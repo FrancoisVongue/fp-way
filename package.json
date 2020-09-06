@@ -1,0 +1,23 @@
+{
+  "name": "fp-way",
+  "version": "0.0.1",
+  "description": "functional programming solution",
+  "main": "src/index.ts",
+  "scripts": {
+    "start": "node src",
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "yes"
+  },
+  "keywords": [
+    "fp",
+    "lambda",
+    "functional-programming",
+    "function",
+    "pure"
+  ],
+  "author": "Francois Vongue",
+  "license": "UNLICENSED"
+}
