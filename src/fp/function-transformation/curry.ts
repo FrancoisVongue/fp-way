@@ -1,30 +1,12 @@
-type Unary<T1, R> = {
-    (t1: T1): R;
-}
-type Binary<T1, T2, R> = {
-    (t1: T1, t2: T2): R;
-}
-type Ternary<T1, T2, T3, R> = {
-    (t1: T1, t2: T2, t3: T3): R;
-}
-type Quaternary<T1, T2, T3, T4, R> = {
-    (t1: T1, t2: T2, t3: T3, t4: T4): R;
-}
-type Quinary<T1, T2, T3, T4, T5, R> = {
-    (t1: T1, t2: T2, t3: T3, t4: T4, t5: T5): R;
-}
-type Senary<T1, T2, T3, T4, T5, T6, R> = {
-    (t1: T1, t2: T2, t3: T3, t4: T4, t5: T5, t6: T6): R;
-}
-type Septenary<T1, T2, T3, T4, T5, T6, T7, R> = {
-    (t1: T1, t2: T2, t3: T3, t4: T4, t5: T5, t6: T6, t7: T7): R;
-}
-type Octonary<T1, T2, T3, T4, T5, T6, T7, T8, R> = {
-    (t1: T1, t2: T2, t3: T3, t4: T4, t5: T5, t6: T6, t7: T7, t8: T8): R;
-}
-type Novenary<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> = {
-    (t1: T1, t2: T2, t3: T3, t4: T4, t5: T5, t6: T6, t7: T7, t8: T8, t9: T9): R;
-}
+import {
+    Binary, Novenary, Octonary,
+    Quaternary,
+    Quinary,
+    Senary,
+    Septenary,
+    Ternary,
+    Unary
+} from "../types/index";
 
 interface Curried1<T1, R> {
     (): Curried1<T1, R>;
@@ -99,15 +81,15 @@ interface Curried9<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> {
     (t1: T1, t2: T2, t3: T3, t4: T4, t5: T5, t6: T6, t7: T7, t8: T8, t9: T9): R;
 }
 
-export function softCurry<T1, R>(f: Unary<T1, R>): Curried1<T1, R>
-export function softCurry<T1, T2, R>(f: Binary<T1, T2, R>): Curried2<T1, T2, R>
-export function softCurry<T1, T2, T3, R>(f: Ternary<T1, T2, T3, R>): Curried3<T1, T2, T3, R>
-export function softCurry<T1, T2, T3, T4, R>(f: Quaternary<T1, T2, T3, T4, R>): Curried4<T1, T2, T3, T4, R>
-export function softCurry<T1, T2, T3, T4, T5, R>(f: Quinary<T1, T2, T3, T4, T5, R>): Curried5<T1, T2, T3, T4, T5, R>
-export function softCurry<T1, T2, T3, T4, T5, T6, R>(f: Senary<T1, T2, T3, T4, T5, T6, R>): Curried6<T1, T2, T3, T4, T5, T6, R>
-export function softCurry<T1, T2, T3, T4, T5, T6, T7, R>(f: Septenary<T1, T2, T3, T4, T5, T6, T7, R>): Curried7<T1, T2, T3, T4, T5, T6, T7, R>
-export function softCurry<T1, T2, T3, T4, T5, T6, T7, T8, R>(f: Octonary<T1, T2, T3, T4, T5, T6, T7, T8, R>): Curried8<T1, T2, T3, T4, T5, T6, T7, T8, R>
-export function softCurry<T1, T2, T3, T4, T5, T6, T7, T8, T9, R>(f: Novenary<T1, T2, T3, T4, T5, T6, T7, T8, T9, R>): Curried9<T1, T2, T3, T4, T5, T6, T7, T8, T9, R>
+export function softCurry<T1, R>(f: Unary<T1, R>): Curried1<T1, R>;
+export function softCurry<T1, T2, R>(f: Binary<T1, T2, R>): Curried2<T1, T2, R>;
+export function softCurry<T1, T2, T3, R>(f: Ternary<T1, T2, T3, R>): Curried3<T1, T2, T3, R>;
+export function softCurry<T1, T2, T3, T4, R>(f: Quaternary<T1, T2, T3, T4, R>): Curried4<T1, T2, T3, T4, R>;
+export function softCurry<T1, T2, T3, T4, T5, R>(f: Quinary<T1, T2, T3, T4, T5, R>): Curried5<T1, T2, T3, T4, T5, R>;
+export function softCurry<T1, T2, T3, T4, T5, T6, R>(f: Senary<T1, T2, T3, T4, T5, T6, R>): Curried6<T1, T2, T3, T4, T5, T6, R>;
+export function softCurry<T1, T2, T3, T4, T5, T6, T7, R>(f: Septenary<T1, T2, T3, T4, T5, T6, T7, R>): Curried7<T1, T2, T3, T4, T5, T6, T7, R>;
+export function softCurry<T1, T2, T3, T4, T5, T6, T7, T8, R>(f: Octonary<T1, T2, T3, T4, T5, T6, T7, T8, R>): Curried8<T1, T2, T3, T4, T5, T6, T7, T8, R>;
+export function softCurry<T1, T2, T3, T4, T5, T6, T7, T8, T9, R>(f: Novenary<T1, T2, T3, T4, T5, T6, T7, T8, T9, R>): Curried9<T1, T2, T3, T4, T5, T6, T7, T8, T9, R>;
 export function softCurry (f: any) {
     let args = [];
 
