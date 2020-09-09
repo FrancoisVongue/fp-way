@@ -1,3 +1,6 @@
+export type Function  = {
+    (...args: any[]): any;
+}
 export type Unary<T1, R> = {
     (t1: T1): R;
 }

@@ -10,4 +10,13 @@ describe('compose', () => {
 
         expect(result).toBe(4);
     })
+    it('should compose two different functions', () => {
+        const addWithTwoArgs = (a:number, b: number) => a + b;
+        const toString = (v): string => '' + v;
+
+        const addAndToString = compose([toString, addWithTwoArgs]);
+        const result = addAndToString(12, 14);
+
+        expect(result).toStrictEqual('26');
+    })
 })

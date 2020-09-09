@@ -1,17 +1,23 @@
-import {Binary, Quaternary, Ternary, Unary} from "../types/index";
+import {Binary, Quaternary, Ternary, Unary, Function} from "../types/index";
 
-export function compose<T1, R>(fns: [Unary<any, R>, Unary<T1, any>])
-export function compose<T1, T2, R>(fns: [Unary<any, R>, Binary<T1, T2, any>])
-export function compose<T1, T2, T3, R>(fns: [Unary<any, R>, Ternary<T1, T2, T3, any>])
-export function compose<T1, T2, T3, T4, R>(fns: [Unary<any, R>, Quaternary<T1, T2, T3, T4, any>])
+export function compose<T1 extends Function, T2>(fns: [Unary<any, T2>, T1]): (...args: Parameters<T1>) => T2;
+export function compose<T1 extends Function, T2>(fns: [Unary<any, T2>, Function, T1]): (...args: Parameters<T1>) => T2;
+export function compose<T1 extends Function, T2>(fns: [Unary<any, T2>, Function, Function, T1]): (...args: Parameters<T1>) => T2;
+export function compose<T1 extends Function, T2>(fns: [Unary<any, T2>, Function, Function, Function, T1]): (...args: Parameters<T1>) => T2;
+export function compose<T1 extends Function, T2>(fns: [Unary<any, T2>, Function, Function, Function, Function, T1]): (...args: Parameters<T1>) => T2;
+export function compose<T1 extends Function, T2>(fns: [Unary<any, T2>, Function, Function, Function, Function, Function, T1]): (...args: Parameters<T1>) => T2;
+export function compose<T1 extends Function, T2>(fns: [Unary<any, T2>, Function, Function, Function, Function, Function, Function, T1]): (...args: Parameters<T1>) => T2;
+export function compose<T1 extends Function, T2>(fns: [Unary<any, T2>, Function, Function, Function, Function, Function, Function, Function, T1]): (...args: Parameters<T1>) => T2;
 export function compose(fns: any[]) {
     return (...args) => {
+        let firstFn = true;
         let firstArgs = args;
-        let currentArg: any;
+        let currentArg = null;
 
         for(let i = fns.length - 1; i >= 0; i--) {
             let result;
-            if(i === fns.length - 1) {
+            if(firstFn) {
+                firstFn = false;
                 result = fns[i](...firstArgs);
             } else {
                 result = fns[i](currentArg);
