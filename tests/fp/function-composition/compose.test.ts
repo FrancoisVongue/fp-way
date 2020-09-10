@@ -1,4 +1,4 @@
-import {compose} from "../../../src/fp/index";
+import {compose} from "../../../src/index";
 
 describe('compose', () => {
     it('should compose two functions', () => {

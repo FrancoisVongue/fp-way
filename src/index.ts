@@ -1,4 +1,6 @@
-import fpBase from 'fp/index'
-export default {
-    fpBase
+import {compose,  pipe, softCurry} from './fp/index'
+export {
+    compose,
+    pipe,
+    softCurry
 }
