@@ -5,7 +5,8 @@ import {
     Senary,
     Septenary,
     Ternary,
-    Unary
+    Unary,
+    Function
 } from "../types/index";
 
 interface Curried1<T1, R> {
@@ -94,7 +95,7 @@ export function softCurry (f: any) {
     let args = [];
 
     return function curried(...newArgs) {
-        args = [...args, ...newArgs];
+        args = [...args, ...newArgs]; // todo: change to push
 
         if(args.length >= f.length)
             return f(...args);
