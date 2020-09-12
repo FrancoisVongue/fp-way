@@ -1,8 +1,12 @@
-import {Unary, Function} from "../types/index";
+import {Unary, Function} from "../types/function";
 
-export function compose<T1 extends Function, R>(fns: [Unary<ReturnType<T1>, R>, T1]): (...args: Parameters<T1>) => R;
-export function compose<T1 extends Function, T2, R>(fns: [Unary<T2, R>,Unary<ReturnType<T1>, T2>,T1]): (...args: Parameters<T1>) => R;
-
+export function compose<T1 extends Function, R>(fns: [
+    Unary<ReturnType<T1>, R>, T1
+]): (...args: Parameters<T1>) => R;
+export function compose<T1 extends Function, T2, R>(fns: [
+    Unary<T2, R>,
+    Unary<ReturnType<T1>, T2>,T1
+]): (...args: Parameters<T1>) => R;
 export function compose<T1 extends Function, T2, T3, R>(fns: [
     Unary<T3, R>,
     Unary<T2, T3>,

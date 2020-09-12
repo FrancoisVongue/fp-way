@@ -1,4 +1,4 @@
-import {Binary, Quaternary, Ternary, Unary, Function} from "../types/index";
+import {Binary, Quaternary, Ternary, Unary, Function} from "../types/function";
 
 export function pipe<T1 extends Function, R>(fns: [T1, Unary<ReturnType<T1>, R>]): (...args: Parameters<T1>) => R;
 export function pipe<T1 extends Function, T2, R>(fns: [T1, Unary<ReturnType<T1>, T2>, Unary<T2, R>]): (...args: Parameters<T1>) => R;

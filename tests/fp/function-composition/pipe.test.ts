@@ -1,6 +1,6 @@
 import {pipe} from "../../../src/index";
 import {compose} from "../../../src/index";
-import {Unary} from "../../../src/fp/types/index";
+import {Unary} from "../../../src/fp/types/function";
 
 describe('pipe', () => {
     it('should pipe two functions', () => {

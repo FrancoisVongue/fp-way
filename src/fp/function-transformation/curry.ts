@@ -7,7 +7,7 @@ import {
     Ternary,
     Unary,
     Function
-} from "../types/index";
+} from "../types/function";
 
 interface Curried1<T1, R> {
     (): Curried1<T1, R>;
