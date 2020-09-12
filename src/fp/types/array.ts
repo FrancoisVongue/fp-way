@@ -1,6 +1,7 @@
 import {Binary, Ternary, Unary} from "./function";
 import {when} from "../basic-functions/index";
 import {not} from "../function-transformation/not";
+import {compose} from "../function-composition/compose";
 
 const forEach = <T1, R>(f: Binary<T1, number, R>, arr: T1[]) => {
     for(let i = 0; i < arr.length; i++) {
@@ -22,9 +23,9 @@ const exclude = <T1>(p: Unary<T1, boolean>, arr: T1[]): T1[] => {
 
 const map = <T1, R>(f: Binary<T1, number, R>, arr: T1[]): R[] => {
     const newArr: R[] = [];
-    for(let i = 0; i < arr.length; i++) {
-        newArr.push(f(arr[i], i));
-    }
+    const push = (value: R) => newArr.push(value);
+
+    forEach(compose([push, f]), arr);
     return newArr;
 }
 
