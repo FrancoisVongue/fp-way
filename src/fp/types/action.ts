@@ -1,5 +1,8 @@
-export type Function = {
+export type Action = {
     (...args: any[]): any;
+}
+export type Function<R extends NonNullable<any>> = {
+    (...args: any[]): R;
 }
 export type Predicate = {
     (...args: any[]): boolean;

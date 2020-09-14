@@ -1,9 +1,9 @@
-import {Binary, Ternary, Unary} from "./function";
+import {Binary, Ternary, Unary} from "./action";
 import {when} from "../basic-functions/index";
-import {not} from "../function-transformation/not";
-import {compose} from "../function-composition/compose";
+import {compose} from "../function-composition";
+import {not} from "./boolean";
 
-const forEach = <T1, R>(f: Binary<T1, number, R>, arr: T1[]) => {
+export const forEach = <T1, R>(f: Binary<T1, number, R>, arr: T1[]) => {
     for(let i = 0; i < arr.length; i++) {
         f(arr[i], i)
     }
@@ -29,11 +29,11 @@ const map = <T1, R>(f: Binary<T1, number, R>, arr: T1[]): R[] => {
     return newArr;
 }
 
-const reduce = <T1, T2, R>(reducer: Ternary<T1, T2, number, T1>, base: T1 = null, arr: T2[]) => {
+const reduce = <T1, T2, R>(reducer: Ternary<T1, T2, number, T1>, base: T1 = null, arr: T2[]): T1 => {
     let intermediateValue = base;
-    const updateValue = (currentArrValue: T2, currentIndex: number) => {
+    const updateValue = (currentArrValue: T2, currentIndex: number) =>
         intermediateValue = reducer(intermediateValue, currentArrValue, currentIndex);
-    }
 
     forEach(updateValue, arr);
+    return intermediateValue;
 }

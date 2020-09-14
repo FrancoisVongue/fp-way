@@ -1,6 +1,7 @@
-import {compose,  pipe, softCurry} from './fp/index'
+import {compose, pipe, split} from "./fp/function-composition";
+
 export {
     compose,
     pipe,
-    softCurry
+    split
 }

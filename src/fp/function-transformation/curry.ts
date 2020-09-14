@@ -6,8 +6,8 @@ import {
     Septenary,
     Ternary,
     Unary,
-    Function
-} from "../types/function";
+    Action
+} from "../types/action";
 
 interface Curried1<T1, R> {
     (): Curried1<T1, R>;

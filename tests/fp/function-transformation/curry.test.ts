@@ -1,4 +1,4 @@
-import {softCurry} from "../../../src/fp/index";
+import {softCurry} from "../../../src/fp/function-transformation/curry";
 
 describe('softCurry', () => {
     it('Should call function when all arguments provided at a time', () => {
