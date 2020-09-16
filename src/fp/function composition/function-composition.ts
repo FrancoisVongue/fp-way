@@ -1,6 +1,6 @@
 import {Action} from "./types/action";
 import {Unary} from "./types/action";
-import {store} from "./basic-functions/index";
+import {store} from "./basic functions/index";
 import {forEach} from "./types/array";
 
 export function compose<T1 extends Action, R>(fns: [

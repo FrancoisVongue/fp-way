@@ -1,3 +1,3 @@
-function Unary<T1, R>(f: (...args: [T1, ...any[]]) => R) {
-    return (single: T1): R => f(single);
-}
+import {call} from "../basic functions/index";
+
+export const Unary = (f, arg) => call(f, arg);

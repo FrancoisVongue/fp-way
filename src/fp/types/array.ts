@@ -1,5 +1,5 @@
 import {Binary, Ternary, Unary} from "./action";
-import {when} from "../basic-functions/index";
+import {when} from "../basic functions/index";
 import {compose} from "../function-composition";
 import {not} from "./boolean";
 

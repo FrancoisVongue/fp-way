@@ -95,7 +95,7 @@ export function softCurry (f: any) {
     let args = [];
 
     return function curried(...newArgs) {
-        args = [...args, ...newArgs]; // todo: change to push
+        args.push(...newArgs);
 
         if(args.length >= f.length)
             return f(...args);

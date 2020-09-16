@@ -1,3 +1,3 @@
-function Binary<T1, T2, R>(f: (...args: [T1, T2, ...any[]]) => R) {
-    return (t1: T1, t2: T2) => f(t1, t2);
-}
+import {call_2} from "../basic functions/index";
+
+export const Binary = (f, arg1, arg2) => call_2(f, arg1, arg2);
