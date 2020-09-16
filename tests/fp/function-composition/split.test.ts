@@ -1,22 +1,12 @@
-import {split} from "../../../src/index";
+import {split} from "../../../src/fp/function composition/split";
 
 describe('split', () => {
-    it('should split two functions', () => {
-        const mul2 = (v: number): number => v * 2;
-        const add2 = (v: number): number => v + 2;
-        const addTwoNumbers = (numbers: [number, number]): number => numbers[0] + numbers[1];
+    it('should split by the number of functions', () => {
+        const mul2 = v => v*2;
+        const add2 = v => v+2;
+        const fnArr = [mul2, add2];
+        const result = split(fnArr, 4);
 
-        const result = split([add2, mul2], addTwoNumbers, 2);
-        expect(result).toEqual(6);
-    })
-    it('should preserve the order', () => {
-        const mul2 = (v: number): number => v * 2;
-        const add2 = (v: number): number => v + 2;
-        const subtract2 = (v: number): number => v - 2;
-        const K = v => _ => v;
-        const concat = (arr: any[]) => arr.join('');
-
-        const result = split([add2, mul2, K('hello'), subtract2], concat, 8);
-        expect(result).toEqual('1016hello6');
+        expect(result).toEqual([8, 6])
     })
 })

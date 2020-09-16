@@ -10,7 +10,7 @@ describe('applyTo', () => {
 
         expect(result).toBe(2);
     });
-    it('should apply a functions to multiple arguments', () => {
+    it('should apply multiple functions to an argument', () => {
         const add3 = v => v+3;
         const add2 = v => v + 2;
         const fnArr = [add3, add2];
