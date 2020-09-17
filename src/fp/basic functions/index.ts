@@ -11,5 +11,5 @@ export const call_3 = (f, arg1, arg2, arg3) => f(arg1, arg2, arg3);
 export const delayCall = (f, arg) => () => f(arg);
 export const not = f => (...args) => !f(...args);
 export const when = (p, f, arg) => p(arg) ? f(arg) : arg;
-export const unless = (p, f, arg) => when(not(p), f, arg);
+export const unless = (p, f, arg) => p(arg) ? arg : f(arg);
 

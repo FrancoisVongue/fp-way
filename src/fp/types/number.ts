@@ -1,2 +1,11 @@
-// todo: gt, lt, gte, gte, max, min, add, subtract, multiply, divide, pow
-//
+export const gt = (n1, n2) => n2 > n1;
+export const gte = (n1, n2) => n2 >= n1;
+export const lt = (n1, n2) => n2 < n1;
+export const lte = (n1, n2) => n2 <= n1;
+export const max = (maxNumber, n2) => n2 > maxNumber ? maxNumber : n2;
+export const min = (minNumber, n2) => n2 < minNumber ? minNumber : n2;
+export const add = (a, b) => a + b;
+export const subtract = (a, b) => b - a ;
+export const multiplyBy = (a, b) => b * a ;
+export const divideBy = (a, b) => b / a ;
+export const pow = (extent, a) => a**extent;

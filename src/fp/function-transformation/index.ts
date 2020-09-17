@@ -1,11 +1,13 @@
 import {Binary} from "./binary";
 import {Unary} from "./unary";
 import {Ternary} from "./ternary";
-import {softCurry} from "./curry";
+import {curry} from "./curry";
+import {memo} from "./memo";
 
 export  {
     Binary,
     Unary,
     Ternary,
-    softCurry
+    curry,
+    memo,
 }

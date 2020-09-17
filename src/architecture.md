@@ -13,3 +13,10 @@
     
 4. Types 
     specific functions for different data types
+    
+    1. boolean
+    2. numbers
+    3. arrays
+    4. strings
+    5. objects
+   
