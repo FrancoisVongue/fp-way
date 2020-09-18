@@ -20,3 +20,7 @@
     4. strings
     5. objects
    
+5. Utilitie
+s
+    functions that help debug, ... code.
+   

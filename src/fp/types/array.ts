@@ -1,6 +1,7 @@
 import {not, when} from "../basic functions/index";
 import {compose} from "../../index";
 import {curry} from "../function-transformation/curry";
+import {all} from "./boolean";
 
 export const forEach = (f, arr) => {
     for(let i = 0; i < arr.length; i++) {
@@ -70,10 +71,27 @@ export const skipWhile = (p, arr) => {
 }
 export const flatten = arr => arr.reduce((b, v) => b.concat(v), []);
 export const subtractArr = (arr, arrBase) => {
-    const newArr = [];
-    const arrBaseSet = new Set(arrBase);
-    const isInSet = v => arrBaseSet.has(v);
-    const appendToNewArr = curry(append)(newArr); // todo: subtract from array, not append
+    const arrSet = new Set(arr);
+    const isInSet = v => arrSet.has(v);
 
-    forEach(when(isInSet, appendToNewArr), )
+    return exclude(isInSet, arrBase);
+}
+export const mergeArr = (arr, anotherArr) => {
+    const anotherArrSet = new Set(anotherArr);
+    const isNewMember = v => !anotherArrSet.has(v);
+    const newMembers = select(isNewMember, arr);
+
+    return [...anotherArr, ...newMembers];
+}
+export const intersection = (arr, anotherArr) => {
+    const arrSet = new Set(arr);
+    const anotherArrSet = new Set(anotherArr);
+    const isCommon = curry(all)([
+        (v) => arrSet.has(v),
+        (v) => anotherArrSet.has(v),
+    ]);
+
+    const commonMembers = select(isCommon, [...arr, ...anotherArr]);
+
+    return commonMembers;
 }
