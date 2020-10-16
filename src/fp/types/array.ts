@@ -1,7 +1,7 @@
-import {not, when} from "../basic functions/index";
+import {when} from "../basic functions/index";
 import {compose} from "../../index";
 import {curry} from "../function-transformation/curry";
-import {all} from "./boolean";
+import {all, and, not} from "./boolean";
 
 export const forEach = (f, arr) => {
     for(let i = 0; i < arr.length; i++) {
@@ -36,6 +36,7 @@ export const reduce = (reducer, base, arr) => {
     return intermediateValue;
 }
 
+export const every = (p, arr) => reduce(compose(), true, arr);
 export const contains = (value, arr: any[]) => ~arr.indexOf(value);
 export const tail = arr => arr.length > 1 ? [...arr].slice(1) : [...arr];
 export const head = arr => arr.length > 1 ? [...arr].slice(0, arr.length - 1) : [...arr];
@@ -86,12 +87,12 @@ export const mergeArr = (arr, anotherArr) => {
 export const intersection = (arr, anotherArr) => {
     const arrSet = new Set(arr);
     const anotherArrSet = new Set(anotherArr);
-    const isCommon = curry(all)([
+
+    const commonToBoth = all([
         (v) => arrSet.has(v),
         (v) => anotherArrSet.has(v),
     ]);
 
-    const commonMembers = select(isCommon, [...arr, ...anotherArr]);
-
-    return commonMembers;
+    return select(commonToBoth, [...arr, ...anotherArr]);
 }
+// todo: multiply?, range?, arrayOfLength(to utils?)

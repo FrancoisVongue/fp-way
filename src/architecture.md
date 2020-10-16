@@ -19,8 +19,12 @@
     3. arrays
     4. strings
     5. objects
+    
+    Each type has `groups`
+        1. translate (from other types, includes `creation`)
+        3. validate (conditions)
+        4. transform (to the same type but different value)
    
-5. Utilitie
-s
-    functions that help debug, ... code.
+5. Utilities
+   are functions that help debug, ... code.
    
