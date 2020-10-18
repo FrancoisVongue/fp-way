@@ -1,13 +1,11 @@
-import {Unary} from "./unary";
-import {curry} from "./curry";
+export const memo = f => {
+    const mapOfArgs = new Map();
 
-export const memo = curry(Unary)((f, mapOfArgs = new Map()) =>
-    arg => {
-        if(mapOfArgs.has(arg))
-            return mapOfArgs.get(arg);
-        else {
+    return arg => {
+        if(!mapOfArgs.has(arg)) {
             let result = f(arg);
             mapOfArgs.set(arg, result);
-            return result;
-            }
-    });
+        }
+        return mapOfArgs.get(arg);
+    };
+}

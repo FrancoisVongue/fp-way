@@ -82,4 +82,4 @@ export const intersection = curry((arr, anotherArr) => {
 
     return select(commonToBoth, [...arr, ...anotherArr]);
 });
-// todo: multiply?, range?, arrayOfLength(to utils?)
+// todo: multiply?, range?, arrayOfLength(length, value-filler) (creates array of length N, FILLED with value-filler)
