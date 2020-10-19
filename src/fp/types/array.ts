@@ -1,7 +1,7 @@
-import {when} from "../basic functions/index";
+import {when} from "../basic-functions/index";
 import {compose} from "../../index";
-import {curry} from "../function-transformation/curry";
-import {allPass, and, not} from "./boolean";
+import {allPass, not} from "./boolean";
+import {curry} from "../function-transformation/index";
 
 export const forEach = curry((f, arr) => {
     for(let i = 0; i < arr.length; i++) {

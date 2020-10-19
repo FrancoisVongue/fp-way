@@ -1,4 +1,4 @@
-import {curry} from "../function-transformation/curry";
+import {curry} from "../function-transformation/index";
 
 export const gt = curry((n1, n2) => n2 > n1);
 export const gte = curry((n1, n2) => n2 >= n1);

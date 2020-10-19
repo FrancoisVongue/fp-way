@@ -1,4 +1,4 @@
-import {curry} from "../function-transformation/curry";
+import {curry} from "../function-transformation/index";
 
 export const identity = x => x;
 export const Const = a => b => a;

@@ -1,7 +1,7 @@
-import {compose, pipe, split} from "./fp/function-composition";
-
-export {
-    compose,
-    pipe,
-    split
-}
+export * from './fp/basic-functions/index'
+export * from './fp/function-composition/index'
+export * from './fp/types/boolean'
+export * from './fp/types/number'
+export * from './fp/types/array'
+export * from './fp/types/string'
+export * from './fp/types/object'

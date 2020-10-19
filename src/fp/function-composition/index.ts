@@ -1,9 +1,9 @@
 import {pipe} from "./pipe";
 import {compose} from "./compose";
-import {split} from "./split";
+import {spreadResult} from "./spreadResult";
 
 export {
     pipe,
-    split,
+    spreadResult,
     compose
 }

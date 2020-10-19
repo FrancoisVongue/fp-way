@@ -1,4 +1,4 @@
-export function split(fns, arg) {
+export function spreadResult(fns, arg) {
     const resultArr = [];
 
     for(let i = 0; i < fns.length; i++) {

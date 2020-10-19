@@ -4,9 +4,7 @@ import {
     identity,
     Swap, unless,
     Variable, when
-} from "../../../src/fp/basic functions/index";
-import {curry} from "../../../src/fp/function-transformation/curry";
-import {add} from "../../../src/fp/types/number";
+} from "../../../src/index";
 
 describe('identity', () => {
     it('should return what has been passed to it', () => {
