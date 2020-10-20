@@ -82,4 +82,30 @@ export const intersection = curry((arr, anotherArr) => {
 
     return select(commonToBoth, [...arr, ...anotherArr]);
 });
-// todo: multiply?, range?, arrayOfLength(length, value-filler) (creates array of length N, FILLED with value-filler)
+// todo: range?, arrayOfLength(length, value-filler) (creates array of length N, FILLED with value-filler)
+
+const allCombinations_2 = curry((arr1, arr2) => {
+    const combinations = [];
+    forEach(v => {
+        forEach(v2 => {
+            combinations.push([v, v2]);
+        }, arr2);
+    }, arr1);
+
+    return combinations;
+});
+export function allCombinations(arrs) {
+    switch (arrs.length) {
+        case 1:
+            return arrs[0];
+        case 2:
+            return allCombinations_2(...arrs);
+        default:
+            return compose([
+                map(flatten),
+                allCombinations_2(arrs[0]),
+                allCombinations,
+                tail
+            ])(arrs);
+    }
+};
