@@ -1,8 +1,12 @@
-import {when} from "../basic-functions/index";
+import {ifElse, when} from "../basic-functions/index";
 import {compose} from "../../index";
 import {allPass, not} from "./boolean";
 import {curry} from "../function-transformation/index";
 
+/*translate*/
+/*validate*/
+export const isArray = arr => Array.isArray(arr);
+/*transform*/
 export const forEach = curry((f, arr) => {
     for(let i = 0; i < arr.length; i++) {
         f(arr[i], i)
@@ -25,7 +29,7 @@ export const reduce = curry((reducer, base, arr) => {
 export const every = curry((p, arr) => reduce((b, v, i) => b && p(v, i), true, arr));
 export const contains = curry((value, arr: any[]) => ~arr.indexOf(value));
 export const tail = curry((arr) => arr.length > 1 ? [...arr].slice(1) : [...arr]);
-export const head = curry((arr) => arr.length > 1 ? [...arr].slice(0, arr.length - 1) : [...arr]);
+export const nose = curry((arr) => arr.length > 1 ? [...arr].slice(0, arr.length - 1) : [...arr]);
 export const take = curry((n, arr) => arr.length < n ? [...arr] : [...arr].slice(0, n));
 export const takeLast = curry((n, arr) => arr.length < n ? [...arr] : [...arr].slice(-n));
 export const append = curry((arr, value) => [...arr, value]);
@@ -57,7 +61,17 @@ export const skipWhile = curry((p, arr) => {
 
     return newArr;
 });
-export const flatten = curry((arr) => arr.reduce((b, v) => b.concat(v), []));
+export const flatten = arr => {
+    const newArr = [];
+    const concatInPlace = arr => newArr.push(...arr);
+    const push = v => newArr.push(v);
+
+    forEach((v, i) => {
+        ifElse(isArray, compose([concatInPlace, flatten]), push)(v);
+    }, arr);
+
+    return newArr;
+}
 export const subtractArr = curry((arr, arrBase) => {
     const arrSet = new Set(arr);
     const isInSet = v => arrSet.has(v);
@@ -82,7 +96,7 @@ export const intersection = curry((arr, anotherArr) => {
 
     return select(commonToBoth, [...arr, ...anotherArr]);
 });
-// todo: range?, arrayOfLength(length, value-filler) (creates array of length N, FILLED with value-filler)
+// todo: deep-flatten, range?, arrayOfLength(length, value-filler) (creates array of length N, FILLED with value-filler)
 
 const allCombinations_2 = curry((arr1, arr2) => {
     const combinations = [];

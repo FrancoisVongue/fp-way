@@ -1,5 +1,30 @@
-import {allCombinations} from "../../../src/fp/types/array";
+import {allCombinations, flatten} from "../../../src/fp/types/array";
 
+describe('flatten', () => {
+    it('should flatten an array of ONE level depth', () => {
+        const nestedArray = [
+            [1, 2],
+            [3, 4]
+        ];
+
+        const result = flatten(nestedArray);
+
+        expect(result).toEqual([1,2,3,4]);
+    })
+})
+describe('flatten', () => {
+    it('should flatten an array of THREE level depth', () => {
+        const deeplyNestedArray = [
+            [1, 2],
+            [[3, 4]],
+            [[[5, [6]]]],
+        ];
+
+        const result = flatten(deeplyNestedArray);
+
+        expect(result).toEqual([1,2,3,4,5,6]);
+    })
+})
 describe('allCombinations', () => {
     it('should return all combinations for a single array', () => {
         const array = [1,2,3];

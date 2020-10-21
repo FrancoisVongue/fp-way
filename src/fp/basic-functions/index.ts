@@ -14,5 +14,8 @@ export const delayCall = curry((f, arg) => () => call(f, arg));
 export const call_2 = curry((f, arg1, arg2) => f(arg1, arg2));
 export const call_3 = curry((f, arg1, arg2, arg3) => f(arg1, arg2, arg3));
 
+export const ifElse = curry((p, onSuccess, onFail, arg) =>
+    p(arg) ? onSuccess(arg) : onFail(arg)
+);
 export const when = curry((p, f, arg) => p(arg) ? f(arg) : arg);
 export const unless = curry((p, f, arg) => p(arg) ? arg : f(arg));
