@@ -1,4 +1,4 @@
-import {every} from "./array";
+import {everyElement} from "./array";
 import {curry} from "../function-transformation/index";
 
 /*VALIDATE*/
@@ -11,7 +11,7 @@ export const satisfiesSpec = (spec, obj) => {
         return validator(value, obj);
     });
 
-    return every(entrySatisfies(spec), Object.entries(obj));
+    return everyElement(entrySatisfies(spec), Object.entries(obj));
 }
 // export const equalTo( ) // deep equality checker
 /*TRANSFORM*/
