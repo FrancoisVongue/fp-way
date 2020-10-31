@@ -1,4 +1,4 @@
-import {Binary, curry, memo} from "../../../src/fp/function-transformation/index";
+import {Binary, curry, memo} from "../../../src/function-transformation/index";
 
 describe('curry', () => {
     it('Should call function when all arguments provided at a time', () => {

@@ -1,5 +1,5 @@
 import {Const, ifElse, Return, Swap, when} from "../basic-functions/index";
-import {compose} from "../../index";
+import {compose} from "../index";
 import {allPass, not} from "./boolean";
 import {curry} from "../function-transformation/index";
 

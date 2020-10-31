@@ -1,4 +1,4 @@
-import {divideBy, gt, lt, max, min, pow, subtract} from "../../../src/fp/types/number";
+import {divideBy, gt, lt, max, min, pow, subtract} from "../../../src/types/number";
 
 describe('gt', () => {
     it('should return true if second value is bigger than the first', () => {

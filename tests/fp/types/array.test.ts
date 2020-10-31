@@ -1,4 +1,4 @@
-import {allCombinations, flatten} from "../../../src/fp/types/array";
+import {allCombinations, flatten} from "../../../src/types/array";
 
 describe('flatten', () => {
     it('should flatten an array of ONE level depth', () => {

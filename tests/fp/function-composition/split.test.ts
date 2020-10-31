@@ -1,4 +1,4 @@
-import {spreadResult} from "../../../src/fp/function-composition/spreadResult";
+import {spreadResult} from "../../../src/function-composition/spreadResult";
 
 describe('split', () => {
     it('should split by the number of functions', () => {

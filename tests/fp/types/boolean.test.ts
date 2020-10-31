@@ -1,4 +1,4 @@
-import {allPass, eitherPass, neitherPass, not} from "../../../src/fp/types/boolean";
+import {allPass, eitherPass, neitherPass, not} from "../../../src/types/boolean";
 
 
 describe('not', () => {

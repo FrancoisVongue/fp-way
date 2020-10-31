@@ -26,7 +26,8 @@ export const memo = f => {
     };
 }
 export const tapWith = curry((f, arg) => (f(arg), arg));
-export const tapBefore = curry(
+export const tapBefore = curry
+(
     (tapper, fn, arg) => {
         tapper(arg);
         return fn(arg);
