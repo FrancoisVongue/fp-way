@@ -9,7 +9,7 @@ export const arrayOfLength = (n, v=0) => (new Array(n)).map(Return(v));
 export const range = curry((start, finish) => {
     const newArr = [];
     forEach((v, i) => {
-        pushTo(newArr, i + start);
+        pushOneTo(newArr, i + start);
     }, arrayOfLength(finish - start + 1))
 
     return newArr;
@@ -50,7 +50,8 @@ export const reduce = curry((reducer, base, arr) => {
     forEach(updateValue, arr);
     return intermediateValue;
 });
-export const pushTo = curry((arr, ...arrOfValues) => arr.push(...arrOfValues));
+export const pushArrayTo = curry((arr, arrOfValues) => arr.push(...arrOfValues));
+export const pushOneTo = curry((arr, v) => arr.push(v));
 export const tail = curry((arr) => arr.length > 1 ? [...arr].slice(1) : [...arr]);
 export const nose = curry((arr) => arr.length > 1 ? [...arr].slice(0, arr.length - 1) : [...arr]);
 export const take = curry((n, arr) => arr.length < n ? [...arr] : [...arr].slice(0, n));
@@ -86,9 +87,11 @@ export const skipWhile = curry((p, arr) => {
 });
 export const flatten = arr => {
     const newArr = [];
+    const flattenAndPush = compose([pushArrayTo(newArr), flatten]);
+    const pushOneToNewArr = pushOneTo(newArr);
 
     forEach((v, i) => {
-        ifElse(isArray, compose([pushTo(newArr), flatten]), pushTo(newArr))(v);
+        ifElse(isArray, flattenAndPush, pushOneToNewArr)(v);
     }, arr);
 
     return newArr;

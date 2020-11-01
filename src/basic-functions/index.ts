@@ -5,8 +5,7 @@ export const Const = a => b => a;
 export const Return = Const;
 export const Variable = a => b => b;
 
-export const
-    Swap = curry((f, a, b) => f(b, a));
+export const Swap = curry((f, a, b) => f(b, a));
 
 export const applyTo = curry((arg, f) => f(arg));
 export const applyTo_2 = curry((arg1, arg2, f) => f(arg1, arg2));

@@ -1,5 +1,48 @@
-import {Binary, curry, memo} from "../../../src/function-transformation/index";
+import {
+    Binary,
+    curry,
+    memo,
+    Skip,
+    skipMerge
+} from "../../../src/function-transformation/index";
 
+describe('skipMerge', () => {
+    it('should skip elements of an array marked as Skip()', () =>{
+        let argList1 = [1, Skip(), 3];
+        let argList2 = [Skip(), 2];
+        const result = skipMerge(argList1, argList2);
+
+        expect(result).toEqual([1, Skip(), 3, 2]);
+    })
+    it('should skip elements of an array marked as Skip()', () =>{
+        let argList1 = [Skip(), Skip(), 3];
+        let argList2 = [Skip(), Skip(), 2];
+        const result = skipMerge(argList1, argList2);
+
+        expect(result).toEqual([Skip(), Skip(), 3, 2]);
+    })
+    it('should skip elements of an array marked as Skip()', () =>{
+        let argList1 = [3, Skip()];
+        let argList2 = [2, 2];
+        const result = skipMerge(argList1, argList2);
+
+        expect(result).toEqual([3, 2, 2]);
+    })
+    it('should skip elements of an array marked as Skip()', () =>{
+        let argList1 = [Skip(), Skip()];
+        let argList2 = [2, 2];
+        const result = skipMerge(argList1, argList2);
+
+        expect(result).toEqual([2, 2]);
+    })
+    it('should skip elements of an array marked as Skip()', () =>{
+        let argList1 = [];
+        let argList2 = [2, Skip(), 2];
+        const result = skipMerge(argList1, argList2);
+
+        expect(result).toEqual([2, Skip(), 2]);
+    })
+})
 describe('curry', () => {
     it('Should call function when all arguments provided at a time', () => {
         let addFn = (a: number, b:number) => a + b;
