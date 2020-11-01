@@ -1,18 +1,46 @@
+export const Skip = () => Symbol.for("skip");
+export const skipMerge = (arr1, arr2) => {
+    const resultOfMerge = [];
+
+    const pushToResult = v => resultOfMerge.push(v);
+    const isSkip = v => v === Skip();
+    let arr2Cursor = 0;
+
+    for(let i = 0; i < arr1.length; i++) {
+        if(isSkip(arr1[i]) && arr2Cursor < arr2.length) {
+            if(isSkip(arr2[arr2Cursor])) {
+                pushToResult(Skip());
+            } else {
+                pushToResult(arr2[arr2Cursor]);
+            }
+            arr2Cursor++;
+        } else {
+            pushToResult(arr1[i]);
+        }
+    }
+    if(arr2Cursor < arr2.length)  {
+        resultOfMerge.push(...arr2.slice(arr2Cursor));
+    }
+
+    return resultOfMerge;
+}
+
 export function curry (f, ...initialArgs) {
     return function curried(...newArgs) {
-        if(initialArgs.length + newArgs.length >= f.length)
-            return f(...initialArgs, ...newArgs);
+        const args = skipMerge(initialArgs, newArgs).slice(0, f.length);
+        const containsSkip = args.includes(Skip());
+
+        if(args.length >= f.length && !containsSkip)
+            return f(...args);
         else
-            return curry(f, ...initialArgs, ...newArgs);
+            return curry(f, ...args);
     }
 }
-/*makes multivariable function take all arguments as an array*/
+
 export const toUnary = f => argsArr => f(...argsArr);
 
-/*forces function to take only one argument*/
 export const Unary = f => curry(a => f(a));
 
-/*forces function to take only two arguments*/
 export const Binary = f => curry((a,b) => f(a,b));
 export const memo = f => {
     const mapOfArgs = new Map();
@@ -40,6 +68,6 @@ export const tapAfter = curry(
         return result;
     }
 );
-export const devour = curry(
+export const devourWith = curry(
     (devourer, fn, arg) => devourer(fn, arg)
 );
