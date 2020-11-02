@@ -1,30 +1,15 @@
 # Layered architecture of functions
-1. Basic fp functions
-    the most essential functions for functional programming.
     
-2. functions that transform other functions
-    allow you to transform a given functions into 
-    different function, in most cases returns the same function
-    but `behaves differently`
-    
-3. functions composition
-    functions that allow you to combine `multiple functions` into 
-    one single function.
-    
-4. Types 
-    specific functions for different data types
-    
+2. Order of layers
+    0. basic fp functions
     1. boolean
     2. numbers
     3. arrays
     4. strings
-    5. objects
+    5. functions
+    6. objects
     
-    Each type has `groups`
+    Each type has functions that ... it
         1. translate (from other types, includes `creation`)
         3. validate (conditions)
-        4. transform (to the same type but different value)
-   
-5. Utilities
-   are functions that help debug, ... code.
-   
+        4. transform (to the same type but different properties)

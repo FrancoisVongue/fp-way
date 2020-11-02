@@ -1,5 +1,5 @@
-import {everyElement} from "./array";
-import {curry} from "../function-transformation/index";
+import {allElementsAre} from "./array";
+import {curry} from "./basic-functions";
 
 /*VALIDATE*/
 export const satisfiesSpec = (spec, obj) => {
@@ -11,7 +11,7 @@ export const satisfiesSpec = (spec, obj) => {
         return validator(value, obj);
     });
 
-    return everyElement(entrySatisfies(spec), Object.entries(obj));
+    return allElementsAre(entrySatisfies(spec), Object.entries(obj));
 }
 // export const equalTo( ) // deep equality checker
 /*TRANSFORM*/

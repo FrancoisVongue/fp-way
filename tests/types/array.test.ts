@@ -1,4 +1,4 @@
-import {allCombinations, flatten} from "../../../src/types/array";
+import {allCombinations, flatten} from "../../src";
 
 describe('flatten', () => {
     it('should flatten an array of ONE level depth', () => {
@@ -12,7 +12,6 @@ describe('flatten', () => {
         expect(result).toEqual([1,2,3,4]);
     })
 })
-describe('flatten', () => {
     it('should flatten an array of THREE level depth', () => {
         const deeplyNestedArray = [
             [1, 2],
@@ -23,7 +22,6 @@ describe('flatten', () => {
         const result = flatten(deeplyNestedArray);
 
         expect(result).toEqual([1,2,3,4,5,6]);
-    })
 })
 describe('allCombinations', () => {
     it('should return all combinations for a single array', () => {

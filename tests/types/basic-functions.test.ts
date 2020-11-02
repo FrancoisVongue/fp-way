@@ -1,10 +1,10 @@
 import {
-    applyTo, call,
-    Const, delayCall,
-    identity,
+    applyTo, call, compose,
+    Const, curry, delayCall, doNothing,
+    identity, pipe, Skip, skipMerge, spreadResult,
     Swap, unless,
     Variable, when
-} from "../../../src/index";
+} from "../../src";
 
 describe('identity', () => {
     it('should return what has been passed to it', () => {
@@ -12,6 +12,13 @@ describe('identity', () => {
         const result = identity(thing);
 
         expect(result).toEqual(thing);
+    })
+})
+describe('doNothing', () => {
+    it('should do nothing', () => {
+        let result = doNothing();
+
+        expect(result).toBeUndefined();
     })
 })
 describe('Const', () => {
@@ -132,4 +139,99 @@ describe('unless', () => {
 
         expect(result).toEqual(someValue);
     })
+})
+describe('spreadResult', () => {
+    it('should split by the number of functions', () => {
+        const mul2 = v => v*2;
+        const add2 = v => v+2;
+        const fnArr = [mul2, add2];
+        const result = spreadResult(fnArr, 4);
+
+        expect(result).toEqual([8, 6])
+    })
+})
+describe('pipe', () => {
+    it('should equal to compose with reversed order of functions', () => {
+        const add = (a: number) => (b: number) => a + b;
+        const mul = (a: number) => (b: number) => a * b;
+
+        const add2 = add(2);
+        const mulBy2 = mul(2);
+
+        const functionArray = [add2, mulBy2];
+        const functionArrayReversed = [mulBy2, add2];
+
+        const pipeResult = pipe(functionArray);
+        const composeResult = compose(functionArrayReversed);
+
+        expect(pipeResult(1)).toStrictEqual(composeResult(1));
+    })
+})
+describe('compose', () => {
+    it('should compose two functions', () => {
+        const add = (a:number) => (b: number) => a + b;
+        const add1 = add(1);
+        const add2 = add(2);
+        const add3 = compose([add1, add2]);
+        const result = add3(1);
+
+        expect(result).toBe(4);
+    })
+})
+describe('skipMerge', () => {
+    it('should skip elements of an array marked as Skip()', () =>{
+        let argList1 = [1, Skip(), 3];
+        let argList2 = [Skip(), 2];
+        const result = skipMerge(argList1, argList2);
+
+        expect(result).toEqual([1, Skip(), 3, 2]);
+    })
+    it('should skip elements of an array marked as Skip()', () =>{
+        let argList1 = [Skip(), Skip(), 3];
+        let argList2 = [Skip(), Skip(), 2];
+        const result = skipMerge(argList1, argList2);
+
+        expect(result).toEqual([Skip(), Skip(), 3, 2]);
+    })
+    it('should skip elements of an array marked as Skip()', () =>{
+        let argList1 = [3, Skip()];
+        let argList2 = [2, 2];
+        const result = skipMerge(argList1, argList2);
+
+        expect(result).toEqual([3, 2, 2]);
+    })
+    it('should skip elements of an array marked as Skip()', () =>{
+        let argList1 = [Skip(), Skip()];
+        let argList2 = [2, 2];
+        const result = skipMerge(argList1, argList2);
+
+        expect(result).toEqual([2, 2]);
+    })
+    it('should skip elements of an array marked as Skip()', () =>{
+        let argList1 = [];
+        let argList2 = [2, Skip(), 2];
+        const result = skipMerge(argList1, argList2);
+
+        expect(result).toEqual([2, Skip(), 2]);
+    })
+})
+describe('curry', () => {
+    it('Should call function when all arguments provided at a time', () => {
+        let addFn = (a: number, b:number) => a + b;
+        let curriedAddFn = curry(addFn);
+        const result = curriedAddFn(2, 2);
+        expect(result).toBe(4);
+    });
+    it('Should return a function when not enough arguments were specified', () => {
+        let addFn = (a: number, b:number) => a + b;
+        let curriedAddFn = curry(addFn);
+        const result = curriedAddFn(1);
+        expect(result).toBeInstanceOf(Function);
+    })
+    it('Should work with different types', () => {
+        let addFn = (a, b: string): string => a + b;
+        let curriedAddFn = curry(addFn);
+        const result = curriedAddFn(1, '2');
+        expect(result).toBe('12');
+    });
 })

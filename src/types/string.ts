@@ -1,5 +1,5 @@
 import {reduce} from "./array";
-import {curry} from "../function-transformation/index";
+import {curry} from "./basic-functions";
 
 /*VALIDATE*/
 export const test = curry((regex, string) => (regex as RegExp).test(string));

@@ -1,17 +1,17 @@
-import {allPass, eitherPass, neitherPass, not} from "../../../src/types/boolean";
+import {allPass, eitherPass, neitherPass, negate} from "../../src";
 
 
 describe('not', () => {
     it('should return false if passed function returns true', () => {
         const alwaysTrue = () => true;
-        const alwaysFalse = not(alwaysTrue);
+        const alwaysFalse = negate(alwaysTrue);
         const result = alwaysFalse('any value');
 
         expect(result).toBeFalsy();
     })
     it('should return true if passed function returns false', () => {
         const alwaysFalse = () => false;
-        const alwaysTrue = not(alwaysFalse);
+        const alwaysTrue = negate(alwaysFalse);
         const result = alwaysTrue('any value');
 
         expect(result).toBeTruthy();

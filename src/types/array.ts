@@ -1,37 +1,53 @@
-import {Const, ifElse, Return, Swap, when} from "../basic-functions/index";
-import {compose} from "../index";
-import {allPass, not} from "./boolean";
-import {curry} from "../function-transformation/index";
+import {
+    Const,
+    curry,
+    ifElse,
+    Return,
+    Swap,
+    when,
+    compose,
+    unless
+} from "./basic-functions";
+import {allPass, negate} from "./boolean";
+import {abs, lt, negateNumber} from "./number";
 
-/*translate*/
+/*
+* =====================================================================================
+* TRANSLATE
+* ====================================================================================
+* */
 export const arrayOf = (...v) => [...v];
 export const arrayOfLength = (n, v=0) => (new Array(n)).map(Return(v));
-export const range = curry((start, finish) => {
+export const arrayOfRange = curry((start, finish) => {
     const newArr = [];
+    const negativeOrder = finish < start;
+
     forEach((v, i) => {
-        pushOneTo(newArr, i + start);
-    }, arrayOfLength(finish - start + 1))
+        pushTo(newArr, start + when(negativeOrder, negateNumber)(i));
+    }, arrayOfLength(abs(finish - start) + 1))
 
     return newArr;
 });
-/*validate*/
-export const isArray = arr => Array.isArray(arr);
-export const everyElement = curry((p, arr) => reduce((b, v, i) => b && p(v, i), true, arr));
-export const someElements = curry((p, arr) => reduce((b, v, i) => b || p(v, i), false, arr));
-export const contains = curry((subArr, arrOrSet) => {
-    let isInArray;
-    
-    if(arrOrSet instanceof Set) {
-        isInArray = v => arrOrSet.has(v);
-    } else if(isArray(arrOrSet)) {
-        isInArray = v => ~arrOrSet.indexOf(v);
-    }
-    
-    return everyElement(isInArray, subArr);
-})
 
-// todo: place comments properly
-/*transform*/
+
+/*
+* =====================================================================================
+* VALIDATE
+* ====================================================================================
+* */
+export const isArray = arr => Array.isArray(arr);
+export const allElementsAre = curry((p, arr) => reduce((b, v, i) => b && p(v, i), true, arr));
+export const someElementsAre = curry((p, arr) => reduce((b, v, i) => b || p(v, i), false, arr));
+export const contains = curry((v, arr) => v => arr.includes(v));
+export const containedIn = Swap(contains);
+export const isSupersetOf = curry((subArr, arr) => allElementsAre(containedIn(arr), subArr));
+
+
+/*
+* =====================================================================================
+* TRANSFORM
+* ====================================================================================
+* */
 export const forEach = curry((f, arr) => {
     for(let i = 0; i < arr.length; i++) {
         f(arr[i], i)
@@ -39,7 +55,7 @@ export const forEach = curry((f, arr) => {
 });
 
 export const select = curry((p, arr) => arr.filter(p));
-export const exclude = curry((p, arr) => select(not(p), arr));
+export const exclude = curry((p, arr) => select(negate(p), arr));
 export const map = curry((f, arr) => arr.map(f));
 export const reduce = curry((reducer, base, arr) => {
     let intermediateValue = base;
@@ -50,8 +66,8 @@ export const reduce = curry((reducer, base, arr) => {
     forEach(updateValue, arr);
     return intermediateValue;
 });
-export const pushArrayTo = curry((arr, arrOfValues) => arr.push(...arrOfValues));
-export const pushOneTo = curry((arr, v) => arr.push(v));
+export const concatTo = curry((arr, arrOfValues) => arr.push(...arrOfValues));
+export const pushTo = curry((arr, v) => arr.push(v));
 export const tail = curry((arr) => arr.length > 1 ? [...arr].slice(1) : [...arr]);
 export const nose = curry((arr) => arr.length > 1 ? [...arr].slice(0, arr.length - 1) : [...arr]);
 export const take = curry((n, arr) => arr.length < n ? [...arr] : [...arr].slice(0, n));
@@ -87,11 +103,11 @@ export const skipWhile = curry((p, arr) => {
 });
 export const flatten = arr => {
     const newArr = [];
-    const flattenAndPush = compose([pushArrayTo(newArr), flatten]);
-    const pushOneToNewArr = pushOneTo(newArr);
+    const flattenAndConcat = compose([concatTo(newArr), flatten]);
+    const pushOne = pushTo(newArr);
 
     forEach((v, i) => {
-        ifElse(isArray, flattenAndPush, pushOneToNewArr)(v);
+        ifElse(isArray, flattenAndConcat, pushOne)(v);
     }, arr);
 
     return newArr;
@@ -104,8 +120,7 @@ export const subtractArr = curry((subtractionArr, baseArr) => {
 });
 export const concatUnique = curry((extraArr, baseArr) => {
     const baseArrSet = new Set(baseArr);
-    const containedIn = Swap(contains);
-    const isNewMember = not(containedIn(baseArrSet));
+    const isNewMember = negate(containedIn(baseArrSet));
     const newMembers = select(isNewMember, extraArr);
 
     return [...baseArr, ...newMembers];
@@ -113,7 +128,6 @@ export const concatUnique = curry((extraArr, baseArr) => {
 export const intersectWith = curry((arr, anotherArr) => {
     const arrSet = new Set(arr);
     const anotherArrSet = new Set(anotherArr);
-    const containedIn = Swap(contains);
 
     const smallerArr = arr.length > anotherArr.length ? anotherArr : arr;
     const commonToBoth = allPass([
