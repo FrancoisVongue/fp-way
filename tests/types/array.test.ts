@@ -1,4 +1,4 @@
-import {allCombinations, allElementsAre, arrayOf, arrayOfLength, arrayOfRange, Const, flatten, is, lt} from "../../src";
+import {allCombinations, allElementsAre, arrayOf, arrayOfLength, arrayOfRange, Const, contains, flatten, forEach, forNumberOfTimes, is, isSupersetOf, lt} from "../../src";
 
 /*
 * =====================================================================================
@@ -50,6 +50,79 @@ describe('allElementsAre', () => {
         const result = allElementsAre(lt(8), [1,2,-2,8]);
 
         expect(result).toBeFalsy();
+    })
+})
+describe('someElementsAre', () => {
+    it('should return true if predicate returns true for at least one element', () => {
+        const result = allElementsAre(lt(0), [1,2,-2]);
+
+        expect(result).toBeTruthy();
+    })
+    it('should return false if predicate returns false for all elements', () => {
+        const result = allElementsAre(Const(false), [1,2,-2,8]);
+
+        expect(result).toBeFalsy();
+    })
+})
+describe('contains', () => {
+    it('should return true if array contains specified elemtn', () => {
+        const sample = {};
+        const result = contains(sample, [1, 2,3 ,sample]);
+
+        expect(result).toBe(true);
+    })
+    it('should return false if array doesnt contain specified elemtn', () => {
+        const sample = {};
+        const result = contains(sample, [1,2,3]);
+
+        expect(result).toBe(false);
+    })
+})
+describe('containedIn', () => {
+    it('should return true if array contains specified elemtn', () => {
+        const sample = {};
+        const result = contains(sample, [1, 2,3 ,sample]);
+
+        expect(result).toBeTruthy();
+    })
+    it('should return false if array doesnt contain specified elemtn', () => {
+        const sample = {};
+        const result = contains(sample, [1, 2,3]);
+
+        expect(result).toBeFalsy();
+    })
+})
+describe('isSupersetOf', () => {
+    it('should return true if array contains all specified elements', () => {
+        const subArr = [1,2];
+        const isSupersetofOneandTwo = isSupersetOf(subArr);
+        const result = isSupersetofOneandTwo([1,2,2,4,true]);
+
+        expect(result).toBe(true);
+    })
+    it('should return false if array doesnt contain some elements', () => {
+        const subArr = [1,2];
+        const isSupersetofOneandTwo = isSupersetOf(subArr);
+        const result = isSupersetofOneandTwo([1,3,3]);
+
+        expect(result).toBe(false);
+    })
+})
+describe('forEach', () => { 
+    it('should call a function for every element in an array and pass value and index to it', () => {
+        const arr = [1,2];
+        const result = [];
+        forEach((v, i) => result.push([v, i]))(arr);
+
+        expect(result).toEqual([[1,0], [2,1]]);
+    })
+})
+describe('forEach', () => { 
+    it('should call a function specified number of times and pass index to it', () => {
+        const result = [];
+        forNumberOfTimes(5, (i) => result.push(i));
+
+        expect(result).toEqual([0,1,2,3,4]);
     })
 })
 
