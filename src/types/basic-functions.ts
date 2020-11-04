@@ -42,7 +42,6 @@ export function curry(f, ...initialArgs) {
 
 export const doNothing = () => {};
 export const identity = x => x;
-export const is = curry((a, b) => a === b);
 export const Const = a => b => a;
 export const Return = Const;
 export const Variable = a => b => b;
@@ -62,6 +61,8 @@ export const ifElse = curry((p, onSuccess, onFail, arg) =>
     p(arg) ? onSuccess(arg) : onFail(arg));
 export const when = curry((p, f, arg) => p(arg) ? f(arg) : arg);
 export const unless = curry((p, f, arg) => p(arg) ? arg : f(arg));
+export const is = curry((a, b) => a === b);
+export const exists = a => !(a === null || a === undefined);
 
 export function compose(fns) {
     return arg => {
