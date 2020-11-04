@@ -1,4 +1,4 @@
-import {curry} from "../../lib/function-transformation";
+import {curry} from "./basic-functions";
 
 export const toUnary = f => argsArr => f(...argsArr);
 export const Unary = f => curry(a => f(a));

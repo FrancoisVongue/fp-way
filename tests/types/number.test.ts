@@ -1,4 +1,4 @@
-import {divideBy, gt, lt, max, min, pow, subtract} from "../../src";
+import {difference, divideBy, gt, lt, max, min, pow, subtract} from "../../src";
 
 describe('gt', () => {
     it('should return true if second value is bigger than the first', () => {
@@ -54,6 +54,17 @@ describe('subtract', () => {
         const five = sbtr5(10);
 
         expect(five).toBe(5);
+    })
+})
+describe('difference', () => {
+    it('should return absolute difference between numbers', () => {
+        const result = difference(5, -2);
+        const result2 = difference(5, 2);
+        const result3 = difference(2, 5);
+
+        expect(result).toBe(7);
+        expect(result2).toBe(3);
+        expect(result2).toEqual(result3);
     })
 })
 describe('divide', () => {

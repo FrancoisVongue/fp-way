@@ -3,7 +3,9 @@
     "version": "0.0.6",
     "description": "Simple functional programming library that works as you would expect.",
     "main": "lib/index.js",
-    "files": ["lib/*"],
+    "files": [
+        "lib/*"
+    ],
     "types": "lib",
     "scripts": {
         "start": "node src",

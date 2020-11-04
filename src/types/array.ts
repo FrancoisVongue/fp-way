@@ -6,10 +6,11 @@ import {
     Swap,
     when,
     compose,
-    unless
+    pipe,
+    tap,
 } from "./basic-functions";
 import {allPass, negate} from "./boolean";
-import {abs, lt, negateNumber} from "./number";
+import {abs, add, difference, increment, lt, negateNumber} from "./number";
 
 /*
 * =====================================================================================
@@ -20,11 +21,16 @@ export const arrayOf = (...v) => [...v];
 export const arrayOfLength = (n, v=0) => (new Array(n)).map(Return(v));
 export const arrayOfRange = curry((start, finish) => {
     const newArr = [];
-    const negativeOrder = finish < start;
+    const orderIsNegative = Const(finish < start);
 
-    forEach((v, i) => {
-        pushTo(newArr, start + when(negativeOrder, negateNumber)(i));
-    }, arrayOfLength(abs(finish - start) + 1))
+    forNumberOfTimes(
+        increment(difference(start, finish)), // finish included
+        pipe([
+            when(orderIsNegative, negateNumber),
+            add(start), 
+            pushTo(newArr),
+        ])
+    );
 
     return newArr;
 });
@@ -51,6 +57,11 @@ export const isSupersetOf = curry((subArr, arr) => allElementsAre(containedIn(ar
 export const forEach = curry((f, arr) => {
     for(let i = 0; i < arr.length; i++) {
         f(arr[i], i)
+    }
+});
+export const forNumberOfTimes = curry((n, f) => {
+    for(let i = 0; i < n; i++) {
+        f(i);
     }
 });
 

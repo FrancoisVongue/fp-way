@@ -42,9 +42,11 @@ export function curry(f, ...initialArgs) {
 
 export const doNothing = () => {};
 export const identity = x => x;
+export const is = curry((a, b) => a === b);
 export const Const = a => b => a;
 export const Return = Const;
 export const Variable = a => b => b;
+export const tap = curry((f, v) => (f(v), v));
 
 export const Swap = curry((f, a, b) => f(b, a));
 

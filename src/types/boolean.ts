@@ -24,7 +24,7 @@ export const isFalse = v => v === false;
 export const negateValue = v => !v;
 export const either = curry((a,b) => toBoolean(a || b));
 export const both = curry((a,b) => toBoolean(a && b));
-export const none = curry((compose([negateValue, either])));
+export const none = curry((a,b) => compose([negateValue, either(a, b)]));
 
 /**
  * Negates the return value of a function
