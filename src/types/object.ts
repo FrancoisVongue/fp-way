@@ -1,4 +1,12 @@
-import {allElementsAre, forEach, pushTo} from "./array";
+import {
+    allElementsAre, exclude,
+    forEach, isArray,
+    isArrayOfLength,
+    map,
+    pushTo,
+    reduce,
+    select, take
+} from "./array";
 import {
     call,
     compose,
@@ -10,6 +18,8 @@ import {
     when
 } from "./basic-functions";
 import {lt} from "./number";
+import {is, pipe, Return} from "../../lib";
+import {isString} from "./string";
 
 /*
 * =====================================================================================
@@ -22,51 +32,43 @@ import {lt} from "./number";
 * VALIDATE
 * ====================================================================================
 * */
-/*
-* example spec and result
-const spec = {
-    property: [
-        [lt(3), 'message'],
-        [lt(3), 'anotherMessage'],
-    ]
-};
-const result = {
-    valid: true, // or false
-    errors: {
-        property: [
-            'message'
-        ]
-    }
-}
-*/
-export const satisfiesSpec = (spec, obj) => {
-    const validationSummary = {
-        valid: true,
-        errors: {}
-    };
-
-    const objectKeys = getKeys(obj);
-    forEach((objKey) => {
-        const objValue = obj[objKey];
-        const errorsArray = validationSummary.errors[objKey] = [];
-
-        forEach((ruleSet) => {
-            const rule = ruleSet[0];
-            const message = ruleSet[1];
-
-            if(!rule(objValue)) {
-                errorsArray.push(message);
-                validationSummary.valid = false;
+const isNestedSpec = s => !isArray(s); // todo: change (currently speck != array)
+export const specSummary = curry((spec, obj) => {
+    const messageForValue = value => (specRuleEntry) => {
+        const [rule, message] = specRuleEntry;
+        if(rule(value)) {
+            return null;
+        } else {
+            if(isString(message)) {
+                return message
+            } else {
+                return message(value);
             }
-        }, spec[objKey])
+        }
+    }
 
-        if(errorsArray.length === 0)
-            validationSummary.errors[objKey] = null;
-    }, objectKeys);
-}
+    return reduce((summary, entry) => {
+        const [key, value] = entry;
+
+        summary[key] = ifElse(
+            isNestedSpec,
+            spec => specSummary(spec, value),
+            pipe([
+                map(messageForValue(value)),
+                exclude(is(null))
+            ])
+        )(spec[key]);
+
+        return summary;
+    }, {}, getEntries(obj));
+});
 // export const equalTo( ) // deep equality checker
 
-/*TRANSFORM*/
+/*
+* =====================================================================================
+* TRANSFORM
+* ====================================================================================
+* */
 export const getKeys = obj => Object.keys(obj);
 export const getEntries = obj => Object.entries(obj);
 
