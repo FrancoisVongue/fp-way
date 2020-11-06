@@ -55,7 +55,7 @@ export const applyTo_3 = curry((arg1, arg2, arg3, f) => f(arg1, arg2, arg3));
 export const call = curry((f, arg) => f(arg));
 export const call_2 = curry((f, arg1, arg2) => f(arg1, arg2));
 export const call_3 = curry((f, arg1, arg2, arg3) => f(arg1, arg2, arg3));
-export const delayCall = curry((f, arg) => () => call(f, arg));
+export const delayCall = curry((f, arg) => () => call(f, arg)); // todo : remove (no need, you have Return already)
 
 export const ifElse = curry((p, onSuccess, onFail, arg) =>
     p(arg) ? onSuccess(arg) : onFail(arg));

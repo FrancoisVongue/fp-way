@@ -4,21 +4,33 @@ Simple functional programming library that works as you would expect.
 # Layered architecture of functions
 ## Order of layers
 0. basic fp functions
-1. boolean
-2. numbers
-3. arrays
-4. strings
-5. functions
-6. objects
-    
-Each type has functions that ... it
-    1. translate (from other types, includes `creation`)
-    3. validate (conditions)
-    4. transform (to the same type but different properties)
 
+1. translation (translate from other types to the type)
+    1. boolean
+    2. numbers
+    3. arrays
+    4. strings
+    5. functions
+    6. objects
+
+2. validation (validate the type and it's properties)
+    1. boolean
+    2. numbers
+    3. arrays
+    4. strings
+    5. functions
+    6. objects
+
+3. transformation (modify type or (map to the same or another type))
+    1. boolean
+    2. numbers
+    3. arrays
+    4. strings
+    5. functions
+    6. objects
+    
 
 ...More examples for all types will come with time.
-
 # Object
 ## Validation using specSummary
 Let's see how we can validate objects with ease using `fp-way`.
