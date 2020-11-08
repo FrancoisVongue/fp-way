@@ -1,4 +1,4 @@
-import {allCombinations, allElementsAre, arrayOf, arrayOfLength, arrayOfRange, Const, contains, flatten, forEach, forNumberOfTimes, is, isSupersetOf, lt} from "../../src";
+import {allCombinations, allElementsAre, arrayOf, arrayOfLength, arrayOfRange, Const, contains, exclude, flatten, forEach, forNumberOfTimes, gt, is, isSupersetOf, lt, select} from "../../src";
 
 /*
 * =====================================================================================
@@ -117,7 +117,7 @@ describe('forEach', () => {
         expect(result).toEqual([[1,0], [2,1]]);
     })
 })
-describe('forEach', () => { 
+describe('forNumberOfTimes', () => { 
     it('should call a function specified number of times and pass index to it', () => {
         const result = [];
         forNumberOfTimes(5, (i) => result.push(i));
@@ -125,6 +125,34 @@ describe('forEach', () => {
         expect(result).toEqual([0,1,2,3,4]);
     })
 })
+describe('select', () => { 
+    it('should return an array with values that satisfy the predicate', () => {
+        const numbers = [1,2,3,4,5]
+        const selectGreaterThanTwo = select(gt(2));
+        const result = selectGreaterThanTwo(numbers);
+
+        expect(result).toEqual([3,4,5]);
+    })
+})
+describe('exclude', () => { 
+    it('should return an array without values that satisfy the predicate', () => {
+        const numbers = [1,2,3,4,5]
+        const excludeGreaterThanTwo = exclude(gt(2));
+        const result = excludeGreaterThanTwo(numbers);
+
+        expect(result).toEqual([1,2]);
+    })
+})
+describe('map', () => {  // todo : here
+    it('should return an array without values that satisfy the predicate', () => {
+        const numbers = [1,2,3,4,5]
+        const excludeGreaterThanTwo = exclude(gt(2));
+        const result = excludeGreaterThanTwo(numbers);
+
+        expect(result).toEqual([1,2]);
+    })
+})
+
 
 
 
