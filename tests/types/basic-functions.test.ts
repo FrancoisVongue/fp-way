@@ -1,7 +1,7 @@
 import {
     applyTo, call, compose,
-    Const, curry, delayCall, doNothing,
-    identity, pipe, Skip, skipMerge, spreadResult,
+    Const, curry, delayCall, DoNothing,
+    Identity, pipe, Skip, skipMerge, spreadArg,
     Swap, unless,
     Variable, when
 } from "../../src";
@@ -9,14 +9,14 @@ import {
 describe('identity', () => {
     it('should return what has been passed to it', () => {
         const thing = {value: 'something'};
-        const result = identity(thing);
+        const result = Identity(thing);
 
         expect(result).toEqual(thing);
     })
 })
 describe('doNothing', () => {
     it('should do nothing', () => {
-        let result = doNothing();
+        let result = DoNothing();
 
         expect(result).toBeUndefined();
     })
@@ -145,7 +145,7 @@ describe('spreadResult', () => {
         const mul2 = v => v*2;
         const add2 = v => v+2;
         const fnArr = [mul2, add2];
-        const result = spreadResult(fnArr, 4);
+        const result = spreadArg(fnArr, 4);
 
         expect(result).toEqual([8, 6])
     })

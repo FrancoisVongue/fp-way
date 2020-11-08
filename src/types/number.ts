@@ -1,12 +1,12 @@
-import {compose, curry, identity, ifElse, unless, when} from "./basic-functions";
+import {curry, Identity, ifElse, unless, when} from "./basic-functions";
 import {allPass} from "./boolean";
+import {compose} from "./construction/function";
 
 /*
 * =====================================================================================
 * TRANSLATE
 * ====================================================================================
 * */
-export const parseNumber = str => parseFloat(str);
 
 
 /*

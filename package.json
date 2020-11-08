@@ -10,7 +10,8 @@
     "scripts": {
         "start": "node src",
         "test": "jest",
-        "build": "tsc -p ."
+        "clean": "rm -rf ./lib",
+        "build": "rm -rf ./lib && tsc -p ."
     },
     "repository": {
         "type": "git",

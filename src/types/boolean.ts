@@ -1,20 +1,5 @@
-import {compose, curry} from "./basic-functions";
-/*
-* =====================================================================================
-* TRANSLATE
-* ====================================================================================
-* */
-export const toBoolean = v => !!v;
-
-
-/*
-* =====================================================================================
-* VALIDATE
-* ====================================================================================
-* */
-export const isBoolean = v => v === true || v === false;
-export const isTrue = v => v === true;
-export const isFalse = v => v === false;
+import {curry} from "./basic-functions";
+import {compose} from "./construction/function";
 
 /*
 * =====================================================================================
@@ -22,9 +7,6 @@ export const isFalse = v => v === false;
 * ====================================================================================
 * */
 export const negateValue = v => !v;
-export const either = curry((a,b) => toBoolean(a || b));
-export const both = curry((a,b) => toBoolean(a && b));
-export const none = curry((a,b) => compose([negateValue, either(a, b)]));
 
 /**
  * Negates the return value of a function

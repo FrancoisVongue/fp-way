@@ -1,5 +1,5 @@
 import {
-    exists,
+    Exists,
     gt,
     isPositive,
     lt,

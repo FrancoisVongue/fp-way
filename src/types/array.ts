@@ -5,35 +5,17 @@ import {
     Return,
     Swap,
     when,
-    compose,
-    pipe,
     tap,
 } from "./basic-functions";
 import {allPass, negate} from "./boolean";
 import {abs, add, difference, increment, lt, negateNumber} from "./number";
+import {compose, pipe} from "./construction/function";
 
 /*
 * =====================================================================================
 * TRANSLATE
 * ====================================================================================
 * */
-export const arrayOf = (...v) => [...v];
-export const arrayOfLength = (n, v=0) => (new Array(n)).map(Return(v));
-export const arrayOfRange = curry((start, finish) => {
-    const newArr = [];
-    const orderIsNegative = Const(finish < start);
-
-    forNumberOfTimes(
-        increment(difference(start, finish)), // finish included
-        pipe([
-            when(orderIsNegative, negateNumber),
-            add(start), 
-            pushTo(newArr),
-        ])
-    );
-
-    return newArr;
-});
 
 
 /*

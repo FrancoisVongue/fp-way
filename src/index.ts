@@ -5,3 +5,6 @@ export * from './types/array'
 export * from './types/string'
 export * from './types/function'
 export * from './types/object'
+export {spreadArg} from "./types/construction/function";
+export {pipe} from "./types/construction/function";
+export {compose} from "./types/construction/function";

@@ -9,17 +9,17 @@ import {
 } from "./array";
 import {
     call,
-    compose,
     Const,
     curry, delayCall,
-    exists,
+    Exists,
     ifElse,
     unless,
     when
 } from "./basic-functions";
 import {lt} from "./number";
-import {is, pipe, Return} from "../../lib";
+import {is, pipe, Return} from "../index";
 import {isString} from "./string";
+import {compose} from "./construction/function";
 
 /*
 * =====================================================================================

@@ -1,4 +1,12 @@
-export const Skip = () => Symbol.for("fp-way-skip");
+export const Const = a => (b = null) => a;
+export const Return = Const;
+export const Variable = (a = null) => b => b;
+export const Identity = Variable();
+export const DoNothing = () => {};
+export const Do = (f = DoNothing) => f();
+export const Exists = a => !(a === null || a === undefined);
+
+export const Skip = Return(Symbol.for("fp-way-skip"));
 /*
 merges two arrays of arguments that may contain Skip() variable
 * see docs for more information*/
@@ -40,55 +48,36 @@ export function curry(f, ...initialArgs) {
     }
 }
 
-export const doNothing = () => {};
-export const identity = x => x;
-export const Const = a => b => a;
-export const Return = Const;
-export const Variable = a => b => b;
-export const tap = curry((f, v) => (f(v), v));
 
+export const tap = curry((f, v) => (f(v), v)); // todo: move to function transformation?
+export const attempt = curry((f, arg) => {
+    try {
+        f(arg);
+        return true;
+    } catch (e) {
+        return false;
+    }
+});
+export const is = curry((a, b) => a === b);
 export const Swap = curry((f, a, b) => f(b, a));
-
 export const applyTo = curry((arg, f) => f(arg));
-export const applyTo_2 = curry((arg1, arg2, f) => f(arg1, arg2));
-export const applyTo_3 = curry((arg1, arg2, arg3, f) => f(arg1, arg2, arg3));
 export const call = curry((f, arg) => f(arg));
-export const call_2 = curry((f, arg1, arg2) => f(arg1, arg2));
-export const call_3 = curry((f, arg1, arg2, arg3) => f(arg1, arg2, arg3));
-export const delayCall = curry((f, arg) => () => call(f, arg)); // todo : remove (no need, you have Return already)
 
 export const ifElse = curry((p, onSuccess, onFail, arg) =>
     p(arg) ? onSuccess(arg) : onFail(arg));
 export const when = curry((p, f, arg) => p(arg) ? f(arg) : arg);
 export const unless = curry((p, f, arg) => p(arg) ? arg : f(arg));
-export const is = curry((a, b) => a === b);
-export const exists = a => !(a === null || a === undefined);
+export const inCase = curry((entries, value) => {
+    const getPredicate = entry => entry[0];
+    const getFn = entry => entry[0];
 
-export function compose(fns) {
-    return arg => {
-        let currentArg = arg;
-        for (let i = fns.length - 1; i >= 0; i--)
-            currentArg = fns[i](currentArg);
-
-        return currentArg;
+    for(let entry of entries) {
+        const predicate = getPredicate(entry);
+        if(predicate(value)) {
+            const fn = getFn(entry);
+            return fn(value);
+        }
     }
-}
-export function pipe(fns) {
-    return arg => {
-        let currentArg = arg;
+});
 
-        for (let i = 0; i < fns.length; i++)
-            currentArg = fns[i](currentArg);
-
-        return currentArg;
-    }
-}
-export function spreadResult(fns, arg) {
-    const resultArr = [];
-
-    for (let i = 0; i < fns.length; i++) {
-        resultArr.push(fns[i](arg));
-    }
-
-    return resultArr;
-}
+export const not = f => (...args) => !f(...args);

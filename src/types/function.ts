@@ -32,3 +32,12 @@ export const tapAfter = curry(
 export const devourWith = curry(
     (devourer, fn, arg) => devourer(fn, arg)
 );
+export function spreadArg(fns, arg) { // todo: where's curry?
+    const resultArr = [];
+
+    for (let i = 0; i < fns.length; i++) {
+        resultArr.push(fns[i](arg));
+    }
+
+    return resultArr;
+}
