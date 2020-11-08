@@ -1,3 +1,5 @@
+🔨 Currently under very active development 🔨
+
 # fp-way
 Simple functional programming library that works as you would expect.
 
@@ -23,7 +25,7 @@ Simple functional programming library that works as you would expect.
     5. function
     6. object
 
-4. transformation (modify type or (map to the same or another type))
+4. transformation (modify value of type)
     1. boolean
     2. number
     3. array
