@@ -10,7 +10,7 @@ import {
 import {
     call,
     Const,
-    curry, delayCall,
+    curry,
     Exists,
     ifElse,
     unless,
@@ -18,7 +18,6 @@ import {
 } from "./basic-functions";
 import {lt} from "./number";
 import {is, pipe, Return} from "../index";
-import {isString} from "./string";
 import {compose} from "./construction/function";
 
 /*
@@ -32,6 +31,7 @@ import {compose} from "./construction/function";
 * VALIDATE
 * ====================================================================================
 * */
+const isString = v => typeof v === "string";
 const isNestedSpec = s => !isArray(s); // todo: change (currently speck != array)
 export const specSummary = curry((spec, obj) => {
     const messageForValue = value => (specRuleEntry) => {
