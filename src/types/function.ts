@@ -41,3 +41,4 @@ export function spreadArg(fns, arg) { // todo: where's curry?
 
     return resultArr;
 }
+export const tap = curry((f: Function, v: any) => (f(v), v));

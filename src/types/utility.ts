@@ -1,3 +1,7 @@
+/*
+    TYPES
+*/
+
 export const serialize = v => JSON.stringify(v);
 export const serializeInvalidValue = v => `<${serialize(v)}>`
 export const enum Type {
