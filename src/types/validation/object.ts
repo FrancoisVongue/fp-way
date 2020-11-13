@@ -1,14 +1,15 @@
-import { isArray } from "../array";
-import { not } from "../core";
+import { Curry, Not } from "../core";
+import { IsArray } from "./array";
+import { IsString } from "./string";
 
-const isNestedSpec = not(isArray);
-export const specSummary = curry((spec, obj) => {
+const isNestedSpec = Not(IsArray);
+export const specSummary = Curry((spec, obj) => {
     const messageForValue = value => (specRuleEntry) => {
         const [rule, message] = specRuleEntry;
         if(rule(value)) {
             return null;
         } else {
-            if(isString(message)) {
+            if(IsString(message)) {
                 return message
             } else {
                 return message(value);
@@ -31,12 +32,6 @@ export const specSummary = curry((spec, obj) => {
         return summary;
     }, {}, getEntries(obj));
 });
-// export const equalTo( ) // deep equality checker
 
-/*
-* =====================================================================================
-* TRANSFORM
-* ====================================================================================
-* */
 export const getKeys = obj => Object.keys(obj);
 export const getEntries = obj => Object.entries(obj);
