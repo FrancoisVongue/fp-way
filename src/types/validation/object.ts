@@ -3,7 +3,9 @@ import { IsArray } from "./array";
 import { IsString } from "./string";
 
 const isNestedSpec = Not(IsArray);
+// const checkProperty = (name, options, obj)
 export const specSummary = Curry((spec, obj) => {
+    const reservedKeys = ['__options'];
     const messageForValue = value => (specRuleEntry) => {
         const [rule, message] = specRuleEntry;
         if(rule(value)) {
