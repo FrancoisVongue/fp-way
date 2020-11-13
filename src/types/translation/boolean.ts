@@ -1,5 +1,5 @@
 import {TranslationError, Type} from "../utility";
-import {attempt, Const, Identity, inCase} from "../core";
+import {attempt, Const, FALSE, TRUE, Identity, inCase} from "../core";
 import {isBoolean} from "../validation/boolean";
 
 export const booleanFromString = s => {
@@ -23,7 +23,7 @@ export const booleanFromNumber = n => {
 
 export const toBoolean = inCase([
     [isBoolean, Identity],
-    [attempt(booleanFromNumber), booleanFromNumber],
-    [attempt(booleanFromString), booleanFromString],
-    [Const(true), (b) => {throw new TranslationError(typeof b, Type.Boolean, b)}],
+    [attempt(booleanFromNumber, TRUE, FALSE), booleanFromNumber],
+    [attempt(booleanFromString, TRUE, FALSE), booleanFromString],
+    [TRUE, (b) => {throw new TranslationError(typeof b, Type.Boolean, b)}],
 ]);

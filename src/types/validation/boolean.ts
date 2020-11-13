@@ -6,12 +6,12 @@ export const isTrue = is(true);
 export const isFalse = is(false);
 export const isBoolean = v => isTrue(v) || isFalse(v);
 
-export const either = curry((a,b,v) => {
+export const either = (a,b,v) => {
     return toBoolean(a(v)) || toBoolean(b(v));
-});
-export const both = curry((a,b,v) => {
+};
+export const both = (a,b,v) => {
     return toBoolean(a(v)) && toBoolean(b(v));
-});
-export const neither = curry((a,b,v) => {
+};
+export const neither = (a,b,v) => {
     return !toBoolean(a(v)) && !toBoolean(b(v));
-});
+};

@@ -2,9 +2,9 @@ import {Const, curry, Return} from "../core";
 
 export const arrayOf = (...v) => [...v];
 export const arrayOfLength = (n, v=0) => (new Array(n)).map(Return(v));
-export const arrayOfRange = curry((start, finish) => {
+export const arrayOfRange = (start, finish) => {
     const newArr = [];
-    const orderIsNegative = Const(finish < start);
+    const orderIsNegative = finish < start;
     const futureLength = Math.abs(start - finish) + 1;
     const incBy = orderIsNegative ? -1 : 1;
 
@@ -13,4 +13,4 @@ export const arrayOfRange = curry((start, finish) => {
     }
 
     return newArr;
-});
+};

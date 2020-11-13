@@ -1,38 +1,7 @@
-import {
-    allElementsAre, exclude,
-    forEach, isArray,
-    isArrayOfLength,
-    map,
-    pushTo,
-    reduce,
-    select, take
-} from "./array";
-import {
-    call,
-    Const,
-    curry,
-    Exists,
-    ifElse,
-    unless,
-    when
-} from "./core";
-import {lt} from "./number";
-import {is, pipe, Return} from "../index";
-import {compose} from "./construction/function";
+import { isArray } from "../array";
+import { not } from "../core";
 
-/*
-* =====================================================================================
-* TRANSLATE
-* ====================================================================================
-* */
-
-/*
-* =====================================================================================
-* VALIDATE
-* ====================================================================================
-* */
-const isString = v => typeof v === "string";
-const isNestedSpec = s => !isArray(s); // todo: change (currently speck != array)
+const isNestedSpec = not(isArray);
 export const specSummary = curry((spec, obj) => {
     const messageForValue = value => (specRuleEntry) => {
         const [rule, message] = specRuleEntry;
@@ -71,4 +40,3 @@ export const specSummary = curry((spec, obj) => {
 * */
 export const getKeys = obj => Object.keys(obj);
 export const getEntries = obj => Object.entries(obj);
-

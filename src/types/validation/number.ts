@@ -22,7 +22,7 @@ export const lte = curry((n1, n2) => {
 });
 
 export const isInRange = curry((n1, n2, n) => {
-    return both(gte(n1), lte(n2))(n);
+    return both(gte(n1), lte(n2), n);
 });
 export const isPositive = gt(0);
 export const isNegative = lt(0);

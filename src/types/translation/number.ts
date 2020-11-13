@@ -1,5 +1,5 @@
 import {TranslationError, Type} from "../utility";
-import {attempt, Const, Identity, inCase} from "../core";
+import {attempt, Const, FALSE, Identity, inCase, TRUE} from "../core";
 import {isNumber} from "../validation/number";
 
 export const numberFromBoolean = b => {
@@ -26,7 +26,7 @@ export const numberFromString = s => {
 
 export const toNumber = inCase([
     [isNumber, Identity],
-    [attempt(numberFromBoolean), numberFromBoolean],
-    [attempt(numberFromString), numberFromString],
+    [attempt(numberFromBoolean, TRUE, FALSE), numberFromBoolean],
+    [attempt(numberFromString, TRUE, FALSE), numberFromString],
     [Const(true), (n) => {throw new TranslationError(typeof n, Type.Number, n)}],
 ]);

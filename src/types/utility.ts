@@ -53,3 +53,10 @@ export const skipMerge = (arr1, arr2) => {
     return resultOfMerge;
 }
 
+export type Predicate<T1 extends any[]> = (...args: [...T1]) => boolean
+export type Unary<T1, R> = 
+    (singleArg: T1) => R 
+export type Binary<T1, T2, R> = 
+    (firstArg: T1, secArg: T2) => R 
+export type Entry<T1, T2> = [T1, T2]
+export type Entries<T,K> = Entry<T,K>[];
