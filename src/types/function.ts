@@ -1,4 +1,4 @@
-import {curry} from "./basic-functions";
+import {curry} from "./core";
 
 export const toUnary = f => argsArr => f(...argsArr);
 export const Unary = f => curry(a => f(a));

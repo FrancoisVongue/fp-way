@@ -6,7 +6,7 @@ import {
     Swap,
     when,
     tap,
-} from "./basic-functions";
+} from "./core";
 import {allPass, negate} from "./boolean";
 import {abs, add, difference, increment, lt, negateNumber} from "./number";
 import {compose, pipe} from "./construction/function";

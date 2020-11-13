@@ -1,5 +1,5 @@
 import {reduce} from "./array";
-import {curry} from "./basic-functions";
+import {curry} from "./core";
 
 /*TRANSFORM*/
 export const split = curry((splitter, str) => (str as string).split(splitter));

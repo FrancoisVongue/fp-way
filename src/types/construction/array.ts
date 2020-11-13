@@ -1,4 +1,4 @@
-import {Const, curry, Return} from "../basic-functions";
+import {Const, curry, Return} from "../core";
 
 export const arrayOf = (...v) => [...v];
 export const arrayOfLength = (n, v=0) => (new Array(n)).map(Return(v));

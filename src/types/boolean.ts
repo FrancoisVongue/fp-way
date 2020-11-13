@@ -1,4 +1,4 @@
-import {curry} from "./basic-functions";
+import {curry} from "./core";
 import {compose} from "./construction/function";
 
 /*

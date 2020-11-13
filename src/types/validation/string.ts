@@ -1,4 +1,4 @@
-import {Const, curry, is} from "../basic-functions";
+import {Const, curry, is} from "../core";
 import {both} from "./boolean";
 import {toString} from "../translation/string";
 

@@ -5,7 +5,7 @@ Simple functional programming library that works as you would expect.
 
 # Layered architecture of functions
 ## Order of layers
-0. basic fp functions
+0. Function
 
 1. translation (translate from one type to another)
     1. boolean
@@ -14,24 +14,21 @@ Simple functional programming library that works as you would expect.
     
 2. construction (factory methods for the type)
     1. array
-    2. function
-    3. object
+    2. object
 
 3. validation (validate the type and it's properties)
     1. boolean
     2. number
     3. array
     4. string
-    5. function
-    6. object
+    5. object
 
 4. transformation (modify value of type)
     1. boolean
     2. number
     3. array
     4. string
-    5. function
-    6. object
+    5. object
     
 
 ...More examples for all types will come with time.

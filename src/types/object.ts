@@ -15,7 +15,7 @@ import {
     ifElse,
     unless,
     when
-} from "./basic-functions";
+} from "./core";
 import {lt} from "./number";
 import {is, pipe, Return} from "../index";
 import {compose} from "./construction/function";

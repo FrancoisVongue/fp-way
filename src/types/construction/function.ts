@@ -17,3 +17,4 @@ export function compose(fns) {
 }
 
 export const pipe = (fns) => compose([...fns].reverse());
+// todo: create fn from 1. context 2. function 3. args

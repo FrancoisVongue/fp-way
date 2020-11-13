@@ -1,5 +1,5 @@
 import {TranslationError, Type} from "../utility";
-import {attempt, Const, Identity, inCase} from "../basic-functions";
+import {attempt, Const, Identity, inCase} from "../core";
 import {isBoolean} from "../validation/boolean";
 
 export const booleanFromString = s => {
