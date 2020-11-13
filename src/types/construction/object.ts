@@ -1,7 +1,10 @@
+import { Entries } from "../utility";
+
 export const objectFromEntries = entries => {
     const result = {};
-    for(let i = 0; i < entries.length; i++ ) {
-        result[entries[i][0]] = entries[i][1];
+    for(let entry of entries) {
+        const prop = entry[0];
+        result[prop] = entry[1];
     }
     return result;
 }
