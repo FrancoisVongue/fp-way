@@ -3,8 +3,8 @@ import {Const, Curry, Is} from "../core";
 export const IsString = s => typeof s === 'string';
 export const IsUpperCase = (s: string) => s.toUpperCase() === s;
 export const IsLowerCase = (s: string) => s.toLowerCase() === s;
-export const Test = (regex, str) => regex.test(ToString(str));
-export const Matches = test;
+export const Test = Curry((regex: RegExp, str: string) => regex.test(ToString(str)));
+export const Matches = Test;
 export const StartsWith = (start, str) => {
     const startString = ToString(start);
     const targetString = ToString(str);

@@ -1,4 +1,4 @@
-import { Compose, Curry, When } from "../..";
+import { Compose, Curry, When } from "../core";
 import { IsNegative } from "../validation/number";
 
 export const NegateNumber = v => -v;

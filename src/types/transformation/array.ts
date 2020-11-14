@@ -1,7 +1,7 @@
 import { Compose, Curry, IfElse, Not, Variable } from "../core";
-import { containedIn as ContainedIn, contains, isArray } from "../validation/array";
+import { ContainedIn, Contains, IsArray } from "../validation/array";
 
-export const forEach = Curry((f, arr) => {
+export const forEach = Curry(<T1>(f: (arg: T1, index?: number) => any, arr: T1[]) => {
     for(let i = 0; i < arr.length; i++) {
         f(arr[i], i);
     }
@@ -13,8 +13,8 @@ export const forNumberOfTimes = Curry((n, f) => {
 });
 
 export const Select = Curry((p, arr) => arr.filter(p));
-export const Exclude = Compose([Select, Not]);
-export const Map = Curry((f, arr) => arr.map(f));
+export const Exclude = Curry((p, arr) => arr.filter(Not(p)))
+export const MapArr = Curry((f, arr) => arr.map(f));
 export const Reduce = Curry((reducer, base, arr) => arr.reduce(reducer, base));
 export const ConcatTo = Curry((arr, arrOfValues) => arr.push(...arrOfValues));
 export const PushTo = Curry((arr, v) => arr.push(v));
@@ -28,19 +28,24 @@ export const Flatten = arr => {
     const newArr = [];
     const flattenAndConcat = Compose([ConcatTo(newArr), Flatten]);
     forEach((v, i) => {
-        IfElse(isArray, flattenAndConcat, PushTo(newArr))(v);
+        IfElse(IsArray, flattenAndConcat, PushTo(newArr))(v);
     }, arr);
 
     return newArr;
 }
-export const subtractArr = Compose([Exclude, ContainedIn, Variable()]);
-export const intersectionBetween = Curry((arr1, arr2) => {
+export const SubtractArr = Curry((values, target) => Exclude(ContainedIn(values), target))
+export const IntersectionBetween = Curry((arr1, arr2) => {
     const [smallerArr, BiggerArr] = arr1.length > arr2.length 
         ? [arr2, arr1] 
         : [arr1, arr2];
     
-    const bigset  = new Set(BiggerArr);
-    return Exclude(v => bigset.has(v))(smallerArr);
+    const bigset = new Set(BiggerArr);
+    return Select(v => bigset.has(v), smallerArr);
+});
+export const EqualsArray = Curry((arr, arrUnderTest) => {
+    const sameLength = arr.length === arrUnderTest.length;
+    const sameElems = SubtractArr(arr, arrUnderTest).length === 0;
+    return sameLength && sameElems;
 });
 const allCombinations_2 = Curry((arr1, arr2) => {
     const combinations = [];
@@ -52,17 +57,17 @@ const allCombinations_2 = Curry((arr1, arr2) => {
 
     return combinations;
 });
-export function allCombinations(arrs: [any, any][]) {
+export function AllCombinations(arrs: any[][]) {
     switch (arrs.length) {
         case 1:
             return arrs[0];
         case 2:
-            return allCombinations_2(...arrs);
+            return allCombinations_2(arrs[0], arrs[1]);
         default:
             return Compose([
-                Map(Flatten),
+                MapArr(Flatten),
                 allCombinations_2(arrs[0]),
-                allCombinations,
+                AllCombinations,
                 Tail
             ])(arrs);
     }

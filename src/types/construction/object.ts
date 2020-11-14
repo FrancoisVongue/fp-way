@@ -1,5 +1,3 @@
-import { Entries } from "../utility";
-
 export const objectFromEntries = entries => {
     const result = {};
     for(let entry of entries) {

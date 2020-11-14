@@ -1,43 +1,40 @@
-import { Attempt, FALSE, Identity, InCase, Is, TRUE } from "../core";
+import {
+    Attempt,
+    Compose,
+    FALSE,
+    Identity,
+    IfElse,
+    InCase,
+    Is,
+    TapWith,
+    TRUE
+} from "../core";
 import { TranslationError } from "../Errors";
-import { Type } from "../transformation/string";
 
-export const isTrue = Is(true);
-export const isFalse = Is(false);
-export const isBoolean = v => isTrue(v) || isFalse(v);
+export const IsTrue = Is(true);
+export const IsFalse = Is(false);
+export const IsBoolean = v => IsTrue(v) || IsFalse(v);
 
 export const either = (a,b,v) => {
-    return toBoolean(a(v)) || toBoolean(b(v));
+    return ToBoolean(a(v)) || ToBoolean(b(v));
 };
 export const both = (a,b,v) => {
-    return toBoolean(a(v)) && toBoolean(b(v));
+    return ToBoolean(a(v)) && ToBoolean(b(v));
 };
 export const neither = (a,b,v) => {
-    return !toBoolean(a(v)) && !toBoolean(b(v));
+    return !ToBoolean(a(v)) && !ToBoolean(b(v));
 };
 
-export const booleanFromString = s => {
-    if (s === 'true') {
-        return true;
-    } else if (s === 'false') {
-        return false;
-    } else {
-        throw new TranslationError(Type.String, Type.Boolean, s);
-    }
-}
-export const booleanFromNumber = n => {
-    if(n > 0) {
-        return true;
-    } else if (n <= 0) {
-        return false;
-    } else {
-        throw new TranslationError(Type.Number, Type.Boolean, n);
-    }
-}
-
-export const toBoolean = InCase([
-    [isBoolean, Identity],
-    [Attempt(booleanFromNumber, TRUE, FALSE), booleanFromNumber],
-    [Attempt(booleanFromString, TRUE, FALSE), booleanFromString],
-    [TRUE, (b) => {throw new TranslationError(typeof b, Type.Boolean, b)}],
+const IsNumber = n => (typeof n === 'number');
+const IsString = n => (typeof n === 'string');
+const Gt = (a: number) => b => b > a;
+export const ToBoolean = InCase([
+    [IsBoolean, Identity],
+    [IsNumber, IfElse(Gt(0), TRUE, FALSE)],
+    [IsString, InCase([
+        [Is('true'), TRUE],
+        [Is('false'), FALSE],
+        [TRUE, (v) => {throw new TranslationError('string', 'boolean', v)}],
+    ])],
+    [TRUE, (v) => {throw new TranslationError('string', 'boolean', v)}]
 ]);

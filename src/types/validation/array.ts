@@ -1,4 +1,4 @@
-import { Curry, Swap } from "../..";
+import { Curry, Swap } from "../core";
 
 export const IsArray = arr => Array.isArray(arr);
 export const AllElementsAre = Curry((p, arr) => arr.every(p));
