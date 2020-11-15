@@ -1,5 +1,6 @@
 import { Compose, Curry, IfElse, Not, Variable } from "../core";
 import { ContainedIn, Contains, IsArray } from "../validation/array";
+import {AnyFn, Curried2} from "../core.types";
 
 export const forEach = Curry(<T1>(f: (arg: T1, index?: number) => any, arr: T1[]) => {
     for(let i = 0; i < arr.length; i++) {
@@ -12,6 +13,7 @@ export const forNumberOfTimes = Curry((n, f) => {
     }
 });
 
+export type TCurrySelect<F extends AnyFn> = Curried2<F, Parameters<F>, ReturnType<F>>;
 export const Select = Curry((p, arr) => arr.filter(p));
 export const Exclude = Curry((p, arr) => arr.filter(Not(p)))
 export const MapArr = Curry((f, arr) => arr.map(f));
