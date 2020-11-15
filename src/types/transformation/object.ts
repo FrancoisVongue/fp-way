@@ -1,8 +1,8 @@
-import {Curry, Exists} from "../core";
-import {Exclude, SubtractArr} from "./array";
-import {ContainedIn} from "../..";
+import {Curry, Exists, InCase, Pipe, Return, TRUE} from "../core";
+import {Exclude, MapArr, SubtractArr} from "./array";
+import {ContainedIn, IsObject} from "../..";
 
-export const PickProps = Curry((props: string[], obj) => {
+export const PickProps = Curry((props: string[], obj) => { // todo: add Swap (pickFrom)
     const newObj = {};
     props.forEach(p => newObj[p] = obj[p]);
 
@@ -16,15 +16,11 @@ export const ExcludeProps = Curry((propsToExclude: string[], obj) => {
     return newObj;
 });
 export const WithDefault = Curry(<T1 extends object>(def: Partial<T1>, obj: Partial<T1>): Partial<T1> => {
-    const result = {...obj};
-
-    for(let defProp of GetKeys(def)) {
-        if(!Exists(result[defProp])) {
-            result[defProp] = def[defProp];
-        }
-    }
-    
-    return result;
+    return InCase([
+        [IsObject, Return({...def, ...obj})],
+        [Exists, () => {throw new Error('WithDefault: obj must be an object')}],
+        [TRUE, Return({...def})],
+    ], obj);
 });
 export const GetKeys = obj => Object.keys(obj);
 export const GetEntries = obj => Object.entries(obj);

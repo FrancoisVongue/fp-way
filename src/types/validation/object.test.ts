@@ -1,4 +1,4 @@
-import {preCheckProps, ISpec, SpecSummary} from "./object";
+import {preCheckProps, ISpec, SpecSummary, ISpecSummary} from "./object";
 import {
     GetEntries,
     Gt,
@@ -71,7 +71,12 @@ describe('specSummary', () => {
             ],
             age: [
                 [Lt(20), 'age of a kid must be less than 20']
-            ]
+            ],
+            __options: {
+                errorHandler: (key, value, e) =>
+                    `Key "${key}" with value <\\${value}\\> could not be validated` +
+                    `Presumably, completely different type`,
+            }
         };
         const personSpec: ISpec<Person> = {
             name: [
@@ -83,7 +88,10 @@ describe('specSummary', () => {
                 [IsInRange(8, 90), value => `Age must be in range between 8 and 90 but was ${value}`],
                 [Gt(5), 'Age must be greater than 5']
             ],
-            kid: kidSpec
+            kid: kidSpec,
+            __options: {
+                // stopWhen: (summary: ISpecSummary) => summary.__meta.__errorCount > 1,
+            }
         }
         const person = {
             "name": "Mandela",

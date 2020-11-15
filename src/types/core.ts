@@ -78,6 +78,18 @@ export const InCase = Curry(<T1>(
         }
     }
 });
+export const IndependentInCase = Curry((
+    entries,
+    value,
+): any => {
+    for(let entry of entries) {
+        const predicate = entry[0];
+        const fn = entry[1];
+        if(predicate(value)) {
+            fn(value);
+        }
+    }
+});
 
 export const Attempt = Curry(<T1, R, SR, ER>(
     f: (arg: T1) => R,
