@@ -1,4 +1,4 @@
-import { serializeInvalidValue } from "./transformation/string";
+import {serialize} from "./transformation/string";
 
 export class ErrorBase extends Error {
     constructor(message, name = null) {
@@ -10,7 +10,7 @@ export class ErrorBase extends Error {
 }
 export class TranslationError extends ErrorBase {
     constructor(fromType, toType, value) {
-        const message = `Could not translate from ${fromType} ${serializeInvalidValue(value)} to ${toType} type.`;
+        const message = `Could not translate from ${fromType} <${serialize(value)}> to ${toType} type.`;
         super(message);
     }
 }
