@@ -1,4 +1,4 @@
-export const objectFromEntries = entries => {
+export const ObjectFromEntries = entries => {
     const result = {};
     for(let entry of entries) {
         const prop = entry[0];

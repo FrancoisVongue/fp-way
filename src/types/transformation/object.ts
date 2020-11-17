@@ -22,5 +22,8 @@ export const WithDefault = Curry(<T1 extends object>(def: Partial<T1>, obj: Part
         [TRUE, Return({...def})],
     ], obj);
 });
+// export const RecursiveMerge = Curry((from, to) => {
+//
+// });
 export const GetKeys = obj => Object.keys(obj);
 export const GetEntries = obj => Object.entries(obj);

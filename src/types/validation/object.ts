@@ -1,36 +1,32 @@
 import {
     ApplyTo,
+    Attempt,
     Curry,
     Exists,
-    FALSE,
-    IfElse,
-    IndependentInCase, Not,
+    FALSE, Identity,
+    Not,
     Pipe,
-    Unless, When
+    TRUE,
+    Unless,
+    When
 } from "../core";
 import {
-    forEach,
+    ForEach,
     IntersectionBetween,
     MapArr,
     Select,
     SubtractArr
 } from "../transformation/array";
-import {
-    ExcludeProps,
-    GetEntries,
-    GetKeys,
-    Increment,
-    IsArray, IsEmptyArray,
-    IsString,
-    WithDefault
-} from "../..";
-import {Entry, Predicate} from "../core.types";
+import {GetEntries, GetKeys, IsArray, IsEmptyArray, IsString, WithDefault} from "../..";
+import {DTO, Entry, Predicate} from "../core.types";
 
 export interface ISpecSummary {
+    __valid: boolean,
     __meta: {
-        __errorCount: number,
-        __missingProperties: string[],
-        __redundantProperties: string[],
+        specName: string,
+        errorCount: number,
+        missingProperties: string[],
+        redundantProperties: string[],
     }
     [key: string]: any,
 }
@@ -39,15 +35,24 @@ export interface ICheckPropsResult {
     redundant: string[],
     propsToCheck: string[],
 }
-export interface IValidationOptions {
-    optionalProps?: string[], // check IF present, ( empty by default )
+export interface IValidationError {
+    key: string,
+    value: any,
+    index: number,
+    error: Error
+}
+export interface IValidationOptions<T = DTO> {
+    optionalProps?: (keyof T)[],
     stopWhen?: (summary: ISpecSummary) => boolean,
-    errorHandler?: (key: string, value: any, e: Error) => string
+    errorHandler?: (e: IValidationError) => string,
+    invalidWhen?: (summary: ISpecSummary) => boolean,
+    redundantIsError?: boolean,
+    specName?: string,
 }
 
 const reservedSpecTypeProps = ['__options'];
 export type ISpec<T1 extends object> = Partial<Record<keyof T1, IPropRuleEntry[] | object>> & {
-    __options?: IValidationOptions
+    __options?: IValidationOptions<T1>
 }
 export type IPropRuleEntry = Entry<Predicate<any>, string | ((any) => string)>
 
@@ -94,49 +99,58 @@ const setMeta = Curry((
     summary: ISpecSummary,
     prop: keyof ISpecSummary["__meta"],
     value: any
+    // @ts-ignore
 ) => summary.__meta[prop] = value);
 const defaultOptions: IValidationOptions = {
     stopWhen: FALSE,
     optionalProps: [],
-    errorHandler: (key, value, error) => error.message,
+    errorHandler: ({error}) => error.message,
+    invalidWhen: summary => summary.__meta.errorCount > 0,
+    redundantIsError: false,
+    specName: 'Specification'
 }
 export const SpecSummary = Curry(<T1 extends object>(spec: ISpec<T1>, obj: T1): ISpecSummary => {
     const options = WithDefault(defaultOptions, spec.__options) as IValidationOptions;
     const summary: ISpecSummary = {
+        __valid: true,
         __meta: {
-            __errorCount: 0,
-            __missingProperties: [],
-            __redundantProperties: [],
+            specName: options.specName,
+            errorCount: 0,
+            missingProperties: [],
+            redundantProperties: [],
         }
     };
+    const setInvalid = () => summary.__valid = false;
     const incErrors = (n = 1) =>
         setMeta(
             summary,
-            "__errorCount",
-            <number>getMeta(summary, "__errorCount") + n);
+            "errorCount",
+            <number>getMeta(summary, "errorCount") + n);
 
     const {propsToCheck, missing, redundant} = preCheckProps(spec, obj);
 
-    When(Not(IsEmptyArray), setMeta(summary, "__missingProperties"), missing);
-    When(Not(IsEmptyArray), setMeta(summary, "__redundantProperties"), redundant);
+    setMeta(summary, 'missingProperties', missing);
+    setMeta(summary, 'redundantProperties', redundant);
 
+    if(!IsEmptyArray(missing))
+        incErrors();
+    if(options.redundantIsError && !IsEmptyArray(redundant))
+        incErrors();
+    if(options.invalidWhen(summary))
+        setInvalid();
     if(options.stopWhen(summary))
         return summary;
 
-    forEach(propName => {
-        const value = obj[propName];
-        const propSpec: IPropRuleEntry[] | ISpec<any> = spec[propName];
-        const errorsBeforePropCheck = <number>getMeta(summary, "__errorCount");
-
+    ForEach(propName => {           // todo: set mark to BREAK THE CYCLE easily
         if(options.stopWhen(summary))                       // if user wants to stop
             return 0;
 
-        if(propSpec instanceof Array) {                     // array of rules
-            forEach((propRule: IPropRuleEntry) => {
-                if(options.stopWhen(summary))               // if user wants to stop
-                    return 0;
+        const value = obj[propName];
+        const propSpec: IPropRuleEntry[] | ISpec<any> = spec[propName];
 
-                if(IsString(summary[propName]))             // if rule errored
+        if(propSpec instanceof Array) {                     // array of rules
+            ForEach((propRule: IPropRuleEntry, index: number) => {
+                if(options.stopWhen(summary))               // if user wants to stop
                     return 0;
 
                 const rule = propRule[0];
@@ -149,14 +163,28 @@ export const SpecSummary = Curry(<T1 extends object>(spec: ISpec<T1>, obj: T1): 
                         addPropError(propName, msg, summary);
                     }
                 } catch (e) {                               // if rule errors
-                    setMeta(summary, "__errorCount", errorsBeforePropCheck + 1);
-                    summary[propName] = options.errorHandler(propName, value, e);
+                    incErrors();
+                    addPropError(
+                        propName,
+                        options.errorHandler({
+                            error: e,
+                            index,
+                            key: propName,
+                            value: value
+                        }),
+                        summary);
                 }
+
+                if(options.invalidWhen(summary))
+                    setInvalid();
             }, propSpec);
         } else {                                            // nested spec
             summary[propName] = SpecSummary(propSpec, obj[propName]);
-            incErrors(<number>getMeta(summary[propName], "__errorCount"));
+            incErrors(<number>getMeta(summary[propName], "errorCount"));
         }
+
+        if(options.invalidWhen(summary))
+            setInvalid();
     }, propsToCheck);
 
     return summary;

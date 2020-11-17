@@ -11,12 +11,12 @@ import {
     TRUE
 } from "../core";
 import { TranslationError } from "../Errors";
-import {both, IsBoolean} from "./boolean";
+import {Both, IsBoolean} from "./boolean";
 import {NegateBool} from "../transformation/boolean";
 
 export const IsNumber = n => typeof n === 'number' && !isNaN(n);
-export const isInt = n => IsNumber(n) && n%1 === 0;
-export const isFiniteNumber = n => IsNumber(n) && n !== Infinity && n !== -Infinity;
+export const IsInt = n => IsNumber(n) && n%1 === 0;
+export const IsFiniteNumber = n => IsNumber(n) && n !== Infinity && n !== -Infinity;
 
 export const Gt = Curry((n1, n2) => {
     return ToNumber(n2) > ToNumber(n1);
@@ -32,7 +32,7 @@ export const Lte = Curry((n1, n2) => {
 });
 
 export const IsInRange = Curry((n1, n2, n) => {
-    return both(Gte(n1), Lte(n2), n);
+    return Both(Gte(n1), Lte(n2), n);
 });
 export const IsPositive = Gt(0);
 export const IsNegative = Lt(0);

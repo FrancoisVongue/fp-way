@@ -9,7 +9,8 @@ export type Ternary<T1, T2, T3, R> =
     (firstArg: T1, secArg: T2, thirdArg: T3) => R 
 export type Quaternary<T1, T2, T3, T4, R> = 
     (firstArg: T1, secArg: T2, thirdArg: T3, forthArg: T4) => R 
-export type Entry<T1, T2> = [T1, T2]	
+export type Entry<T1, T2> = [T1, T2];
+export type DTO = {[key: string]: any};
 export type Entries<T,K> = Entry<T,K>[];
 
 export interface Curried1<T1, R> {	

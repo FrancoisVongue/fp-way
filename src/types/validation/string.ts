@@ -3,7 +3,7 @@ import {Const, Curry, Is} from "../core";
 export const IsString = s => typeof s === 'string';
 export const IsUpperCase = (s: string) => s.toUpperCase() === s;
 export const IsLowerCase = (s: string) => s.toLowerCase() === s;
-export const Test = Curry((regex: RegExp, str: string) => regex.test(ToString(str)));
+export const Test = Curry((regex: RegExp, str: string) => regex.test(ToString(str))); // todo: remove toString, it fails
 export const Matches = Test;
 export const StartsWith = (start, str) => {
     const startString = ToString(start);
@@ -24,7 +24,7 @@ export const ContainsString = Curry((str, target) => {
 });
 
 export const ToString = v => JSON.stringify(v);
-export const OccurrencesOf = (unvalidatedRegex, str) => {
-    const regex = new RegExp(unvalidatedRegex as RegExp, 'g');
+export const OccurrencesOf = (R, str) => {
+    const regex = new RegExp(R as RegExp, 'g');
     return (str as string).match(regex);
 };

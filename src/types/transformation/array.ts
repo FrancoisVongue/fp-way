@@ -1,12 +1,12 @@
 import { Compose, Curry, IfElse, Not, Variable } from "../core";
 import { ContainedIn, Contains, IsArray } from "../validation/array";
 
-export const forEach = Curry(<T1>(f: (arg: T1, index?: number) => any, arr: T1[]) => {
+export const ForEach = Curry(<T1>(f: (arg: T1, index?: number) => any, arr: T1[]) => {
     for(let i = 0; i < arr.length; i++) {
         f(arr[i], i);
     }
 });
-export const forNumberOfTimes = Curry((n, f) => {
+export const ForNumberOfTimes = Curry((n, f) => {
     for(let i = 0; i < n; i++) {
         f(i);
     }
@@ -27,7 +27,7 @@ export const Prepend = Curry((arr, value) => [value, ...arr]);
 export const Flatten = arr => {
     const newArr = [];
     const flattenAndConcat = Compose([ConcatTo(newArr), Flatten]);
-    forEach((v, i) => {
+    ForEach((v, i) => {
         IfElse(IsArray, flattenAndConcat, PushTo(newArr))(v);
     }, arr);
 
@@ -49,8 +49,8 @@ export const EqualsArray = Curry((arr, arrUnderTest) => {
 });
 const allCombinations_2 = Curry((arr1, arr2) => {
     const combinations = [];
-    forEach(v => {
-        forEach(v2 => {
+    ForEach(v => {
+        ForEach(v2 => {
             combinations.push([v, v2]);
         }, arr2);
     }, arr1);

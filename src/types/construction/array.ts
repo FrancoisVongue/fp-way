@@ -1,6 +1,6 @@
-export const arrayOf = (...v) => [...v];
-export const arrayOfLength = (n, v=0) => (new Array(n)).map(v => v);
-export const arrayOfRange = (start, finish) => {
+export const ArrayOf = (...v) => [...v];
+export const ArrayOfLength = (n, v=0) => (new Array(n)).map(v => v);
+export const ArrayOfRange = (start, finish) => {
     const newArr = [];
     const orderIsNegative = finish < start;
     const length = Math.abs(start - finish) + 1;

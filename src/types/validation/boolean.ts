@@ -15,13 +15,13 @@ export const IsTrue = Is(true);
 export const IsFalse = Is(false);
 export const IsBoolean = v => IsTrue(v) || IsFalse(v);
 
-export const either = (a,b,v) => {
+export const Either = (a,b,v) => {
     return ToBoolean(a(v)) || ToBoolean(b(v));
 };
-export const both = (a,b,v) => {
+export const Both = (a, b, v) => {
     return ToBoolean(a(v)) && ToBoolean(b(v));
 };
-export const neither = (a,b,v) => {
+export const Neither = (a,b,v) => {
     return !ToBoolean(a(v)) && !ToBoolean(b(v));
 };
 
