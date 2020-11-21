@@ -190,3 +190,6 @@ export const SpecSummary = Curry(<T1 extends object>(spec: ISpec<T1>, obj: T1): 
     return summary;
 });
 export const IsObject = o => o instanceof Object;
+export const HasProp = Curry((prop: string, obj: DTO):boolean => {
+    return Exists(obj[prop]);
+});

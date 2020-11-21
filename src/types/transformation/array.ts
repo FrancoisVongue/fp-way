@@ -21,6 +21,7 @@ export const PushTo = Curry((arr, v) => arr.push(v));
 export const Tail = (arr) => arr.length > 1 ? [...arr].slice(1) : [...arr];
 export const Nose = (arr) => arr.length > 1 ? [...arr].slice(0, arr.length - 1) : [...arr];
 export const Take = Curry((n, arr) => arr.length < n ? [...arr] : [...arr].slice(0, n));
+export const Head = <T1>(arr: T1[]): T1 => arr[0];
 export const TakeLast = Curry((n, arr) => arr.length < n ? [...arr] : [...arr].slice(-n));
 export const Append = Curry((value, arr) => [...arr, value]);
 export const Prepend = Curry((arr, value) => [value, ...arr]);

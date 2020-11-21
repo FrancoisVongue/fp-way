@@ -36,9 +36,9 @@ export interface Curried4<T1, T2, T3, T4, R> {
     (t1: T1, t2: T2, t3: T3, t4: T4): R;	
 }
 
-export type TCurry = {
-    <T1, R>(f: Unary<T1, R>): Curried1<T1, R>;	
-    <T1, T2, R>(f: Binary<T1, T2, R>): Curried2<T1, T2, R>;	
-    <T1, T2, T3, R>(f: Ternary<T1, T2, T3, R>): Curried3<T1, T2, T3, R>;	
-    <T1, T2, T3, T4, R>(f: Quaternary<T1, T2, T3, T4, R>): Curried4<T1, T2, T3, T4, R>;
+export type TCurry<T=unknown> = {
+    <T1, R>(f: Unary<T1, R>): T extends unknown ? Curried1<T1, R> : T;
+    <T1, T2, R>(f: Binary<T1, T2, R>): T extends unknown ? Curried2<T1, T2, R> : T;
+    <T1, T2, T3, R>(f: Ternary<T1, T2, T3, R>): T extends unknown ? Curried3<T1, T2, T3, R> : T;
+    <T1, T2, T3, T4, R>(f: Quaternary<T1, T2, T3, T4, R>): T extends unknown ? Curried4<T1, T2, T3, T4, R> : T;
 }
