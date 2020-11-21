@@ -25,6 +25,7 @@ export const IsInRange = Curry((n1, n2, n) => {
 export const IsPositive = Gt(0);
 export const IsNegative = Lt(0);
 
+export const ParseInt = n => Number.parseInt(n);
 export const ParseFloat = n => Number.parseFloat(n);
 export const IsNaN = n => Number.isNaN(n);
-export const ToInteger = (n: number):number => ~~n;
+export const NumberToInt = (n: number):number => ~~n;

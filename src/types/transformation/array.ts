@@ -1,7 +1,8 @@
 import { Compose, Curry, IfElse, Not, Variable } from "../core";
 import { ContainedIn, Contains, IsArray } from "../validation/array";
+import {AnyFn} from "../core.types";
 
-export const ForEach = Curry(<T1>(f: (arg: T1, index?: number) => any, arr: T1[]) => {
+export const ForEach = Curry((f: AnyFn, arr: any[]) => {
     for(let i = 0; i < arr.length; i++) {
         f(arr[i], i);
     }
@@ -42,11 +43,6 @@ export const IntersectionBetween = Curry((arr1, arr2) => {
     
     const bigset = new Set(BiggerArr);
     return Select(v => bigset.has(v), smallerArr);
-});
-export const EqualsArray = Curry((arr, arrUnderTest) => {
-    const sameLength = arr.length === arrUnderTest.length;
-    const sameElems = SubtractArr(arr, arrUnderTest).length === 0;
-    return sameLength && sameElems;
 });
 const allCombinations_2 = Curry((arr1, arr2) => {
     const combinations = [];

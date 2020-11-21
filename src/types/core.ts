@@ -1,22 +1,29 @@
-import {AnyFn, Curried2, Entry, Predicate, TCurry, Unary} from "./core.types";
+import {
+    AnyFn,
+    Binary, Curried,
+    Curried2, Entries,
+    Entry,
+    Predicate, TComposeFunctionsArr,
+    TCurry, TPipeFunctionsArr,
+    Unary
+} from "./core.types";
 
-export const Identity = <T1>(v):T1 => v;
-export const Const = <T1>(v: T1) => (a?: any): T1 => v;
+export const Identity = <T1>(v: T1):T1 => v;
+export const Const = <T1>(v: T1) => (a?): T1 => v;
 export const Return = Const;
 export const TRUE = Const(true);
 export const FALSE = Const(false);
-export const Variable = <T1>(a?) => (v: T1): T1 => v;
-export const DoNothing = () => {};
+export const Variable = (a?) => <T1>(v: T1): T1 => v;
+export const DoNothing = (a?) => {};
 export const Exists = a => !(a === null || a === undefined);
-export const Swap = <T1, T2, R>(f: (arg1: T1, arg2: T2) => R): Curried2<T2, T1, R> =>
+export const Swap = <T1, T2, R>(f: Binary<T1, T2, R>): Curried2<T2, T1, R> =>
     Curry((a, b) => f(b,a));
-
-export const Not = (f: (...args: any[]) => any) => (...args): boolean => !f(...args);
-export const CreateAction = <T1 extends (...args: any[]) => any, R>(
+export const Not = (f: AnyFn) => (...args): boolean => !f(...args);
+export const CreateAction = <T1 extends AnyFn>(
     fn: T1,
     argsArr: Parameters<T1>,
     ctx = null
-) => (): R => fn.bind(ctx)(argsArr);
+) => (): ReturnType<T1> => fn.bind(ctx)(...argsArr);
 
 export const Curry: TCurry = function Curry(f, ...initialArgs) {
     return function curried(...newArgs) {
@@ -29,46 +36,83 @@ export const Curry: TCurry = function Curry(f, ...initialArgs) {
     }
 }
 
-export const Is = Curry(<T1>(a: T1, b: T1): boolean => a === b);
-export const ApplyTo = Curry(<T1,R>(a: T1, f: (arg: T1) => R): R => f(a));
-export const Call = Curry(<T1, R>(f: (arg: T1) => R, a: T1): R => f(a));
-export const IfElse = Curry(<T1>(
+export type TIs<T1> = (a: T1, b: T1) => Boolean
+export const Is = Curry((a, b): boolean => a === b);
+
+export type TApplyTo<T1, R> = (arg: T1, f: Unary<T1, R>) => R
+export const ApplyTo = Curry((a, f: AnyFn) => f(a));
+
+export type TCall<T1, R> = (f: Unary<T1, R>, arg: T1) => R
+export const Call = Curry((f: AnyFn, a) => f(a));
+
+export type TIfElse<T1, R1, R2> = (
     p: Predicate<T1>,
-    onSuccess: Unary<T1, any>,
-    onFail: Unary<T1, any>,
-    arg: T1
+    onSuccess: Unary<T1, R1>,
+    onFail: Unary<T1, R2>,
+    arg: T1) => R1 | R2
+export const IfElse = Curry((
+    p: Predicate<any>,
+    onSuccess: Unary<any, any>,
+    onFail: Unary<any, any>,
+    arg: any
 ) => p(arg) ? onSuccess(arg) : onFail(arg));
 
-export const When = Curry(<T1>(
+export type TWhen<T1, R> = (
     p: Predicate<T1>,
-    f: Unary<T1, any>,
+    onSuccess: Unary<T1, R>,
     arg: T1
+) => R | T1
+export const When = Curry((
+    p: Predicate<any>,
+    f: Unary<any, any>,
+    arg: any
 ) => p(arg) ? f(arg) : arg);
 
-export const Unless = Curry(<T1>(
+export type TUnless<T1, R> = (
     p: Predicate<T1>,
-    f: Unary<T1, any>,
+    onFail: Unary<T1, R>,
     arg: T1
+) => R | T1
+export const Unless = Curry((
+    p: Predicate<any>,
+    f: Unary<any, any>,
+    arg: any
 ) => p(arg) ? arg : f(arg));
 
-export const AllPass = Curry(<T1>(
-    fns: Unary<T1, any>[],
+export type TAllPass<T1> = (
+    fns: Predicate<T1>,
     arg: T1
-) => fns.every(f => f(arg)));
+) => boolean
+export const AllPass = Curry((
+    fns: Predicate<any>[],
+    arg: any
+): boolean => fns.every(f => f(arg)));
 
-export const EitherPass = Curry(<T1>(
-    fns: Unary<T1, any>[],
+export type TEitherPass<T1> = (
+    fns: Predicate<T1>,
     arg: T1
-) => fns.some(f => f(arg)));
+) => boolean
+export const EitherPass = Curry((
+    fns: Predicate<any>[],
+    arg: any
+): boolean => fns.some(f => f(arg)));
 
-export const NeitherPass = Curry(<T1>(
-    fns: Unary<T1, any>[],
+export type TNeitherPass<T1> = (
+    fns: Predicate<T1>,
     arg: T1
-) => !(fns.some(f => f(arg))));
+) => boolean
+export const NeitherPass = Curry((
+    fns: Predicate<any>[],
+    arg: any
+): boolean => !(fns.some(f => f(arg))));
 
-export const InCase = Curry(<T1>(
-    entries: Entry<Predicate<T1>, (arg: T1) => any>[],
-    value: T1
+export type TInCase<T1, R> = (
+    entries: Entries<Predicate<T1>, Unary<T1, R>>,
+    arg: T1
+) => R
+export const InCase = Curry((
+    entries: Entries<Predicate<any>, Unary<any, any>>,
+    value: any
 ): any => {
     for(let entry of entries) {
         const predicate = entry[0];
@@ -78,9 +122,11 @@ export const InCase = Curry(<T1>(
         }
     }
 });
+
+export type TIndependentInCase<T1, R> = TInCase<T1, R>
 export const IndependentInCase = Curry((
-    entries,
-    value,
+    entries: Entries<Predicate<any>, Unary<any, any>>,
+    value: any
 ): any => {
     for(let entry of entries) {
         const predicate = entry[0];
@@ -91,39 +137,32 @@ export const IndependentInCase = Curry((
     }
 });
 
-export const Attempt = Curry(<T1, R, SR, ER>(
-    f: (arg: T1) => R,
-    onSuccess: (arg: R) => SR,
-    onError: (e: Error) => ER,
+export type TTapWith<T1> = (
+    f: Unary<T1, any>,
     arg: T1
-): SR | ER => {
-    try {
-        return onSuccess(f(arg));
-    } catch(e) {
-        return onError(e);
-    }
-});
+) => T1
+export const TapWith = Curry((
+    f: AnyFn,
+    arg: any
+): any => (f(arg), arg));
 
-export const TapWith = f => arg => {
-    f(arg);
-    return arg;
-}
-export const ChangeWithHooks = (obj, fn) => arg => {
-    if(obj.guard && obj.guard(arg)) {
-        return Compose([obj.hookAfter ?? Identity, fn, obj.hookBefore ?? Identity])(arg);
-    } 
-    return null;
-}
-export const PassToFunctions = fns => arg => { 
-    const resultArr = [];
+export type TPassToFunctions<T1, R> = (
+    fns: Unary<T1, R>[],
+    arg: T1
+) => R
+export const PassToFunctions = Curry((
+    fns: AnyFn[],
+    arg: any
+): any[] => fns.map(f => f(arg)));
 
-    for (let i = 0; i < fns.length; i++) {
-        resultArr.push(fns[i](arg));
-    }
-
-    return resultArr;
-}
-export const Compose = Curry((fns, arg) => {
+export type TCompose<T1, R> = (
+    fns: TComposeFunctionsArr<T1, R>,
+    arg: T1
+) => R
+export const Compose = Curry((
+    fns: AnyFn[],
+    arg: any
+) => {
     let currentArg = arg;
 
     let fnsInReversedOrder = [...fns].reverse();
@@ -133,7 +172,15 @@ export const Compose = Curry((fns, arg) => {
 
     return currentArg;
 });
-export const Pipe = Curry((fns, arg) => {
+
+export type TPipe<T1, R> = (
+    fns: TPipeFunctionsArr<T1, R>,
+    arg: T1
+) => R
+export const Pipe = Curry((
+    fns: AnyFn[],
+    arg: any
+): any => {
     let currentArg = arg;
 
     for(let fn of fns)

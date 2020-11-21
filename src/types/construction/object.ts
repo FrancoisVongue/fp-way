@@ -1,8 +1,7 @@
-export const ObjectFromEntries = entries => {
-    const result = {};
-    for(let entry of entries) {
-        const prop = entry[0];
-        result[prop] = entry[1];
-    }
-    return result;
-}
+import {DTO, Entries} from "../core.types";
+
+export const ObjectFromEntries = (entries: Entries<string, any>): DTO =>
+    [...entries].reduce((b, [key, value]) => {
+        b[key] = value;
+        return b;
+    }, {});
