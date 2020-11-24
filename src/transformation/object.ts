@@ -1,6 +1,6 @@
 import {Curry, Exists, InCase, Pipe, Return, TRUE} from "../core";
 import {Exclude, Head, MapArr, SubtractArr, Tail} from "./array";
-import {ContainedIn, IsObject} from "../..";
+import {ContainedIn, IsObject} from "../index";
 import {DTO} from "../core.types";
 
 export const PickProps = Curry((props: string[], obj) => { // todo: add Swap (pickFrom)

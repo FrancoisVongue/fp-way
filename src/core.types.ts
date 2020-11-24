@@ -63,7 +63,7 @@ export type TComposeFunctionsArr<T1, R> = [Unary<T1, R>]
     | [Unary<any, R>, Unary<any, any>, Unary<any, any>, Unary<any, any>, Unary<any, any>, Unary<any, any>, Unary<any, any>, Unary<any, any>, Unary<any, any>, Unary<T1, any>]
     | [Unary<any, R>, Unary<any, any>, Unary<any, any>, Unary<any, any>, Unary<any, any>, Unary<any, any>, Unary<any, any>, Unary<any, any>, Unary<any, any>, Unary<any, any>, Unary<T1, any>]
     | [Unary<any, R>, Unary<any, any>, Unary<any, any>, Unary<any, any>, Unary<any, any>, Unary<any, any>, Unary<any, any>, Unary<any, any>, Unary<any, any>, Unary<any, any>, Unary<any, any>, Unary<T1, any>]
-    | any
+    | never
 
 export type TPipeFunctionsArr<T1, R> = [Unary<T1, R>]
     | [Unary<T1, any>, Unary<T1, R>]
@@ -77,4 +77,4 @@ export type TPipeFunctionsArr<T1, R> = [Unary<T1, R>]
     | [Unary<T1, any>, Unary<any, any>, Unary<any, any>, Unary<any, any>, Unary<any, any>, Unary<any, any>, Unary<any, any>, Unary<any, any>, Unary<any, any>, Unary<T1, R>]
     | [Unary<T1, any>, Unary<any, any>, Unary<any, any>, Unary<any, any>, Unary<any, any>, Unary<any, any>, Unary<any, any>, Unary<any, any>, Unary<any, any>, Unary<any, any>, Unary<T1, R>]
     | [Unary<T1, any>, Unary<any, any>, Unary<any, any>, Unary<any, any>, Unary<any, any>, Unary<any, any>, Unary<any, any>, Unary<any, any>, Unary<any, any>, Unary<any, any>, Unary<any, any>, Unary<T1, R>]
-    | any
+    | never

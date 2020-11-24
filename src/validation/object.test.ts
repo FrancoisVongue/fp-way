@@ -8,7 +8,7 @@ import {
     IsString,
     Lt,
     Matches
-} from "../..";
+} from "../index";
 
 describe('checkProps', () => {
     it('should show required and properties to check', () => {

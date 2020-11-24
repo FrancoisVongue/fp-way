@@ -87,7 +87,7 @@ describe('Pipe', () => {
         let three;
         let five;
         const minusTwo = v => v - 2;
-        const result = (Pipe as Curried<TPipe<number, string>>)([
+        const result = Pipe([
             Identity,
             TapWith(v => five = v),
             minusTwo,

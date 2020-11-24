@@ -1,15 +1,4 @@
-import {
-    ApplyTo,
-    Attempt,
-    Curry,
-    Exists,
-    FALSE, Identity,
-    Not,
-    Pipe,
-    TRUE,
-    Unless,
-    When
-} from "../core";
+import {ApplyTo, Curry, Exists, FALSE, Pipe, Unless} from "../core";
 import {
     ForEach,
     IntersectionBetween,
@@ -17,7 +6,7 @@ import {
     Select,
     SubtractArr
 } from "../transformation/array";
-import {GetEntries, GetKeys, IsArray, IsEmptyArray, IsString, WithDefault} from "../..";
+import {GetEntries, GetKeys, IsArray, IsEmptyArray, IsString, WithDefault} from "../index";
 import {DTO, Entry, Predicate} from "../core.types";
 
 export interface ISpecSummary {
@@ -141,7 +130,7 @@ export const SpecSummary = Curry(<T1 extends object>(spec: ISpec<T1>, obj: T1): 
     if(options.stopWhen(summary))
         return summary;
 
-    ForEach(propName => {           // todo: set mark to BREAK THE CYCLE easily
+    ForEach(propName => {
         if(options.stopWhen(summary))                       // if user wants to stop
             return 0;
 
