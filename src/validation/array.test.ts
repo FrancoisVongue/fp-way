@@ -1,6 +1,6 @@
 import {
     AllElementsAre,
-    ContainedIn, EqualsArray,
+    ContainedIn, EqualsArray, EqualsList,
     IsArrayOfLength,
     IsEmptyArray, IsSubsetOf,
     IsSupersetOf
@@ -90,7 +90,7 @@ describe('IsSubsetOf', () => {
 describe('EqualsArray', () => {
     it('should return true if arrays contain the same set of values', () => {
         const arr1 = [1,2,3,4,5];
-        const arr2 = [1,2,3,4,5];
+        const arr2 = [1,2,4,5,3];
 
         const result = EqualsArray(arr1, arr2);
         expect(result).toBe(true);
@@ -100,6 +100,23 @@ describe('EqualsArray', () => {
         const arr2 = [1,2,8,4,5]; // 8 instead of 3
 
         const result = EqualsArray(arr1, arr2);
+        expect(result).toBe(false);
+    })
+})
+describe('EqualsList', () => {
+    it('should return true if arrays have same values in the same order', () => {
+        const arr1 = [1,2,3,4,5];
+        const arr2 = [1,2,3,4,5];
+
+        const result = EqualsList(arr1, arr2);
+        expect(result).toBe(true);
+    })
+    it('should return false if arrays contain different values ' +
+        'or values are arranged in different order', () => {
+        const arr1 = [1,2,3,4,5];
+        const arr2 = [1,2,4,5,3]; // 3 is misarranged
+
+        const result = EqualsList(arr1, arr2);
         expect(result).toBe(false);
     })
 })

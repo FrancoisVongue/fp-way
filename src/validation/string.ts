@@ -1,28 +1,30 @@
-import {Const, Curry, Is} from "../core";
+import {Compose, Curry, Is, Not} from "../core";
+import {Gte} from "./number";
+import {Both} from "./boolean";
 
 export const IsString = s => typeof s === 'string';
+export const IsStringOfLength = Curry((n: number, s: string) =>
+    Both(IsString, s => s.length === n, s));
+
 export const IsUpperCase = (s: string) => s.toUpperCase() === s;
 export const IsLowerCase = (s: string) => s.toLowerCase() === s;
-export const Test = Curry((regex: RegExp, str: string) => regex.test(str)); // todo: remove toString, it fails (test)
+export const Test = Curry((regex: RegExp, str: string) => regex.test(str));
 export const Matches = Test;
-// export const StartsWith = (start, str) => {
-//
-//     return startString.length < targetString.length &&
-//         Is(startString)(targetString.slice(0, startString.length));
-// };
-// export const EndsWith = (end, str) => {
-//     const endString = ToString(end);
-//     const targetString = ToString(str);
-//
-//     return endString.length < targetString.length &&
-//         Is(endString)(targetString.slice(-endString.length));
-// };
-// export const ContainsString = Curry((str, target) => {
-//     return (ToString(target)).includes(ToString(str));
-// });
+export const IndexOf = Curry((s: string, base: string) => base.indexOf(s));
+export const LastIndexOf = Curry((s: string, base: string) => base.lastIndexOf(s));
 
-export const SerializeToString = v => JSON.stringify(v);
-export const OccurrencesOf = (R, str) => {
-    const regex = new RegExp(R as RegExp, 'g');
-    return (str as string).match(regex);
-};
+export const StartsWith = Curry((start:string, str:string) =>
+    (Compose as Compose<string, boolean>)
+    ([Is(0), IndexOf(start)], str));
+
+export const EndsWith = Curry((end:string, str:string) =>
+    (Compose as Compose<string, boolean>)
+    ([Both(
+        Gte(0),
+        Is(str.length - end.length)
+    ), LastIndexOf(end)], str));
+
+export const ContainsString = Curry((sub: string, str: string) =>
+    (Compose as Compose<string, boolean>)
+    ([Not(Is(-1)), IndexOf(sub)], str));
+
