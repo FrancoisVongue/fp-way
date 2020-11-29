@@ -20,10 +20,9 @@ describe('IsArrayOfLength', () => {
         const nil = null;
 
         const result1 = IsArrayOfLength(3, arrayOfLengthFive);
-        const result2 = IsArrayOfLength(3, stringOfLengthThree);
         const result3 = IsArrayOfLength(3, nil);
 
-        const result = result1 || result2  || result3;
+        const result = result1 || result3;
 
         expect(result).toBe(false);
     })
@@ -42,11 +41,9 @@ describe('IsEmptyArray', () => {
         const nil = null;
 
         const result1 = IsArrayOfLength(3, arrayOfLengthFive);
-        const result2 = IsArrayOfLength(3, stringOfLengthThree);
         const result3 = IsArrayOfLength(3, nil);
-        const result4 = IsArrayOfLength(3, emptyString);
 
-        const result = result1 || result2  || result3 || result4;
+        const result = result1 || result3;
 
         expect(result).toBe(false);
     })

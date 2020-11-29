@@ -44,11 +44,20 @@ export type TCurry = {
     <T1, T2, T3, T4, R>(f: Quaternary<T1, T2, T3, T4, R>): Curried4<T1, T2, T3, T4, R>;
 }
 
+// todo: revisit
+/*
 export type Curried<F> =
     F extends Unary<any, any> ? Curried1<Parameters<F>[0], ReturnType<F>> :
     F extends Binary<any, any, any> ? Curried2<Parameters<F>[0], Parameters<F>[1], ReturnType<F>> :
     F extends Ternary<any, any, any, any> ? Curried3<Parameters<F>[0], Parameters<F>[1], Parameters<F>[2], ReturnType<F>> :
     F extends Quaternary<any, any, any, any, any> ? Curried4<Parameters<F>[0], Parameters<F>[1], Parameters<F>[2], Parameters<F>[3], ReturnType<F>> :
+        never;
+*/
+export type Curried<F> =
+    F extends Unary<infer T1, infer R> ? Curried1<T1, R> :
+    F extends Binary<infer T1, infer T2, infer R> ? Curried2<T1, T2, R> :
+    F extends Ternary<infer T1, infer T2, infer T3, infer R> ? Curried3<T1, T2, T3, R> :
+    F extends Quaternary<infer T1, infer T2, infer T3, infer T4, infer R> ? Curried4<T1,T2,T3,T4,R> :
         never;
 
 export type TComposeFunctionsArr<T1, R> = [Unary<T1, R>]
