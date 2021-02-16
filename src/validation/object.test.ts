@@ -54,6 +54,12 @@ describe('get entries', () => {
 });
 
 describe('specSummary', () => {
+/*
+    const personSpe/!**!/c
+    beforeEach(() => {
+
+    })
+*/
     it('should return error according to spec', () => {
         interface Kid {
             name: string,

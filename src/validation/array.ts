@@ -9,7 +9,7 @@ export const IsArrayOfLength = Curry((n: number, arr: any[]) =>
 
 export const IsEmptyArray = IsArrayOfLength(0);
 
-export type TAllElementsAre<T1> = (
+export type TAllElementsAre<T1 = any> = (
     p: Predicate<T1>,
     arr: T1[]
 ) => boolean
@@ -26,7 +26,9 @@ export const Contains = Curry((v, arr: any[]) => arr.includes(v));
 export const ContainedIn = Swap(Contains);
 
 export const IsSupersetOf = Curry((sub: any[], sup: any[]):boolean =>
-    sub.every(e => sup.includes(e)));
+    AllElementsAre(ContainedIn(sup), sub));
+export const IsArrayContaining = IsSupersetOf;
+
 export const IsSubsetOf = Swap(IsSupersetOf);
 
 export const EqualsArray = Curry((arr: any[], arrUnderTest: any[]): boolean => {
