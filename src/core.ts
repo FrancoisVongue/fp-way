@@ -48,14 +48,14 @@ export const IndependentInCase = <T1, R>(
     v: T1
 ): R[] => {
     const results: R[] = [];
-    
+
     for(let entry of entries) {
         const [predicate, f] = entry;
         if(predicate(v)) {
             results.push(f(v));
         }
     }
-    
+
     return results;
 };
 
@@ -69,12 +69,12 @@ export const Pipe = Curry((fns: Function[], arg: any): any => {
 });
 export const Compose = Curry((fns: Function[], a: any) => Pipe(fns.reverse(), a));
 
-export const IsOfType = (desiredType: JSTypesWithArrayAndNull, a: any) => {
+export const IsOfType = Curry((desiredType: JSTypesWithArrayAndNull, a: any) => {
     const Type = InCase<any, JSTypesWithArrayAndNull>([
         [Is(null), () => "null"],
         [a => Array.isArray(a), () => "array"],
         [TRUE, a => typeof a]
     ], a);
-    
+
     return Type === desiredType;
-}
+});

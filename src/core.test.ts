@@ -1,4 +1,16 @@
-import {Compose, Curry, FALSE, InCase, IndependentInCase, Is, IsOfType, Return, TRUE, Unless, When} from "./core";
+import {
+    Compose, 
+    Curry, 
+    FALSE, 
+    InCase, 
+    IndependentInCase, 
+    Is, 
+    IsOfType, 
+    Return, 
+    TRUE, 
+    Unless, 
+    When
+} from './core';
 
 describe('Curry', () => {
     it('should curry a non-generic function', () => {
