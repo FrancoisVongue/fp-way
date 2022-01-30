@@ -1,11 +1,11 @@
 import {Curry, Exists, InCase, IsOfType, Return, Swap, TRUE, Variable} from "../core";
 
 export namespace obj {
-    export const Keys = (obj: object) => Object.keys(obj);
+    export const Keys = <T1 extends {}>(obj: T1) => Object.keys(obj) as (keyof T1)[];
     export const Entries = (obj: object) => Object.entries(obj);
     
-    export const DeepCopy = (obj: object) => {
-        const newObj = {};
+    export const DeepCopy = <T1 extends {}>(obj: T1): T1 => {
+        const newObj = {} as T1;
         const properties = Object.getOwnPropertyNames(obj);
         
         properties.forEach((prop: string) => {
@@ -44,11 +44,45 @@ export namespace obj {
         props.forEach(p => newObj[p] = objCopy[p]);
 
         return newObj;
-    }) as <T1 extends {}>(props: (keyof T1)[], obj: T1) => Partial<T1>;
+    });
     
     export const ExcludeProps = Curry((propsToExclude: string[], obj: {}) => {
         const allProps = Keys(obj);
         const props = allProps.filter(p => !propsToExclude.includes(p));
         return PickProps(props, obj as any);
-    }) as <T1 extends {}>(props: (keyof T1)[], obj: T1) => Partial<T1>;
+    });
+
+    export type ObjectMapper<O1> = (value: any, obj: O1) => any;
+    export type ObjectMapSpec<O1 extends {}, O2 extends {}> = {
+        map: [keyof O1 | '', ObjectMapper<O1>, keyof O2][];
+        transfer?: Extract<keyof O1, keyof O2>[]
+    }
+    
+    type what = Extract<"any" | "two", "any" | "two">
+    
+    export const Map = <O1 extends {}, O2 extends {}>(
+        mapSpec: ObjectMapSpec<O1, O2>,
+        src: O1
+    ) => {
+        const result = {} as O2;
+        const mappedProps = new Set();
+
+        for(let row of mapSpec.map) {
+            const [sourceProp, mapper, destinationProp] = row;
+            mappedProps.add(sourceProp);
+            mappedProps.add(destinationProp);
+
+            result[destinationProp] = sourceProp 
+                ? mapper(src[sourceProp], src)
+                : mapper(null, src);
+        }
+
+        if(mapSpec.transfer) {
+            for(const prop of mapSpec.transfer) {
+                result[prop as any] = src[prop];
+            }
+        }
+
+        return result;
+    }
 }
