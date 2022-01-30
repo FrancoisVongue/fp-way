@@ -52,14 +52,12 @@ export namespace obj {
         return PickProps(props, obj as any);
     });
 
+    // == MAPPER
     export type ObjectMapper<O1> = (value: any, obj: O1) => any;
     export type ObjectMapSpec<O1 extends {}, O2 extends {}> = {
         map: [keyof O1 | '', ObjectMapper<O1>, keyof O2][];
         transfer?: Extract<keyof O1, keyof O2>[]
     }
-    
-    type what = Extract<"any" | "two", "any" | "two">
-    
     export const Map = <O1 extends {}, O2 extends {}>(
         mapSpec: ObjectMapSpec<O1, O2>,
         src: O1
@@ -85,4 +83,34 @@ export namespace obj {
 
         return result;
     }
+    
+    // == VALIDATOR
+    export type ValidationSummary<T1> = {
+        valid: boolean,
+        errorCount: number,
+        missingProperties: string[],
+        redundantProperties: string[],
+        errors?: Record<keyof T1, any>
+    }
+    export type ValidationException = {
+        key: string,
+        value: any,
+        ruleIndex: number,
+        error: Error
+    }
+    export type ValidationOptions<T extends {}> = {
+        stopWhen?: (summary: ValidationSummary<T>) => boolean,
+        errorHandler?: (e: ValidationException) => string,
+        invalidWhen?: (summary: ValidationSummary<T>) => boolean,
+        redundantIsError?: boolean,
+        optionalProps?: (keyof T)[] | true,
+    }
+    export type ValidationPropertyRule<T1 extends {}> = [
+        (a: any, T1) => boolean, 
+        string | ((v: any, k: keyof T1) => string)
+    ];
+    export const ValidationOptionsSym: unique symbol = Symbol.for('fp-way-validation-options');
+    export type ValidationSpec<T1 extends {}> = Partial<Record<keyof T1, ValidationPropertyRule<T1> | any>>
+        & { [ValidationOptionsSym]: ValidationOptions<T1> };
+    export const Validate = () => {}
 }
