@@ -1,7 +1,9 @@
 import {obj} from "./index";
 import ObjectMapSpec = obj.ObjectMapSpec;
-import {Return, TRUE} from "../core";
+import {IsOfType, Return, TRUE} from "../core";
 import ObjectMapper = obj.ObjectMapper;
+import ValidationSpec = obj.ValidationSpec;
+import ValidationOptionsSym = obj.ValidationOptionsSym;
 
 type Cat = {
     age: number;
@@ -154,5 +156,57 @@ describe('Map', () => {
         const cat = obj.Map(mapSpec, animal1);
 
         expect(cat.name).toBe(animal1.name);
+    })
+})
+
+describe('_preCheckProps', () => {
+    let catSpec: ValidationSpec<Cat> = {
+        age: [
+            [IsOfType("number"), 'age must be a number'],
+        ],
+        name: [
+            [IsOfType("string"), 'name must be string'],
+        ],
+        amountOfLegs: [
+            [IsOfType("string"), 'amountOfLegs must be number'],
+        ],
+        child: [
+            [IsOfType("string"), 'child must be partial cat'],
+        ],
+        [ValidationOptionsSym]: {
+            optionalProps: ['child']
+        }
+    }
+    it('Should return missing properties', () => {
+        const catWOage: Partial<Cat> = {
+            // age: 12,
+            amountOfLegs: 4,
+            name: 'Tony'
+        }
+        const result = obj._validationPreCheckProps(catSpec, catWOage);
+        
+        expect(result.missing).toEqual(['age']);
+    })
+    it('Should return resundant properties', () => {
+        const catWithTailLength: Partial<Cat> & {tailLen: number} = {
+            age: 12,
+            amountOfLegs: 4,
+            name: 'Tony',
+            tailLen: 22
+        }
+        const result = obj._validationPreCheckProps(catSpec, catWithTailLength);
+
+        expect(result.redundant).toEqual(['tailLen']);
+    })
+    it('Should return properties that need to be checked', () => {
+        const catWOageWithTailLen: Partial<Cat> & {tailLen: number} = {
+            // age: 12, -- missing
+            amountOfLegs: 4,
+            name: 'Tony',
+            tailLen: 22  // -- redundant
+        }
+        const result = obj._validationPreCheckProps(catSpec, catWOageWithTailLen);
+
+        expect(result.propsToCheck).toEqual(['amountOfLegs', 'name']);
     })
 })

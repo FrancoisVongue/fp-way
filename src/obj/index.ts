@@ -1,8 +1,8 @@
-import {Curry, Exists, InCase, IsOfType, Return, Swap, TRUE, Variable} from "../core";
+import {Curry, Exists, InCase, Is, IsOfType, Pipe, Return, Swap, TRUE, Variable, When} from "../core";
 
 export namespace obj {
-    export const Keys = <T1 extends {}>(obj: T1) => Object.keys(obj) as (keyof T1)[];
-    export const Entries = (obj: object) => Object.entries(obj);
+    export const Keys = <T1 extends {}>(obj: T1) => Object.keys(obj);
+    export const Entries = (obj: {}) => Object.entries(obj);
     
     export const DeepCopy = <T1 extends {}>(obj: T1): T1 => {
         const newObj = {} as T1;
@@ -103,14 +103,55 @@ export namespace obj {
         errorHandler?: (e: ValidationException) => string,
         invalidWhen?: (summary: ValidationSummary<T>) => boolean,
         redundantIsError?: boolean,
-        optionalProps?: (keyof T)[] | true,
+        optionalProps?: (keyof T)[] | '*',
     }
     export type ValidationPropertyRule<T1 extends {}> = [
-        (a: any, T1) => boolean, 
+        (v: any, o: T1) => boolean, 
         string | ((v: any, k: keyof T1) => string)
     ];
     export const ValidationOptionsSym: unique symbol = Symbol.for('fp-way-validation-options');
-    export type ValidationSpec<T1 extends {}> = Partial<Record<keyof T1, ValidationPropertyRule<T1> | any>>
+    export type ValidationSpec<T1 extends {}> = Partial<Record<keyof T1, ValidationPropertyRule<T1>[]>>
         & { [ValidationOptionsSym]: ValidationOptions<T1> };
     export const Validate = () => {}
+
+    export type CheckPropsResult = {
+        missing: string[],
+        redundant: string[],
+        propsToCheck: string[],
+    }
+    export const _validationPreCheckProps = <T1 extends object>(
+        spec: ValidationSpec<T1>, 
+        o: {}
+    ): CheckPropsResult => {
+        const declaredPropsToCheck = Keys(spec);
+        const desiredOptionalProps = spec[ValidationOptionsSym].optionalProps;
+        const optionalProps: string[] = When(
+            Is('*'), 
+            Return(declaredPropsToCheck), 
+            desiredOptionalProps
+        );
+        const requiredProps = declaredPropsToCheck.filter(d => !optionalProps.includes(d));
+
+        if(!IsOfType("object", o)) {
+            return {
+                missing: requiredProps,
+                redundant: [],
+                propsToCheck: [],
+            }
+        }
+
+        const presentProps = Entries(o)
+            .filter(([k, v]) => Exists(v))
+            .map(([k, v]) => k);
+        
+        const missingRequiredProps = requiredProps.filter(r => !presentProps.includes(r));
+        const redundantProps = presentProps.filter(p => !declaredPropsToCheck.includes(p)); 
+        const propsToCheck = presentProps.filter(p => declaredPropsToCheck.includes(p));
+
+        return {
+            missing: missingRequiredProps,
+            propsToCheck: propsToCheck,
+            redundant: redundantProps,
+        }
+    }
 }
