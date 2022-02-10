@@ -1,14 +1,15 @@
 import {
-    Compose, 
-    Curry, 
-    FALSE, 
-    InCase, 
-    IndependentInCase, 
-    Is, 
-    IsOfType, 
-    Return, 
-    TRUE, 
-    Unless, 
+    CanBeDescribedAs,
+    Compose,
+    Curry,
+    FALSE,
+    InCase,
+    IndependentInCase,
+    Is,
+    IsOfType,
+    Return,
+    TRUE,
+    Unless,
     When
 } from './core';
 
@@ -118,5 +119,13 @@ describe('IsOfType', () => {
         
         expect(True).toBe(true);
         expect(False).toBe(false);
+    })
+})
+
+describe('CanBeDescribedAs', () => {
+    it('should return true in case all predicates return true', () => {
+        const isInt = CanBeDescribedAs([
+            
+        ])
     })
 })

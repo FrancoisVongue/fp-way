@@ -187,7 +187,7 @@ describe('_preCheckProps', () => {
         
         expect(result.missing).toEqual(['age']);
     })
-    it('Should return resundant properties', () => {
+    it('Should return redundant properties', () => {
         const catWithTailLength: Partial<Cat> & {tailLen: number} = {
             age: 12,
             amountOfLegs: 4,

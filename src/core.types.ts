@@ -1,3 +1,5 @@
+export type Predicate = (...args: any[]) => boolean
+
 export type Unary<T1, R> =
     (a: T1) => R
 export type Binary<T1, T2, R> =
@@ -37,7 +39,14 @@ export type TCurry = {
     <T1, T2, T3, T4, R>(f: Quaternary<T1, T2, T3, T4, R>): Curried4<T1, T2, T3, T4, R>;
 }
 
-export type JSTypesWithArrayAndNull = 
+export type Curried<F> =
+    F extends Unary<infer T1, infer R> ? Curried1<T1, R> :
+        F extends Binary<infer T1, infer T2, infer R> ? Curried2<T1, T2, R> :
+            F extends Ternary<infer T1, infer T2, infer T3, infer R> ? Curried3<T1, T2, T3, R> :
+                F extends Quaternary<infer T1, infer T2, infer T3, infer T4, infer R> ? Curried4<T1,T2,T3,T4,R> :
+                    unknown;
+
+export type JSTypesWithArrayAndNull =
     | "undefined"
     | "null"
     | "object"
@@ -48,3 +57,14 @@ export type JSTypesWithArrayAndNull =
     | "symbol"
     | "function"
     | "array"
+
+// methods
+export type TIndependentInCase<T1, R> = (
+    entries: [Unary<T1, boolean>, Unary<T1, R>][],
+    v: T1) => R[];
+export type IndependentInCase<T1 = any, R = any> = Curried<TIndependentInCase<T1, R>>
+
+export type TInCase<T1, R> = (
+    entries: [Unary<T1, boolean>, Unary<T1, R>][],
+    v: T1) => R;
+export type IInCase<T1 = never, R = never> = Curried<TInCase<T1, R>>
