@@ -58,7 +58,7 @@ describe('InCase', () => {
         const five = 5;
         const three = 3;
         
-        const fiveIsFive = InCase([
+        const fiveIs3or2or5 = InCase([
             [Is(3), FALSE],
             [Is(2), FALSE],
             [Is(5), TRUE],
@@ -79,7 +79,7 @@ describe('InCase', () => {
             [TRUE, FALSE],
         ], three);
         
-        expect(fiveIsFive).toBe(true);
+        expect(fiveIs3or2or5).toBe(true);
         expect(fiveIs3or2or4).toBe(false);
         expect(threeIs3or2or4).toBe(true);
     })
