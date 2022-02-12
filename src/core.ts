@@ -1,9 +1,9 @@
 import {
     Binary, Curried,
-    Curried2, IInCase,
+    Curried2,
     JSTypesWithArrayAndNull,
     Predicate,
-    TCurry, TInCase,
+    TCurry,
     Unary
 } from "./core.types";
 
@@ -42,7 +42,16 @@ export const IfElse = Curry((
 export const When = Curry((p, f, a) => p(a) ? f(a) : a);
 export const Unless = Curry((p, f, a) => !p(a) ? f(a) : a);
 
-export const InCase: { <T, R>(a: T): any } = Curry((
+export const InCase: {
+    <T, R>(
+        entries: [Unary<T, boolean>, Unary<T, R>][],
+    ): (v: T) => R
+
+    <T, R>(
+        entries: [Unary<T, boolean>, Unary<T, R>][],
+        v: T
+    ): R
+} = Curry((
     entries: [Unary<any, boolean>, Unary<any, any>][],
     v: any
 ): any => {

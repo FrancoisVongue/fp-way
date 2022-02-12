@@ -4,10 +4,8 @@ import {
     Curry,
     FALSE,
     InCase,
-    IndependentInCase,
     Is,
     IsOfType,
-    Return,
     TRUE,
     Unless,
     When
@@ -18,10 +16,10 @@ describe('Curry', () => {
         const add = (a: number, b: number) => a + b;
         const cAdd = Curry(add);
         const inc = cAdd(1);
-        
+
         const five = inc(4);
         const six = inc(five);
-        
+
         expect(five).toBe(5);
         expect(six).toBe(6);
     })
@@ -31,10 +29,10 @@ describe('When', () => {
     it('should run function if predicate is correct, or return argument unchanged', () => {
         const inc = a => a + 1;
         const incIf4 = When(Is(4), inc);
-        
+
         const five = incIf4(4);
         const eight = incIf4(8);
-        
+
         expect(five).toBe(5);
         expect(eight).toBe(8);
     })
@@ -57,8 +55,8 @@ describe('InCase', () => {
     it(`should run function af the first entry where predicate returns true`, () => {
         const five = 5;
         const three = 3;
-        
-        const fiveIs3or2or5 = InCase([
+
+        const fiveIs3or2or5 = InCase<number, boolean>([
             [Is(3), FALSE],
             [Is(2), FALSE],
             [Is(5), TRUE],
@@ -71,14 +69,14 @@ describe('InCase', () => {
             [Is(4), TRUE],
             [TRUE, FALSE],
         ], five);
-        
+
         const threeIs3or2or4 = InCase([
             [Is(3), TRUE],
             [Is(2), TRUE],
             [Is(4), TRUE],
             [TRUE, FALSE],
         ], three);
-        
+
         expect(fiveIs3or2or5).toBe(true);
         expect(fiveIs3or2or4).toBe(false);
         expect(threeIs3or2or4).toBe(true);
@@ -90,15 +88,15 @@ describe('Compose', () => {
         const inc = a => a + 1;
         const mul2 = a => a * 2;
         const min3 = a => a - 3;
-        
+
         const add1mul2min3 = Compose([
             min3,
             mul2,
             inc,
         ]);
-        
+
         const nineteen = add1mul2min3(10);
-        
+
         expect(nineteen).toBe(19);
     })
 })
@@ -113,10 +111,10 @@ describe('IsOfType', () => {
             IsOfType("undefined", undefined),
             IsOfType("object", {}),
         ];
-        
+
         const False = IsOfType("object", []);
         const True = arrayOfTrue.reduce((b, v) => v && b, true)
-        
+
         expect(True).toBe(true);
         expect(False).toBe(false);
     })
@@ -125,7 +123,7 @@ describe('IsOfType', () => {
 describe('CanBeDescribedAs', () => {
     it('should return true in case all predicates return true', () => {
         const isInt = CanBeDescribedAs([
-            
+
         ])
     })
 })
