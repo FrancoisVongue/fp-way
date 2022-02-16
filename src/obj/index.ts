@@ -130,160 +130,159 @@ export namespace obj {
     });
     
     // == VALIDATOR
-    export type ValidationSummary<T1> = {
-        valid: boolean,
-        errorCount: number,
-        missingProperties: string[],
-        redundantProperties: string[],
-        errors?: Record<keyof T1, any>
-    }
-    namespace _ValidationSummary {
-        export const addErr = (k, msg, summary: ValidationSummary<any>) => {
-            if(IsOfType('array', summary.errors[k])) {
-                (summary.errors[k]).push(msg);
-            } else {
-                summary.errors[k] = [msg];
-            }
-            incErrCount(summary);
-            setInvalid(summary);
-        }
-        export const incErrCount = (s: ValidationSummary<any>) => ++s.errorCount;
-        export const setInvalid = (s: ValidationSummary<any>) => s.valid = false;
-        export const New = <T1>(): ValidationSummary<T1> => {
-            return {
-                valid: true,
-                errorCount: 0,
-                missingProperties: [],
-                redundantProperties: [],
-            }
-        }
-        export const handleRuleException = (
-            summary: ValidationSummary<any>,
-            key, 
-            value, 
-            ruleIndex, 
-            handler: ValidationOptions<any>["errorHandler"], 
-            e: Error
-        ) => {
-            const errMsg = handler({
-                key: key,
-                error: e,
-                value: value,
-                ruleIndex: ruleIndex,
-            })
-            addErr(key, errMsg, summary);
-        }
-    }
-    export type ValidationException = {
-        key: string,
-        value: any,
-        ruleIndex: number,
-        error: Error
-    }
-    export type ValidationOptions<T extends {}> = {
-        stopWhen?: (summary: ValidationSummary<T>) => boolean,
-        errorHandler?: (e: ValidationException) => string,
-        invalidWhen?: (summary: ValidationSummary<T>) => boolean,
-        redundantIsError?: boolean,
-        optionalProps?: (keyof T)[] | '*',
-    }
-    type PopulatedValidationOptions<T1 extends {}> = Required<ValidationOptions<T1>>;
-    const defaultValidationOptions: ValidationOptions<any> = {
-        optionalProps: [],
-        redundantIsError: true,
-        stopWhen: FALSE,
-        errorHandler: ({key}) => `Could not validate property: ${key}`,
-        invalidWhen: summary => summary.errorCount > 0,
-    }
-    export type ValidationPropertyRule<T1 extends {}> = [
-        (v: any, o: T1) => boolean, 
-        string | ((v: any, k: keyof T1) => string)
-    ];
-    export const ValidationOptionsSym: unique symbol = Symbol.for('fp-way-validation-options');
-    export type ValidationSpec<T1 extends DataObject> = 
-        & Partial<Record<keyof T1, ValidationPropertyRule<T1>[] | any>>
-        & { [ValidationOptionsSym]: ValidationOptions<T1> };
-    export type _CheckPropsResult = {
-        missing: string[],
-        redundant: string[],
-        propsToCheck: string[],
-    }
-    export const _validationPreCheckProps = <T1 extends {}>(
-        spec: ValidationSpec<T1>, 
-        o: {}
-    ): _CheckPropsResult => {
-        const declaredPropsToCheck = Keys(spec);
-        const desiredOptionalProps = spec[ValidationOptionsSym].optionalProps;
-        const optionalProps: string[] = When(
-            Is('*'), 
-            Return(declaredPropsToCheck), 
-            desiredOptionalProps
-        );
-        const requiredProps = declaredPropsToCheck.filter(d => !optionalProps.includes(d));
+    // export type ValidationSummary<T1> = {
+    //     valid: boolean,
+    //     errorCount: number,
+    //     missingProperties: string[],
+    //     redundantProperties: string[],
+    //     errors?: Record<keyof T1, any>
+    // }
+    // namespace _ValidationSummary {
+    //     export const addErr = (k, msg, summary: ValidationSummary<any>) => {
+    //         if(IsOfType('array', summary.errors[k])) {
+    //             (summary.errors[k]).push(msg);
+    //         } else {
+    //             summary.errors[k] = [msg];
+    //         }
+    //         incErrCount(summary);
+    //     }
+    //     export const incErrCount = (s: ValidationSummary<any>) => ++s.errorCount;
+    //     export const setInvalid = (s: ValidationSummary<any>) => s.valid = false;
+    //     export const New = <T1>(): ValidationSummary<T1> => {
+    //         return {
+    //             valid: true,
+    //             errorCount: 0,
+    //             missingProperties: [],
+    //             redundantProperties: [],
+    //         }
+    //     }
+    //     export const handleRuleException = (
+    //         summary: ValidationSummary<any>,
+    //         key, 
+    //         value, 
+    //         ruleIndex, 
+    //         handler: ValidationOptions<any>["errorHandler"], 
+    //         e: Error
+    //     ) => {
+    //         const errMsg = handler({
+    //             key: key,
+    //             error: e,
+    //             value: value,
+    //             ruleIndex: ruleIndex,
+    //         })
+    //         addErr(key, errMsg, summary);
+    //     }
+    // }
+    // export type ValidationException = {
+    //     key: string,
+    //     value: any,
+    //     ruleIndex: number,
+    //     error: Error
+    // }
+    // export type ValidationOptions<T extends {}> = {
+    //     stopWhen?: (summary: ValidationSummary<T>) => boolean,
+    //     errorHandler?: (e: ValidationException) => string,
+    //     invalidWhen?: (summary: ValidationSummary<T>) => boolean,
+    //     redundantIsError?: boolean,
+    //     optionalProps?: (keyof T)[] | '*',
+    // }
+    // type PopulatedValidationOptions<T1 extends {}> = Required<ValidationOptions<T1>>;
+    // const defaultValidationOptions: ValidationOptions<any> = {
+    //     optionalProps: [],
+    //     redundantIsError: true,
+    //     stopWhen: FALSE,
+    //     errorHandler: ({key}) => `Could not validate property: ${key}`,
+    //     invalidWhen: summary => summary.errorCount > 0,
+    // }
+    // export type ValidationPropertyRule<T1 extends {}> = [
+    //     (v: any, o: T1) => boolean, 
+    //     string | ((v: any, k: keyof T1) => string)
+    // ];
+    // export const ValidationOptionsSym: unique symbol = Symbol.for('fp-way-validation-options');
+    // export type ValidationSpec<T1 extends DataObject> = 
+    //     & Partial<Record<keyof T1, ValidationPropertyRule<T1>[] | any>>
+    //     & { [ValidationOptionsSym]: ValidationOptions<T1> };
+    // export type _CheckPropsResult = {
+    //     missing: string[],
+    //     redundant: string[],
+    //     propsToCheck: string[],
+    // }
+    // export const _validationPreCheckProps = <T1 extends {}>(
+    //     spec: ValidationSpec<T1>, 
+    //     o: {}
+    // ): _CheckPropsResult => {
+    //     const declaredPropsToCheck = Keys(spec);
+    //     const desiredOptionalProps = spec[ValidationOptionsSym].optionalProps;
+    //     const optionalProps: string[] = When(
+    //         Is('*'), 
+    //         Return(declaredPropsToCheck), 
+    //         desiredOptionalProps
+    //     );
+    //     const requiredProps = declaredPropsToCheck.filter(d => !optionalProps.includes(d));
 
-        if(!IsOfType("object", o)) {
-            return {
-                missing: requiredProps,
-                redundant: [],
-                propsToCheck: [],
-            }
-        }
+    //     if(!IsOfType("object", o)) {
+    //         return {
+    //             missing: requiredProps,
+    //             redundant: [],
+    //             propsToCheck: [],
+    //         }
+    //     }
 
-        const presentProps = Entries(o)
-            .filter(([k, v]) => Exists(v))
-            .map(([k, v]) => k);
+    //     const presentProps = Entries(o)
+    //         .filter(([k, v]) => Exists(v))
+    //         .map(([k, v]) => k);
         
-        const missingRequiredProps = requiredProps.filter(r => !presentProps.includes(r));
-        const redundantProps = presentProps.filter(p => !declaredPropsToCheck.includes(p)); 
-        const propsToCheck = presentProps.filter(p => declaredPropsToCheck.includes(p));
+    //     const missingRequiredProps = requiredProps.filter(r => !presentProps.includes(r));
+    //     const redundantProps = presentProps.filter(p => !declaredPropsToCheck.includes(p)); 
+    //     const propsToCheck = presentProps.filter(p => declaredPropsToCheck.includes(p));
 
-        return {
-            missing: missingRequiredProps,
-            propsToCheck: propsToCheck,
-            redundant: redundantProps,
-        }
-    }
+    //     return {
+    //         missing: missingRequiredProps,
+    //         propsToCheck: propsToCheck,
+    //         redundant: redundantProps,
+    //     }
+    // }
     
-    export const Validate = <T1 extends {}>(
-        spec: ValidationSpec<T1>,
-        o: T1
-    ): ValidationSummary<T1> => {
-        const options = WithDefault(defaultValidationOptions, spec[ValidationOptionsSym]) as PopulatedValidationOptions<T1>;
-        const summary: ValidationSummary<T1> = _ValidationSummary.New();
-        const {propsToCheck, missing, redundant} = _validationPreCheckProps(spec, obj);
-        if(missing.length) {
-            _ValidationSummary.incErrCount(summary);
-            summary.missingProperties = missing;
-        }
-        if(redundant.length) {
-            if(options.redundantIsError) {
-                _ValidationSummary.incErrCount(summary);
-            }
-            summary.redundantProperties = redundant;
-        }
+    // export const Validate = <T1 extends {}>(
+    //     spec: ValidationSpec<T1>,
+    //     o: T1
+    // ): ValidationSummary<T1> => {
+    //     const options = WithDefault(defaultValidationOptions, spec[ValidationOptionsSym]) as PopulatedValidationOptions<T1>;
+    //     const summary: ValidationSummary<T1> = _ValidationSummary.New();
+    //     const {propsToCheck, missing, redundant} = _validationPreCheckProps(spec, obj);
+    //     if(missing.length) {
+    //         _ValidationSummary.incErrCount(summary);
+    //         summary.missingProperties = missing;
+    //     }
+    //     if(redundant.length) {
+    //         if(options.redundantIsError) {
+    //             _ValidationSummary.incErrCount(summary);
+    //         }
+    //         summary.redundantProperties = redundant;
+    //     }
         
-        for(const ptc of propsToCheck) {
-            if(options.stopWhen(summary)) { return summary; }
+    //     for(const ptc of propsToCheck) {
+    //         if(options.stopWhen(summary)) { return summary; }
             
-            const keySpec: ValidationPropertyRule<T1>[] = spec[ptc];
-            if(IsOfType('array', keySpec)) {
-                for(const rule of keySpec) {
-                    const [validator, msgOrFn] = rule;
-                    const v = o[ptc];
-                    const rulePass = validator(v, o);
+    //         const keySpec: ValidationPropertyRule<T1>[] = spec[ptc];
+    //         if(IsOfType('array', keySpec)) {
+    //             for(const rule of keySpec) {
+    //                 const [validator, msgOrFn] = rule;
+    //                 const v = o[ptc];
+    //                 const rulePass = validator(v, o);
                     
-                    if(!rulePass) {
-                        const message: string = InCase([
-                            [IsOfType('string'), Variable()],
-                            [TRUE, f => f(v, ptc)],
-                        ], msgOrFn)
+    //                 if(!rulePass) {
+    //                     const message: string = InCase([
+    //                         [IsOfType('string'), Variable()],
+    //                         [TRUE, f => f(v, ptc)],
+    //                     ], msgOrFn)
                         
-                        _ValidationSummary.addErr(ptc, message, summary);
-                    }
-                }
-            } else {
+    //                     _ValidationSummary.addErr(ptc, message, summary);
+    //                 }
+    //             }
+    //         } else {
                 
-            }
-        }
-    }
+    //         }
+    //     }
+    // }
 }
