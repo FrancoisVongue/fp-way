@@ -1,14 +1,14 @@
 import {
-    CanBeDescribedAs,
-    Compose,
-    Curry,
-    FALSE,
-    InCase,
-    Is,
-    IsOfType,
-    TRUE,
-    Unless,
-    When
+  CanBeDescribedAs,
+  Compose,
+  Curry,
+  FALSE, IfElse,
+  InCase,
+  Is,
+  IsOfType, Return,
+  TRUE,
+  Unless,
+  When
 } from './core';
 
 describe('Curry', () => {
@@ -126,4 +126,16 @@ describe('CanBeDescribedAs', () => {
 
         ])
     })
+})
+
+describe('IfElse', () => {
+  it('Should return different values depending on condition', () => {
+    const if5then3else10 = IfElse<number, number>(Is(5), Return(3), Return(10));
+    
+    const three = if5then3else10(5);
+    const ten = if5then3else10(10);
+    
+    expect(three).toBe(3);
+    expect(ten).toBe(10);
+  })
 })

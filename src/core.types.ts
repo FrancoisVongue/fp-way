@@ -9,6 +9,11 @@ export type Ternary<T1, T2, T3, R> =
 export type Quaternary<T1, T2, T3, T4, R> =
     (a: T1, b: T2, c: T3, d: T4) => R
 
+export type UnaryPredicate<T> = Unary<T, boolean>
+export type BinaryPredicate<T, T2> = Binary<T, T2, boolean>
+export type TernaryPredicate<T, T2, T3> = Ternary<T, T2, T3, boolean>
+export type QuaternaryPredicate<T, T2, T3, T4> = Quaternary<T, T2, T3, T4, boolean>
+
 export interface Curried1<T1, R> {
     (): Curried1<T1, R>;
     (t1: T1): R;
