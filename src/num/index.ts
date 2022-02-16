@@ -1,4 +1,4 @@
-import {Const, Curry, InCase, IsOfType, TRUE} from "../core";
+import {Const, Curry, InCase, IsOfType, Return, TRUE} from "../core";
 
 export namespace num {
     // validate
@@ -38,7 +38,7 @@ export namespace num {
     export const ToInt = (v: number) => InCase([
         [IsPos, Floor],
         [IsNeg, Ceil],
-        [TRUE, Const(0)]
+        [TRUE, Return(0)]
     ], v);
     export const Abs = (n: number) => Math.abs(n);
 }

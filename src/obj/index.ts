@@ -1,30 +1,41 @@
-import {Curry, Exists, FALSE, InCase, Is, IsOfType, Pipe, Return, Swap, TRUE, Variable, When} from "../core";
+import {Curry, Exists, FALSE, InCase, Is, IsOfType, Pipe, Return, Swap, TRUE, Variable, When, ReturnAsIs} from "../core";
+import { DataObject, Unary, DeepPartial } from "../core.types";
 
 export namespace obj {
-    export const Keys = <T1 extends {}>(obj: T1) => Object.keys(obj);
-    export const Entries = (obj: {}) => Object.entries(obj);
+    export const Keys = <T1 extends DataObject>(obj: T1): (keyof T1)[] => Object.keys(obj);
+    export const Entries = <T1 extends DataObject>(obj: T1): [(keyof T1), any][] => Object.entries(obj);
     
-    export const DeepCopy = <T1 extends {}>(obj: T1): T1 => {
-        const newObj = {} as T1;
-        const properties = Object.getOwnPropertyNames(obj);
-        
-        properties.forEach((prop: string) => {
-            const value = obj[prop];
-            newObj[prop] = InCase([
-                [IsOfType("array"), a => a.map(DeepCopy)],
-                [IsOfType("object"), DeepCopy],
-                [TRUE, Variable()],
-            ], value);
-        });
+    export const DeepCopy = <T1>(obj: T1): T1 => {
+        return InCase<T1, T1>([
+            [IsOfType('array'), arr => (arr as any).map(DeepCopy) as any],
+            [IsOfType('object'), obj => {
+                const newObj = {} as T1;
+                const keys = Keys(obj as any)
+                
+                keys.forEach((prop) => {
+                    const value = obj[prop];
+                    newObj[prop] = DeepCopy(value);
+                });
 
-        return newObj;
+                return newObj;
+            }],
+            [TRUE, ReturnAsIs()]
+        ], obj)
     };
-    export const WithDefault = Curry((def: {}, obj: {}) => {
+
+    export const WithDefault: {
+        <T1 extends DataObject, R extends DeepPartial<T1>>(
+            def: DeepPartial<T1>,
+            obj: DeepPartial<T1>,
+        ): R
+
+        <T1 extends DataObject, R extends DeepPartial<T1>>(
+            def: DeepPartial<T1>,
+        ): R
+    } = Curry((def, obj) => {
         const objCopy = DeepCopy(obj);
         const defCopy = DeepCopy(def);
-        const objProps = Object.getOwnPropertyNames(obj);
-        const defProps = Object.getOwnPropertyNames(def);
-        const allProps = [...new Set([...objProps, ...defProps])];
+        const allProps = [...new Set([...Keys(objCopy), ...Keys(defCopy)])];
         
         for(const key of allProps) {
             objCopy[key] = InCase([
@@ -36,9 +47,28 @@ export namespace obj {
         
         return objCopy;
     });
-    export const Impose = Swap(WithDefault);
+
+    export const Impose: {
+        <T1 extends DataObject, R extends DeepPartial<T1>>(
+            def: DeepPartial<T1>,
+            obj: DeepPartial<T1>,
+        ): R
+
+        <T1 extends DataObject, R extends DeepPartial<T1>>(
+            def: DeepPartial<T1>,
+        ): R
+    } = Swap(WithDefault);
     
-    export const PickProps = Curry((props: string[], obj: {}) => { 
+    export const Pick: {
+        <T1 extends DataObject>(
+            keys: (keyof T1)[],
+            obj: T1
+        ): Partial<T1>
+
+        <T1 extends DataObject>(
+            keys: (keyof T1)[],
+        ): Unary<T1, Partial<T1>>
+    } = Curry((props, obj) => { 
         const newObj = {};
         const objCopy = DeepCopy(obj);
         props.forEach(p => newObj[p] = objCopy[p]);
@@ -46,10 +76,19 @@ export namespace obj {
         return newObj;
     });
     
-    export const ExcludeProps = Curry((propsToExclude: string[], obj: {}) => {
+    export const ExcludeProps: {
+        <T1 extends DataObject>(
+            keys: (keyof T1)[],
+            obj: T1
+        ): Partial<T1>
+
+        <T1 extends DataObject>(
+            keys: (keyof T1)[],
+        ): Unary<T1, Partial<T1>>
+    } = Curry((propsToExclude, obj) => {
         const allProps = Keys(obj);
         const props = allProps.filter(p => !propsToExclude.includes(p));
-        return PickProps(props, obj as any);
+        return Pick(props, obj);
     });
 
     // == MAPPER
@@ -58,11 +97,17 @@ export namespace obj {
         map: [keyof O1 | '', ObjectMapper<O1>, keyof O2][];
         transfer?: Extract<keyof O1, keyof O2>[]
     }
-    export const Map = <O1 extends {}, O2 extends {}>(
-        mapSpec: ObjectMapSpec<O1, O2>,
-        src: O1
-    ) => {
-        const result = {} as O2;
+    export const Map: {
+        <O1 extends {}, O2 extends {}>(
+            mapSpec: ObjectMapSpec<O1, O2>,
+            src: O1
+        ): O2
+
+        <O1 extends {}, O2 extends {}>(
+            mapSpec: ObjectMapSpec<O1, O2>,
+        ): Unary<O1, O2>
+    } = Curry((mapSpec, src) => {
+        const result = {};
         const mappedProps = new Set();
 
         for(let row of mapSpec.map) {
@@ -82,7 +127,7 @@ export namespace obj {
         }
 
         return result;
-    }
+    });
     
     // == VALIDATOR
     export type ValidationSummary<T1> = {
@@ -155,7 +200,7 @@ export namespace obj {
         string | ((v: any, k: keyof T1) => string)
     ];
     export const ValidationOptionsSym: unique symbol = Symbol.for('fp-way-validation-options');
-    export type ValidationSpec<T1 extends {}> = 
+    export type ValidationSpec<T1 extends DataObject> = 
         & Partial<Record<keyof T1, ValidationPropertyRule<T1>[] | any>>
         & { [ValidationOptionsSym]: ValidationOptions<T1> };
     export type _CheckPropsResult = {

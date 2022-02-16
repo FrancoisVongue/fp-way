@@ -77,7 +77,7 @@ describe('ExcludeProps', () => {
         expect(cat.amountOfLegs).toBe(4);
     })
 })
-describe('PickProps', () => {
+describe('Pick', () => {
     it('Should pick properties from objects', () => {
         const cat = {
             age: 8,
@@ -85,7 +85,7 @@ describe('PickProps', () => {
             amountOfLegs: 4
         };
 
-        const catWOAge: Partial<Cat> = obj.PickProps(["name", "amountOfLegs"], cat);
+        const catWOAge: Partial<Cat> = obj.Pick(["name", "amountOfLegs"], cat);
 
         expect(catWOAge.age).toBeUndefined();
         expect(catWOAge.name).toBeDefined();
@@ -99,7 +99,7 @@ describe('PickProps', () => {
             amountOfLegs: 4
         };
 
-        const catWithAge: Partial<Cat> = obj.PickProps(["age"], cat);
+        const catWithAge: Partial<Cat> = obj.Pick(["age"], cat);
         catWithAge.age = 444;
 
         expect(cat.age).toBe(8);
@@ -158,7 +158,6 @@ describe('Map', () => {
         expect(cat.name).toBe(animal1.name);
     })
 })
-
 describe('_preCheckProps', () => {
     let catSpec: ValidationSpec<Cat> = {
         age: [
