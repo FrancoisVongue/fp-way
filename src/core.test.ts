@@ -122,19 +122,26 @@ describe('IsOfType', () => {
 
 describe('CanBeDescribedAs', () => {
     it('should return true in case all predicates return true', () => {
-        const isInt = CanBeDescribedAs([
-
+        const isInt = CanBeDescribedAs<number>([
+            (int) => int % 1 === 0,
+            int => typeof int === 'number'
         ])
+
+        const True = isInt(-8) && isInt(8)
+        const False = isInt(8.8);
+
+        expect(True).toBe(true);
+        expect(False).toBe(false);
     })
 })
 
 describe('IfElse', () => {
   it('Should return different values depending on condition', () => {
     const if5then3else10 = IfElse<number, number>(Is(5), Return(3), Return(10));
-    
+
     const three = if5then3else10(5);
     const ten = if5then3else10(10);
-    
+
     expect(three).toBe(3);
     expect(ten).toBe(10);
   })
