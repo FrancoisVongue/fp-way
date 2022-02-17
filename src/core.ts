@@ -1,10 +1,10 @@
 import {
-  Binary, Curried,
-  Curried2, Curried3,
-  JSTypesWithArrayAndNull,
-  Predicate,
-  TCurry,
-  Unary, UnaryPredicate
+    Binary, Curried,
+    Curried2, Curried3,
+    JSTypesWithArrayAndNull,
+    Predicate,
+    TCurry,
+    Unary, UnaryPredicate
 } from "./core.types";
 
 export const Curry: TCurry = function (f, ...initialArgs) {
@@ -36,63 +36,63 @@ export const Call = Curry((f, v) => f(v))
 export const ApplyOn = Swap(Call)
 
 export const IfElse: {
-  <T, R>(
-    predicate: Unary<T, boolean>,
-    onSuccess: Unary<T, R>,
-    onFail: Unary<T, R>,
-    value: T
-  ): R
-  
-  <T, R>(
-    predicate: Unary<T, boolean>,
-    onSuccess: Unary<T, R>,
-    onFail: Unary<T, R>,
-  ): Unary<T, R>
-  
-  <T, R>(
-    predicate: Unary<T, boolean>,
-    onSuccess: Unary<T, R>,
-  ): Curried2<Unary<T, R>, T, R>
-  
-  <T, R>(
-    predicate: Unary<T, boolean>,
-  ): Curried3<Unary<T, R>, Unary<T, R>, T, R>
+    <T, R>(
+        predicate: Unary<T, boolean>,
+        onSuccess: Unary<T, R>,
+        onFail: Unary<T, R>,
+        value: T
+    ): R
+
+    <T, R>(
+        predicate: Unary<T, boolean>,
+        onSuccess: Unary<T, R>,
+        onFail: Unary<T, R>,
+    ): Unary<T, R>
+
+    <T, R>(
+        predicate: Unary<T, boolean>,
+        onSuccess: Unary<T, R>,
+    ): Curried2<Unary<T, R>, T, R>
+
+    <T, R>(
+        predicate: Unary<T, boolean>,
+    ): Curried3<Unary<T, R>, Unary<T, R>, T, R>
 } = Curry((
     p, onSuccess, onFail, arg
 ) => p(arg) ? onSuccess(arg) : onFail(arg));
 
 export const When: {
-  <T>(
-    predicate: Unary<T, boolean>,
-    onSuccess: Unary<T, T>,
-    value: T
-  ): T
-  
-  <T>(
-    predicate: Unary<T, boolean>,
-    onSuccess: Unary<T, T>,
-  ): Unary<T, T>
-  
-  <T>(
-    predicate: Unary<T, boolean>,
-  ): Curried2<Unary<T, T>, T, T>
+    <T>(
+        predicate: Unary<T, boolean>,
+        onSuccess: Unary<T, T>,
+        value: T
+    ): T
+
+    <T>(
+        predicate: Unary<T, boolean>,
+        onSuccess: Unary<T, T>,
+    ): Unary<T, T>
+
+    <T>(
+        predicate: Unary<T, boolean>,
+    ): Curried2<Unary<T, T>, T, T>
 } = Curry((p, f, a) => p(a) ? f(a) : a);
 
 export const Unless: {
-  <T>(
-    predicate: Unary<T, boolean>,
-    onFail: Unary<T, T>,
-    value: T
-  ): T
+    <T>(
+        predicate: Unary<T, boolean>,
+        onFail: Unary<T, T>,
+        value: T
+    ): T
 
-  <T>(
-    predicate: Unary<T, boolean>,
-    onFail: Unary<T, T>,
-  ): Unary<T, T>
+    <T>(
+        predicate: Unary<T, boolean>,
+        onFail: Unary<T, T>,
+    ): Unary<T, T>
 
-  <T>(
-    predicate: Unary<T, boolean>,
-  ): Curried2<Unary<T, T>, T, T>
+    <T>(
+        predicate: Unary<T, boolean>,
+    ): Curried2<Unary<T, T>, T, T>
 } = Curry((p, f, a) => !p(a) ? f(a) : a);
 
 export const InCase: {
@@ -117,16 +117,16 @@ export const InCase: {
 });
 
 export const IndependentInCase: {
-  <T, R>(
-    entries: [Unary<T, boolean>, Unary<T, R>][],
-  ): (v: T) => R
+    <T, R>(
+        entries: [Unary<T, boolean>, Unary<T, R>][],
+    ): (v: T) => R
 
-  <T, R>(
-    entries: [Unary<T, boolean>, Unary<T, R>][],
-    v: T
-  ): R[]
+    <T, R>(
+        entries: [Unary<T, boolean>, Unary<T, R>][],
+        v: T
+    ): R[]
 } = Curry((
-  entries: [Unary<any, boolean>, Unary<any, any>][],
+    entries: [Unary<any, boolean>, Unary<any, any>][],
     v: any
 ): any[] => {
     const results = [];
@@ -142,27 +142,27 @@ export const IndependentInCase: {
 });
 
 export const CanBeDescribedAs: {
-  <T>(
-    predicates: UnaryPredicate<T>[],
-    value: T
-  ): boolean
-  
-  <T>(
-    predicates: UnaryPredicate<T>[],
-  ): Unary<T, boolean>
+    <T>(
+        predicates: UnaryPredicate<T>[],
+        value: T
+    ): boolean
+
+    <T>(
+        predicates: UnaryPredicate<T>[],
+    ): Unary<T, boolean>
 } = Curry((ps: Predicate[], v: any) => {
     return ps.map(ApplyOn(v)).every(Is(true))
 })
 
 export const Pipe: {
-  <T, R>(
-    functions: [Unary<T, any>, ...Unary<any, any>[], Unary<any, R>],
-    v: T
-  ): R
-  
-  <T, R>(
-    functions: [Unary<T, any>, ...Unary<any, any>[], Unary<any, R>],
-  ): Unary<T, R>
+    <T, R>(
+        functions: [Unary<T, any>, ...Unary<any, any>[], Unary<any, R>],
+        v: T
+    ): R
+
+    <T, R>(
+        functions: [Unary<T, any>, ...Unary<any, any>[], Unary<any, R>],
+    ): Unary<T, R>
 } = Curry((fns: Function[], arg: any): any => {
     let currentArg = arg;
 
@@ -173,14 +173,14 @@ export const Pipe: {
 });
 
 export const Compose: {
-  <T, R>(
-    functions: [Unary<any, R>, ...Unary<any, any>[], Unary<T, any>],
-    v: T
-  ): R
+    <T, R>(
+        functions: [Unary<any, R>, ...Unary<any, any>[], Unary<T, any>],
+        v: T
+    ): R
 
-  <T, R>(
-    functions: [Unary<any, R>, ...Unary<any, any>[], Unary<T, any>],
-  ): Unary<T, R>
+    <T, R>(
+        functions: [Unary<any, R>, ...Unary<any, any>[], Unary<T, any>],
+    ): Unary<T, R>
 } = Curry((fns: Function[], a: any) => Pipe(fns.reverse() as any, a));
 
 export const IsOfType = Curry((desiredType: JSTypesWithArrayAndNull, v: any) => {
@@ -188,9 +188,9 @@ export const IsOfType = Curry((desiredType: JSTypesWithArrayAndNull, v: any) => 
 });
 
 export const TypeOf = (v): JSTypesWithArrayAndNull => {
-  return InCase([
-    [Is(null), () => "null"],
-    [a => Array.isArray(a), () => "array"],
-    [TRUE, a => typeof a]
-  ], v);
+    return InCase([
+        [Is(null), () => "null"],
+        [a => Array.isArray(a), () => "array"],
+        [TRUE, a => typeof a]
+    ], v);
 }
