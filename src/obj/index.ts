@@ -4,6 +4,11 @@ import { DataObject, Unary, DeepPartial } from "../core.types";
 export namespace obj {
     export const Keys = <T1 extends DataObject>(obj: T1): (keyof T1 & string)[] => Object.keys(obj);
     export const Entries = <T1 extends DataObject>(obj: T1): [(keyof T1 & string), any][] => Object.entries(obj);
+    export const FromEntries = <T1>(entries: [string, any][]) => 
+      entries.reduce((b, [k, v]) => {
+        b[k] = v
+        return b
+      }, {})
     
     export const DeepCopy = <T1>(obj: T1): T1 => {
         return InCase<T1, T1>([
@@ -98,12 +103,12 @@ export namespace obj {
         transfer?: Extract<keyof O1, keyof O2>[]
     }
     export const Map: {
-        <O1 extends {}, O2 extends {}>(
+        <O1 extends DataObject, O2 extends DataObject>(
             mapSpec: ObjectMapSpec<O1, O2>,
             src: O1
         ): O2
 
-        <O1 extends {}, O2 extends {}>(
+        <O1 extends DataObject, O2 extends DataObject>(
             mapSpec: ObjectMapSpec<O1, O2>,
         ): Unary<O1, O2>
     } = Curry((mapSpec, src) => {
@@ -132,10 +137,13 @@ export namespace obj {
         errorCount: number,
         missingProperties: string[],
         redundantProperties: string[],
-        errors?: Record<keyof T1, any>
+        errors: Record<keyof T1, any>
     }
     namespace _ValidationSummary {
-        export const incErrCount = (s: ValidationSummary<any>) => ++s.errorCount;
+        export const incErrCount = (s: ValidationSummary<any>) => {
+          s.errorCount++
+          s.valid = false
+        }
         export const addErr = (k, msg, summary: ValidationSummary<any>) => {
             if(IsOfType('array', summary.errors[k])) {
                 (summary.errors[k]).push(msg);
@@ -144,30 +152,31 @@ export namespace obj {
             }
             incErrCount(summary);
         }
-        export const setInvalid = (s: ValidationSummary<any>) => s.valid = false;
         export const New = <T1>(): ValidationSummary<T1> => {
             return {
                 valid: true,
                 errorCount: 0,
                 missingProperties: [],
                 redundantProperties: [],
+                errors: {} as Record<keyof T1, any>
             }
         }
-        export const handleRuleException = (
-            summary: ValidationSummary<any>,
-            key, 
-            value, 
-            ruleIndex, 
-            handler: ValidationOptions<any>["errorHandler"], 
-            e: Error
+        export const mergeNestedSummary = (
+          summary: ValidationSummary<any>,
+          key: string,
+          nestedSummary: ValidationSummary<any>,
         ) => {
-            const errMsg = handler({
-                key: key,
-                error: e,
-                value: value,
-                ruleIndex: ruleIndex,
-            })
-            addErr(key, errMsg, summary);
+          summary.valid = nestedSummary.valid && summary.valid
+          summary.errorCount += nestedSummary.errorCount
+          summary.missingProperties = [...summary.missingProperties, ...nestedSummary.missingProperties]
+          summary.redundantProperties = [...summary.redundantProperties, ...nestedSummary.redundantProperties]
+          const nestedErrors: [any, any][] = Entries(nestedSummary.errors)
+            .map(([nestedKey, v]) => [`${key}.${nestedKey}`, v])
+          
+          summary.errors = FromEntries([
+            ...Entries(summary.errors),
+            ...nestedErrors
+          ])
         }
     }
     export type ValidationException = {
@@ -176,28 +185,26 @@ export namespace obj {
         ruleIndex: number,
         error: Error
     }
-    export type ValidationOptions<T extends {}> = {
+    export type ValidationOptions<T extends DataObject> = {
         stopWhen?: (summary: ValidationSummary<T>) => boolean,
         errorHandler?: (e: ValidationException) => string,
-        invalidWhen?: (summary: ValidationSummary<T>) => boolean,
         redundantIsError?: boolean,
         optionalProps?: (keyof T)[] | '*',
     }
-    type PopulatedValidationOptions<T1 extends {}> = Required<ValidationOptions<T1>>;
+    type PopulatedValidationOptions<T1 extends DataObject> = Required<ValidationOptions<T1>>;
     const defaultValidationOptions: ValidationOptions<any> = {
         optionalProps: [],
         redundantIsError: true,
         stopWhen: FALSE,
         errorHandler: ({key}) => `Could not validate property: ${key}`,
-        invalidWhen: summary => summary.errorCount > 0,
     }
-    export type ValidationPropertyRule<T1 extends {}> = [
+    export type ValidationPropertyRule<T1> = [
         (v: any, o: T1) => boolean, 
         string | ((v: any, k: keyof T1) => string)
     ];
     export const ValidationOptionsSym: unique symbol = Symbol.for('fp-way-validation-options');
     export type ValidationSpec<T1 extends DataObject> = 
-        & Partial<Record<keyof T1, ValidationPropertyRule<T1>[] | any>>
+        & Record<keyof T1, ValidationPropertyRule<T1>[] | any>
         & { [ValidationOptionsSym]: ValidationOptions<T1> };
     export type _CheckPropsResult = {
         missing: string[],
@@ -240,46 +247,62 @@ export namespace obj {
         }
     }
     
-    // export const Validate = <T1 extends {}>(
-    //     spec: ValidationSpec<T1>,
-    //     o: T1
-    // ): ValidationSummary<T1> => {
-    //     const options = WithDefault(defaultValidationOptions, spec[ValidationOptionsSym]) as PopulatedValidationOptions<T1>;
-    //     const summary: ValidationSummary<T1> = _ValidationSummary.New();
-    //     const {propsToCheck, missing, redundant} = _validationPreCheckProps(spec, obj);
-    //     if(missing.length) {
-    //         _ValidationSummary.incErrCount(summary);
-    //         summary.missingProperties = missing;
-    //     }
-    //     if(redundant.length) {
-    //         if(options.redundantIsError) {
-    //             _ValidationSummary.incErrCount(summary);
-    //         }
-    //         summary.redundantProperties = redundant;
-    //     }
+    export const Validate = <T1 extends DataObject>(
+        spec: ValidationSpec<T1>,
+        obj: T1
+    ): ValidationSummary<T1> => {
+        const options = WithDefault<
+          ValidationOptions<any>, 
+          PopulatedValidationOptions<any>
+        >(
+          defaultValidationOptions, 
+          spec[ValidationOptionsSym]
+        );
         
-    //     for(const ptc of propsToCheck) {
-    //         if(options.stopWhen(summary)) { return summary; }
+        const summary: ValidationSummary<T1> = _ValidationSummary.New();
+        const {propsToCheck, missing, redundant} = _validationPreCheckProps(spec, obj);
+        if(missing.length) {
+            _ValidationSummary.incErrCount(summary);
+            summary.missingProperties = missing;
+        }
+        if(redundant.length) {
+          summary.redundantProperties = redundant;
+          if(options.redundantIsError) {
+            _ValidationSummary.incErrCount(summary);
+          }
+        }
+        
+        for(const [i, ptc] of propsToCheck.entries()) {
+            if(options.stopWhen(summary)) { return summary; }
             
-    //         const keySpec: ValidationPropertyRule<T1>[] = spec[ptc];
-    //         if(IsOfType('array', keySpec)) {
-    //             for(const rule of keySpec) {
-    //                 const [validator, msgOrFn] = rule;
-    //                 const v = o[ptc];
-    //                 const rulePass = validator(v, o);
-                    
-    //                 if(!rulePass) {
-    //                     const message: string = InCase([
-    //                         [IsOfType('string'), Variable()],
-    //                         [TRUE, f => f(v, ptc)],
-    //                     ], msgOrFn)
-                        
-    //                     _ValidationSummary.addErr(ptc, message, summary);
-    //                 }
-    //             }
-    //         } else {
-                
-    //         }
-    //     }
-    // }
+            const keySpec: ValidationPropertyRule<T1>[] | ValidationSpec<any> = spec[ptc];
+            const value = obj[ptc];
+
+          if(IsOfType('array', keySpec)) {
+                for(const rule of keySpec as ValidationPropertyRule<T1>[]) {
+                    const [validator, msgOrFn] = rule;
+                    let rulePass; 
+                    try {
+                      rulePass = validator(value, obj);
+                    } catch(e){
+                      const message = options.errorHandler({key: ptc, value, ruleIndex: i, error: e})
+                      _ValidationSummary.addErr(ptc, message, summary)
+                      continue;
+                    }
+
+                    if(!rulePass) {
+                      const message: string = InCase([
+                        [IsOfType('string'), ReturnAsIs()],
+                        [TRUE, f => f(value, ptc)],
+                      ], msgOrFn)
+
+                      _ValidationSummary.addErr(ptc, message, summary);
+                    }
+                }
+            } else {
+                const nestedSummary = Validate(keySpec as ValidationSpec<T1>, value)
+                _ValidationSummary.mergeNestedSummary(summary, ptc, nestedSummary)  
+            }
+        }
+    }
 }
