@@ -190,10 +190,10 @@ export namespace obj {
         stopWhen?: (summary: ValidationSummary<T>) => boolean,
         errorHandler?: (e: ValidationException) => string,
         redundantIsError?: boolean,
-        optionalProps?: (keyof T)[] | '*',
+        optionalProps?: (keyof T)[],
     }
-    type PopulatedValidationOptions<T1 extends DataObject> = Required<ValidationOptions<T1>>;
-    const defaultValidationOptions: ValidationOptions<any> = {
+    export type PopulatedValidationOptions<T1 extends DataObject> = Required<ValidationOptions<T1>>;
+    export const _defaultValidationOptions: PopulatedValidationOptions<any> = {
         optionalProps: [],
         redundantIsError: true,
         stopWhen: FALSE,
@@ -206,23 +206,21 @@ export namespace obj {
     export const ValidationOptionsSym: unique symbol = Symbol.for('fp-way-validation-options');
     export type ValidationSpec<T1 extends DataObject> =
         & Record<keyof T1, ValidationPropertyRule<T1>[] | any>
-        & { [ValidationOptionsSym]: ValidationOptions<T1> };
+        & { [ValidationOptionsSym]?: ValidationOptions<T1> };
+    export type ValidationSpecWithPopulatedOptions<T1 extends DataObject> =
+        & ValidationSpec<T1>
+        & { [ValidationOptionsSym]: PopulatedValidationOptions<T1> };
     export type _CheckPropsResult = {
         missing: string[],
         redundant: string[],
         propsToCheck: string[],
     }
     export const _validationPreCheckProps = <T1 extends DataObject>(
-        spec: ValidationSpec<T1>,
+        spec: ValidationSpecWithPopulatedOptions<T1>,
         o: T1
     ): _CheckPropsResult => {
         const declaredPropsToCheck = Keys(spec);
-        const desiredOptionalProps = spec[ValidationOptionsSym].optionalProps;
-        const optionalProps: string[] = When(
-            Is('*'),
-            Return(declaredPropsToCheck),
-            desiredOptionalProps
-        );
+        const optionalProps = spec[ValidationOptionsSym].optionalProps;
         const requiredProps = declaredPropsToCheck.filter(d => !optionalProps.includes(d));
 
         if(!IsOfType("object", o)) {
@@ -254,14 +252,15 @@ export namespace obj {
     ): ValidationSummary<T1> => {
         const options = WithDefault<
             ValidationOptions<any>,
-            PopulatedValidationOptions<any>
-            >(
-            defaultValidationOptions,
-            spec[ValidationOptionsSym]
+            PopulatedValidationOptions<T1>>
+        (
+            _defaultValidationOptions,
+            spec[ValidationOptionsSym] ?? {}
         );
+        const populatedSpec = (spec[ValidationOptionsSym] = options, spec) as ValidationSpecWithPopulatedOptions<T1>
 
         const summary: ValidationSummary<T1> = _ValidationSummary.New();
-        const {propsToCheck, missing, redundant} = _validationPreCheckProps(spec, obj);
+        const {propsToCheck, missing, redundant} = _validationPreCheckProps(populatedSpec, obj);
         if(missing.length) {
             _ValidationSummary.incErrCount(summary);
             summary.missingProperties = missing;
@@ -305,5 +304,7 @@ export namespace obj {
                 _ValidationSummary.mergeNestedSummary(summary, ptc, nestedSummary)
             }
         }
+        
+        return summary;
     }
 }

@@ -15,7 +15,10 @@ export namespace str {
     export const ConcatWith = Curry((s1: string, s2: string) => s2 + s1);
     export const OccurrencesOf = Curry((R: RegExp, str: string): string[] => {
         const regex = R.global ? R : new RegExp(R, 'g');
-        return str.match(regex);
+        const result = str.match(regex);
+        return result 
+            ? Array.from(result) 
+            : [];
     });
 
     // validate

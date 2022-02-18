@@ -129,7 +129,7 @@ export const IndependentInCase: {
     entries: [Unary<any, boolean>, Unary<any, any>][],
     v: any
 ): any[] => {
-    const results = [];
+    const results: any[] = [];
 
     for(let entry of entries) {
         const [predicate, f] = entry;

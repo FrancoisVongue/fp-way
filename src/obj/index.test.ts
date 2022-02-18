@@ -1,9 +1,11 @@
 import {obj} from "./index";
+import ValidationOptionsSym = obj.ValidationOptionsSym;
 import ObjectMapSpec = obj.ObjectMapSpec;
 import {IsOfType, Return, TRUE} from "../core";
-import ObjectMapper = obj.ObjectMapper;
 import ValidationSpec = obj.ValidationSpec;
-import ValidationOptionsSym = obj.ValidationOptionsSym;
+import _defaultValidationOptions = obj._defaultValidationOptions;
+import ValidationSpecWithPopulatedOptions = obj.ValidationSpecWithPopulatedOptions;
+import PopulatedValidationOptions = obj.PopulatedValidationOptions;
 
 type Cat = {
     age: number;
@@ -39,8 +41,8 @@ describe('WithDefault', () => {
         const cat = obj.WithDefault(defCat, partialCat) as Cat;
         
         expect(cat.amountOfLegs).toBe(defCat.amountOfLegs); // should take default
-        expect(cat.child.age).toBe(defCat.child.age); // should take default
-        expect(cat.child.amountOfLegs).toBe(3); // should preserve existing
+        expect(cat.child?.age).toBe(defCat.child?.age); // should take default
+        expect(cat.child?.amountOfLegs).toBe(3); // should preserve existing
     })
     
     it('Should not have link to the default object', () => {
@@ -160,7 +162,7 @@ describe('Map', () => {
     })
 })
 describe('_preCheckProps', () => {
-    let catSpec: ValidationSpec<Cat> = {
+    let catSpec: ValidationSpecWithPopulatedOptions<Cat> = {
         age: [
             [IsOfType("number"), 'age must be a number'],
         ],
@@ -173,9 +175,7 @@ describe('_preCheckProps', () => {
         child: [
             [IsOfType("string"), 'child must be partial cat'],
         ],
-        [ValidationOptionsSym]: {
-            optionalProps: ['child']
-        }
+        [ValidationOptionsSym]: _defaultValidationOptions as PopulatedValidationOptions<Cat>
     }
     it('Should return missing properties', () => {
         const catWOage: Partial<Cat> = {
@@ -185,7 +185,7 @@ describe('_preCheckProps', () => {
         }
         const result = obj._validationPreCheckProps(catSpec, catWOage);
         
-        expect(result.missing).toEqual(['age']);
+        expect(result.missing).toEqual(['age', 'child']);
     })
     it('Should return redundant properties', () => {
         const catWithTailLength: Partial<Cat> & {tailLen: number} = {
@@ -210,7 +210,14 @@ describe('_preCheckProps', () => {
         expect(result.propsToCheck).toEqual(['amountOfLegs', 'name']);
     })
 })
-
-describe('test',() => {
-    it('', () => {})
+describe('Validate', () => {
+    it('should validate an object', () => {
+        const CatSpec: obj.ValidationSpec<Cat> = {
+            age: [],
+            name: [],
+            child: [],
+            amountOfLegs: [],
+            // [ValidationOptionsSym]: {}
+        }
+    })
 })
