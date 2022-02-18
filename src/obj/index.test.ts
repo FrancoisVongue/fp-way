@@ -7,12 +7,19 @@ import ValidationSpecWithPopulatedOptions = obj.ValidationSpecWithPopulatedOptio
 import PopulatedValidationOptions = obj.PopulatedValidationOptions;
 import Validate = obj.Validate;
 
+type CatParent = {
+    age: number;
+    name?: string;
+    amountOfLegs: number;
+    childCat: Cat;
+}
 type Cat = {
     age: number;
     name?: string;
     amountOfLegs: number;
-    child?: Partial<Cat>;
+    child?: CatChild
 }
+type CatChild = Partial<Omit<Cat, 'child'>>
 
 
 describe('WithDefault', () => {
@@ -212,6 +219,21 @@ describe('_preCheckProps', () => {
 })
 
 describe('Validate', () => {
+    const CatChildSpec: obj.ValidationSpec<CatChild> = {
+        age: [
+            [IsOfType('number'), 'age must be a number']
+        ],
+        name: [
+            [IsOfType('string'),  'name must be a number']
+        ],
+        amountOfLegs: [
+            [IsOfType('number'),  'amountOfLegs must be a number']
+        ],
+        [ValidationOptionsSym]: {
+            optionalProps: ['name', 'age', 'amountOfLegs']
+        }
+    }
+    
     const CatSpec: obj.ValidationSpec<Cat> = {
         age: [
             [IsOfType('number'), 'age must be a number']
@@ -222,9 +244,23 @@ describe('Validate', () => {
         amountOfLegs: [
             [IsOfType('number'),  'amountOfLegs must be a number']
         ],
-        child: [
-            [IsOfType('object'),  (v, k) => `${k} must be an object`]
+        child: CatChildSpec,
+        [ValidationOptionsSym]: {
+            optionalProps: ['name']
+        }
+    }
+    
+    const CatParentSpec: obj.ValidationSpec<CatParent> = {
+        age: [
+            [IsOfType('number'), 'age must be a number']
         ],
+        name: [
+            [IsOfType('string'),  'name must be a number']
+        ],
+        amountOfLegs: [
+            [IsOfType('number'),  'amountOfLegs must be a number']
+        ],
+        childCat: CatSpec,
         [ValidationOptionsSym]: {
             optionalProps: ['name']
         }
@@ -273,7 +309,7 @@ describe('Validate', () => {
         expect(result.errors.amountOfLegs).toBeUndefined();
 
         expect(result.errors.age).toBeDefined();
-        expect(result.errors.child).toBeDefined();
+        expect(result.errors['child._self']).toBeDefined();
         expect(result.errorCount).toBe(2);
         expect(result.valid).toBe(false);
     })
@@ -302,5 +338,68 @@ describe('Validate', () => {
 
         expect(result.valid).toBe(false);
         expect(result.errors.name).toBeDefined();
+    })
+    it('should error redundant properties by default', () => {
+        const cat: Cat & any = {
+            age: 1,
+            name: 'Tonny',
+            amountOfLegs: 4,
+            child: {},
+            redProp: 'what', // redundant
+        }
+
+        const result = Validate(CatSpec, cat);
+
+        expect(result.redundantProperties?.length).toBeGreaterThan(0);
+    })
+    it('should validate specs even if they are deeply nested', () => {
+        const cat: Cat = {
+            age: 1,
+            name: 1 as any, // SHOULD BE A STRING
+            amountOfLegs: 4,
+            child: {
+                name: 'Tonny jr',
+                age: '1' as any, // SHOULD BE A NUMBER
+            },
+        }
+        const catParent: CatParent = {
+            age: 1,
+            name: 'Tonny Sr',
+            amountOfLegs: '4' as any, // SHOULD BE NUMBER
+            childCat: cat
+        }
+
+        const result = Validate(CatParentSpec, catParent);
+
+        expect(result.errorCount).toBe(3);
+        expect(result.valid).toBe(false);
+    })
+    it('should validate an object in less than 3ms', () => {
+        const cat: Cat = {
+            age: 1,
+            name: 1 as any, // SHOULD BE A STRING
+            amountOfLegs: 4,
+            child: {
+                name: 'Tonny jr',
+                age: '1' as any, // SHOULD BE A NUMBER
+            },
+        }
+        const catParent: CatParent = {
+            age: 1,
+            name: 'Tonny Sr',
+            amountOfLegs: '4' as any, // SHOULD BE NUMBER
+            childCat: cat
+        }
+        
+        const ITERATIONS = 100;
+        
+        const start = process.hrtime();
+        for(let i = 0; i < ITERATIONS; i++) {
+            Validate(CatParentSpec, catParent);
+        }
+        const [_, ms6] = process.hrtime(start);
+        const ms = ms6 / 10**6 / ITERATIONS
+
+        expect(ms).toBeLessThan(3);
     })
 })

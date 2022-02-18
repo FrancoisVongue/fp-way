@@ -132,12 +132,12 @@ export namespace obj {
     });
 
     // == VALIDATOR
-    export type ValidationSummary<T1> = {
+    export type ValidationSummary<T1 extends DataObject> = {
         valid: boolean,
         errorCount: number,
         missingProperties: string[],
         redundantProperties: string[],
-        errors: Record<keyof T1, any>
+        errors: Record<keyof T1 | '_self', any>
     }
     namespace _ValidationSummary {
         export const incErrCount = (s: ValidationSummary<any>) => {
@@ -158,7 +158,7 @@ export namespace obj {
                 errorCount: 0,
                 missingProperties: [],
                 redundantProperties: [],
-                errors: {} as Record<keyof T1, any>
+                errors: {} as Record<keyof T1 | '_self', any>
             }
         }
         export const mergeNestedSummary = (
@@ -204,7 +204,7 @@ export namespace obj {
         string | ((v: any, k: keyof T1) => string)
     ];
     export const ValidationOptionsSym: unique symbol = Symbol.for('fp-way-validation-options');
-    type AnyValidationSpec =
+    export type AnyValidationSpec =
       & Record<string ,any>
       & { [ValidationOptionsSym]?: ValidationOptions<any> };
     export type ValidationSpec<T1 extends DataObject> =
@@ -225,14 +225,6 @@ export namespace obj {
         const declaredPropsToCheck = Keys(spec);
         const optionalProps = spec[ValidationOptionsSym].optionalProps;
         const requiredProps = declaredPropsToCheck.filter(d => !optionalProps.includes(d));
-
-        if(!IsOfType("object", o)) {
-            return {
-                missing: requiredProps,
-                redundant: [],
-                propsToCheck: [],
-            }
-        }
 
         const presentProps = Entries(o)
         .filter(([k, v]) => Exists(v))
@@ -263,7 +255,18 @@ export namespace obj {
         const populatedSpec = (spec[ValidationOptionsSym] = options, spec) as ValidationSpecWithPopulatedOptions<T1>
 
         const summary: ValidationSummary<T1> = _ValidationSummary.New();
-        const {propsToCheck, missing, redundant} = _validationPreCheckProps(populatedSpec, obj);
+        
+        if(!IsOfType("object", obj)) {
+            _ValidationSummary.addErr('_self', 'Value should be an object', summary)
+            return summary;
+        }
+
+        const {
+            propsToCheck, 
+            missing, 
+            redundant
+        } = _validationPreCheckProps(populatedSpec, obj);
+        
         if(missing.length) {
             _ValidationSummary.incErrCount(summary);
             summary.missingProperties = missing;
