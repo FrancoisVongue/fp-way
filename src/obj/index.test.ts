@@ -2,10 +2,10 @@ import {obj} from "./index";
 import ValidationOptionsSym = obj.ValidationOptionsSym;
 import ObjectMapSpec = obj.ObjectMapSpec;
 import {IsOfType, Return, TRUE} from "../core";
-import ValidationSpec = obj.ValidationSpec;
 import _defaultValidationOptions = obj._defaultValidationOptions;
 import ValidationSpecWithPopulatedOptions = obj.ValidationSpecWithPopulatedOptions;
 import PopulatedValidationOptions = obj.PopulatedValidationOptions;
+import Validate = obj.Validate;
 
 type Cat = {
     age: number;
@@ -210,14 +210,25 @@ describe('_preCheckProps', () => {
         expect(result.propsToCheck).toEqual(['amountOfLegs', 'name']);
     })
 })
+
 describe('Validate', () => {
     it('should validate an object', () => {
         const CatSpec: obj.ValidationSpec<Cat> = {
-            age: [],
-            name: [],
-            child: [],
-            amountOfLegs: [],
-            // [ValidationOptionsSym]: {}
+            age: [IsOfType('number')],
+            name: [IsOfType('string')],
+            amountOfLegs: [IsOfType('number')],
+            child: [IsOfType('object')],
         }
+        
+        const cat: Cat = {
+            age: 1,
+            name: 'Tonny',
+            amountOfLegs: 4,
+            child: {}
+        }
+        
+        const result = Validate(CatSpec, cat);
+        
+        expect(result.valid).toBe(true);
     })
 })
