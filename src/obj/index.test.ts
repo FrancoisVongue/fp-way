@@ -9,7 +9,7 @@ import Validate = obj.Validate;
 
 type Cat = {
     age: number;
-    name: string;
+    name?: string;
     amountOfLegs: number;
     child?: Partial<Cat>;
 }
@@ -212,13 +212,25 @@ describe('_preCheckProps', () => {
 })
 
 describe('Validate', () => {
-    it('should validate an object', () => {
-        const CatSpec: obj.ValidationSpec<Cat> = {
-            age: [IsOfType('number')],
-            name: [IsOfType('string')],
-            amountOfLegs: [IsOfType('number')],
-            child: [IsOfType('object')],
+    const CatSpec: obj.ValidationSpec<Cat> = {
+        age: [
+            [IsOfType('number'), 'age must be a number']
+        ],
+        name: [
+            [IsOfType('string'),  'name must be a number']
+        ],
+        amountOfLegs: [
+            [IsOfType('number'),  'amountOfLegs must be a number']
+        ],
+        child: [
+            [IsOfType('object'),  (v, k) => `${k} must be an object`]
+        ],
+        [ValidationOptionsSym]: {
+            optionalProps: ['name']
         }
+    }
+    
+    it('should return valid summary if an object is valid', () => {
         
         const cat: Cat = {
             age: 1,
@@ -230,5 +242,65 @@ describe('Validate', () => {
         const result = Validate(CatSpec, cat);
         
         expect(result.valid).toBe(true);
+    })
+    
+    it('should return valid summary if an object is invalid', () => {
+
+        const cat: Cat = {
+            age: '1' as any, // str instead of a number
+            name: 'Tonny',
+            amountOfLegs: 4,
+            child: [] as any // arr instead of an obj
+        }
+
+        const result = Validate(CatSpec, cat);
+
+        expect(result.valid).toBe(false);
+    })
+    
+    it('should return number of errors and invalid keys', () => {
+
+        const cat: Cat = {
+            age: '1' as any, // str instead of a number
+            name: 'Tonny',
+            amountOfLegs: 4,
+            child: [] as any // arr instead of an obj
+        }
+
+        const result = Validate(CatSpec, cat);
+
+        expect(result.errors.name).toBeUndefined();
+        expect(result.errors.amountOfLegs).toBeUndefined();
+
+        expect(result.errors.age).toBeDefined();
+        expect(result.errors.child).toBeDefined();
+        expect(result.errorCount).toBe(2);
+        expect(result.valid).toBe(false);
+    })
+    
+    it('should not error optional properties if they were omitted', () => {
+        const cat: Cat = {
+            age: 1,
+            // name: 'Tonny',  <-- optional
+            amountOfLegs: 4,
+            child: {},
+        }
+
+        const result = Validate(CatSpec, cat);
+
+        expect(result.valid).toBe(true);
+    })
+    it('should error optional properties if they are present', () => {
+        const cat: Cat = {
+            age: 1,
+            name: 1 as any, // should be string
+            amountOfLegs: 4,
+            child: {},
+        }
+
+        const result = Validate(CatSpec, cat);
+
+        expect(result.valid).toBe(false);
+        expect(result.errors.name).toBeDefined();
     })
 })

@@ -37,7 +37,7 @@ export namespace obj {
         <T1 extends DataObject, R extends DeepPartial<T1>>(
             def: DeepPartial<T1>,
         ): R
-    } = Curry((def, obj) => {
+    } = Curry((def: DataObject, obj: DataObject) => {
         const objCopy = DeepCopy(obj);
         const defCopy = DeepCopy(def);
         const allProps = [...new Set([...Keys(objCopy), ...Keys(defCopy)])];
@@ -201,11 +201,14 @@ export namespace obj {
     }
     export type ValidationPropertyRule<T1> = [
         (v: any, o: T1) => boolean,
-            string | ((v: any, k: keyof T1) => string)
+        string | ((v: any, k: keyof T1) => string)
     ];
     export const ValidationOptionsSym: unique symbol = Symbol.for('fp-way-validation-options');
+    type AnyValidationSpec =
+      & Record<string ,any>
+      & { [ValidationOptionsSym]?: ValidationOptions<any> };
     export type ValidationSpec<T1 extends DataObject> =
-        & Record<keyof T1, ValidationPropertyRule<T1>[] | any>
+        & Record<keyof T1, ValidationPropertyRule<T1>[] | AnyValidationSpec>
         & { [ValidationOptionsSym]?: ValidationOptions<T1> };
     export type ValidationSpecWithPopulatedOptions<T1 extends DataObject> =
         & ValidationSpec<T1>
@@ -272,15 +275,17 @@ export namespace obj {
             }
         }
 
-        for(const [i, ptc] of propsToCheck.entries()) {
+        for(let i = 0; i < propsToCheck.length; i++) {
             if(options.stopWhen(summary)) { return summary; }
 
+            const ptc = propsToCheck[i];
             const keySpec: ValidationPropertyRule<T1>[] | ValidationSpec<any> = spec[ptc];
             const value = obj[ptc];
 
             if(IsOfType('array', keySpec)) {
                 for(const rule of keySpec as ValidationPropertyRule<T1>[]) {
                     const [validator, msgOrFn] = rule;
+
                     let rulePass;
                     try {
                         rulePass = validator(value, obj);
