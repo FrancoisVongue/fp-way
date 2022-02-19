@@ -1,4 +1,5 @@
-import {Curry, Exists, FALSE, InCase, Is, IsOfType, Pipe, Return, Swap, TRUE, Variable, When, ReturnAsIs} from "../core";
+import { Identity } from "..";
+import {Curry, Exists, FALSE, InCase, Is, IsOfType, Pipe, Return, Swap, TRUE, Variable, When} from "../core";
 import { DataObject, Unary, DeepPartial } from "../core.types";
 
 export namespace obj {
@@ -24,7 +25,7 @@ export namespace obj {
 
                 return newObj;
             }],
-            [TRUE, ReturnAsIs()]
+            [TRUE, Identity]
         ], obj)
     };
 
@@ -166,13 +167,15 @@ export namespace obj {
             key: string,
             nestedSummary: ValidationSummary<any>,
         ) => {
-            summary.valid = nestedSummary.valid && summary.valid
-            summary.errorCount += nestedSummary.errorCount
-            summary.missingProperties = [...summary.missingProperties, ...nestedSummary.missingProperties]
-            summary.redundantProperties = [...summary.redundantProperties, ...nestedSummary.redundantProperties]
+            const prependKey = (v: string) => `${key}.${v}`
+
+            summary.valid = nestedSummary.valid && summary.valid;
+            summary.errorCount += nestedSummary.errorCount;
+            summary.missingProperties.push(...nestedSummary.missingProperties.map(prependKey));
+            summary.redundantProperties.push(...nestedSummary.redundantProperties.map(prependKey));
             
             const nestedErrors: [any, any][] = Entries(nestedSummary.errors)
-                .map(([nestedKey, v]) => [`${key}.${nestedKey}`, v])
+                .map(([nestedKey, v]) => [prependKey(nestedKey), v])
 
             summary.errors = FromEntries([
                 ...Entries(summary.errors),
@@ -205,8 +208,8 @@ export namespace obj {
     ];
     export const ValidationOptionsSym: unique symbol = Symbol.for('fp-way-validation-options');
     export type AnyValidationSpec =
-      & Record<string ,any>
-      & { [ValidationOptionsSym]?: ValidationOptions<any> };
+        & Record<string, any>
+        & { [ValidationOptionsSym]?: ValidationOptions<any> };
     export type ValidationSpec<T1 extends DataObject> =
         & Record<keyof T1, ValidationPropertyRule<T1>[] | AnyValidationSpec>
         & { [ValidationOptionsSym]?: ValidationOptions<T1> };
@@ -300,7 +303,7 @@ export namespace obj {
 
                     if(!rulePass) {
                         const message: string = InCase([
-                            [IsOfType('string'), ReturnAsIs()],
+                            [IsOfType('string'), Identity],
                             [TRUE, f => f(value, ptc)],
                         ], msgOrFn)
 
