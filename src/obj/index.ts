@@ -1,4 +1,4 @@
-import { Identity } from "..";
+import {Identity} from "..";
 import {Curry, Exists, FALSE, InCase, Is, IsOfType, Pipe, Return, Swap, TRUE, Variable, When} from "../core";
 import { DataObject, Unary, DeepPartial } from "../core.types";
 
@@ -14,17 +14,11 @@ export namespace obj {
     export const DeepCopy = <T1>(obj: T1): T1 => {
         return InCase<T1, T1>([
             [IsOfType('array'), arr => (arr as any).map(DeepCopy) as any],
-            [IsOfType('object'), obj => {
-                const newObj = {} as T1;
-                const keys = Keys(obj as any)
-
-                keys.forEach((prop) => {
-                    const value = obj[prop];
-                    newObj[prop] = DeepCopy(value);
-                });
-
-                return newObj;
-            }],
+            [IsOfType('object'), Pipe([
+                Entries,
+                entries => entries.map(([k, v]) => [k, DeepCopy(v)]),
+                FromEntries
+            ])],
             [TRUE, Identity]
         ], obj)
     };
@@ -100,7 +94,7 @@ export namespace obj {
     // == MAPPER
     export type ObjectMapper<O1> = (value: any, obj: O1) => any;
     export type ObjectMapSpec<O1 extends DataObject, O2 extends DataObject> = {
-        map: [keyof O1 | '', ObjectMapper<O1>, keyof O2][];
+        map: [keyof O1 | '', ObjectMapper<O1> | ObjectMapSpec<any, any>, keyof O2][];
         transfer?: Extract<keyof O1, keyof O2>[]
     }
     export const Map: {
@@ -115,6 +109,10 @@ export namespace obj {
     } = Curry((mapSpec, src) => {
         const result = {};
 
+        if(!IsOfType('object', src)) {
+            throw Error(`Invalid input to obj.Map: src must be an object`)
+        }
+
         if(mapSpec.transfer) {
             for(const prop of mapSpec.transfer) {
                 result[prop] = src[prop];
@@ -122,11 +120,13 @@ export namespace obj {
         }
 
         for(let row of mapSpec.map) {
-            const [sourceProp, mapper, destinationProp] = row;
+            const [sourceProp, mapperOrSpec, destinationProp] = row;
 
-            result[destinationProp] = sourceProp
-                ? mapper(src[sourceProp], src)
-                : mapper(null, src);
+            if(IsOfType('function', mapperOrSpec)) {
+                result[destinationProp] = mapperOrSpec(src?.[sourceProp] ?? null, src);
+            } else {
+                result[destinationProp] = Map(mapperOrSpec, src?.[sourceProp]);
+            }
         }
 
         return result;
@@ -173,7 +173,7 @@ export namespace obj {
             summary.errorCount += nestedSummary.errorCount;
             summary.missingProperties.push(...nestedSummary.missingProperties.map(prependKey));
             summary.redundantProperties.push(...nestedSummary.redundantProperties.map(prependKey));
-            
+
             const nestedErrors: [any, any][] = Entries(nestedSummary.errors)
                 .map(([nestedKey, v]) => [prependKey(nestedKey), v])
 
@@ -194,6 +194,7 @@ export namespace obj {
         errorHandler?: (e: ValidationException) => string,
         redundantIsError?: boolean,
         optionalProps?: (keyof T)[],
+        isOptional?: boolean
     }
     export type PopulatedValidationOptions<T1 extends DataObject> = Required<ValidationOptions<T1>>;
     export const _defaultValidationOptions: PopulatedValidationOptions<any> = {
@@ -201,6 +202,7 @@ export namespace obj {
         redundantIsError: true,
         stopWhen: FALSE,
         errorHandler: ({key}) => `Could not validate property: ${key}`,
+        isOptional: false
     }
     export type ValidationPropertyRule<T1> = [
         (v: any, o: T1) => boolean,
@@ -258,18 +260,20 @@ export namespace obj {
         const populatedSpec = (spec[ValidationOptionsSym] = options, spec) as ValidationSpecWithPopulatedOptions<T1>
 
         const summary: ValidationSummary<T1> = _ValidationSummary.New();
-        
+
         if(!IsOfType("object", obj)) {
-            _ValidationSummary.addErr('_self', 'Value should be an object', summary)
+            if(!options.isOptional || Exists(obj)) {
+                _ValidationSummary.addErr('_self', 'Value should be an object', summary)
+            }
             return summary;
         }
 
         const {
-            propsToCheck, 
-            missing, 
+            propsToCheck,
+            missing,
             redundant
         } = _validationPreCheckProps(populatedSpec, obj);
-        
+
         if(missing.length) {
             _ValidationSummary.incErrCount(summary);
             summary.missingProperties = missing;
@@ -315,7 +319,7 @@ export namespace obj {
                 _ValidationSummary.mergeNestedSummary(summary, ptc, nestedSummary)
             }
         }
-        
+
         return summary;
     }
 }

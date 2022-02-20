@@ -1,7 +1,7 @@
 import {obj} from "./index";
 import ValidationOptionsSym = obj.ValidationOptionsSym;
 import ObjectMapSpec = obj.ObjectMapSpec;
-import {IsOfType, Return, TRUE} from "../core";
+import {Identity, IsOfType, Return, TRUE} from "../core";
 import _defaultValidationOptions = obj._defaultValidationOptions;
 import ValidationSpecWithPopulatedOptions = obj.ValidationSpecWithPopulatedOptions;
 import PopulatedValidationOptions = obj.PopulatedValidationOptions;
@@ -43,21 +43,21 @@ describe('WithDefault', () => {
             }
         }
     });
-    
+
     it('Should provide default properties for objects', () => {
         const cat = obj.WithDefault(defCat, partialCat) as Cat;
-        
+
         expect(cat.amountOfLegs).toBe(defCat.amountOfLegs); // should take default
         expect(cat.child?.age).toBe(defCat.child?.age); // should take default
         expect(cat.child?.amountOfLegs).toBe(3); // should preserve existing
     })
-    
+
     it('Should not have link to the default object', () => {
         const cat = obj.WithDefault(defCat, partialCat) as Cat;
         cat.amountOfLegs = 3;
 
-        expect(cat.amountOfLegs).toBe(3); 
-        expect(defCat.amountOfLegs).toBe(4); 
+        expect(cat.amountOfLegs).toBe(3);
+        expect(defCat.amountOfLegs).toBe(4);
     })
 })
 describe('ExcludeProps', () => {
@@ -67,13 +67,13 @@ describe('ExcludeProps', () => {
             name: 'John',
             amountOfLegs: 4
         };
-        
+
         const catWOAge: Partial<Cat> = obj.ExcludeProps(["age"], cat);
-        
+
         expect(catWOAge.age).toBeUndefined();
         expect(catWOAge.name).toBeDefined();
     })
-    
+
     it('Should have no link with the old obj', () => {
         const cat = {
             age: 8,
@@ -116,18 +116,33 @@ describe('Pick', () => {
     })
 })
 describe('Map', () => {
+    type AnimalOwner = {
+        name: string,
+        animal: Animal
+    }
+    type CatOwner = {
+        name: string,
+        cat: Cat
+    }
     type Animal = {
         alive: boolean;
         name: string;
         legs: number;
     }
     type Cat = Pick<Animal, "alive" | "name"> & {
-        amountOfLegs: number;
+        amountOfLegs: 4;
         mustacheLength: number;
     }
-    
+
     let animal1: Animal;
-    
+    const AnimalToCatSpec: ObjectMapSpec<Animal, Cat> = {
+        map: [
+            ["legs", Return(4), "amountOfLegs"],
+            ["", (v, o) => o.legs * 2,  "mustacheLength"],
+        ],
+        transfer: ['name', 'alive']
+    }
+
     beforeEach(() => {
         animal1 = {
             alive: false,
@@ -135,37 +150,41 @@ describe('Map', () => {
             legs: 2
         }
     })
-    
-    it('Should map one type to another', () => {
-        const mapSpec: ObjectMapSpec<Animal, Cat> = {
-            map: [
-                ["alive", TRUE, "alive"],
-                ["legs", Return(4), "amountOfLegs"],
-                ["", (v, o) => o.legs * 2,  "mustacheLength"],
-            ],
-        }
-        
-        const cat = obj.Map(mapSpec, animal1);
-        
-        expect(cat.amountOfLegs).toBe(4);
-        expect(cat.alive).toBe(true);
-        expect(cat.mustacheLength).toBe(animal1.legs * 2);
-        expect(cat.name).toBeUndefined();
-    })
-    
-    it('Should directly map specified properties', () => {
-        const mapSpec: ObjectMapSpec<Animal, Cat> = {
-            map: [
-                ["alive", TRUE, "alive"],
-                ["legs", Return(4), "amountOfLegs"],
-                ["", (v, o) => o.legs * 2,  "mustacheLength"],
-            ],
-            transfer: ["name"] // leave animal name as it is
-        }
 
-        const cat = obj.Map(mapSpec, animal1);
+    it('Should map one type to another', () => {
+        const cat = obj.Map(AnimalToCatSpec, animal1);
+
+        expect(cat.amountOfLegs).toBe(4);
+        expect(cat.mustacheLength).toBe(animal1.legs * 2);
+        expect(cat.alive).toBe(animal1.alive);
+        expect(cat.name).toBe(animal1.name);
+    })
+
+    it('Should directly map specified properties', () => {
+        const cat = obj.Map(AnimalToCatSpec, animal1);
 
         expect(cat.name).toBe(animal1.name);
+    })
+
+    it('Should allow to map nested objects by passing a spec', () => {
+        const animalOwner: AnimalOwner = {
+            name: 'John',
+            animal: {
+                alive: true,
+                legs: 3,
+                name: 'Tonny'
+            }
+        }
+
+        const catOwner = obj.Map<AnimalOwner, CatOwner>({
+            transfer: ['name'],
+            map: [
+                ['animal', AnimalToCatSpec, 'cat']
+            ]
+        }, animalOwner);
+
+        expect(catOwner.cat.amountOfLegs).toBe(4);
+        expect(catOwner.cat.mustacheLength).toBeGreaterThan(0);
     })
 })
 describe('_preCheckProps', () => {
@@ -191,7 +210,7 @@ describe('_preCheckProps', () => {
             name: 'Tony'
         }
         const result = obj._validationPreCheckProps(catSpec, catWOage);
-        
+
         expect(result.missing).toEqual(['age', 'child']);
     })
     it('Should return redundant properties', () => {
@@ -217,7 +236,6 @@ describe('_preCheckProps', () => {
         expect(result.propsToCheck).toEqual(['amountOfLegs', 'name']);
     })
 })
-
 describe('Validate', () => {
     const CatChildSpec: obj.ValidationSpec<CatChild> = {
         age: [
@@ -233,7 +251,7 @@ describe('Validate', () => {
             optionalProps: ['name', 'age', 'amountOfLegs']
         }
     }
-    
+
     const CatSpec: obj.ValidationSpec<Cat> = {
         age: [
             [IsOfType('number'), 'age must be a number']
@@ -249,7 +267,7 @@ describe('Validate', () => {
             optionalProps: ['name']
         }
     }
-    
+
     const CatParentSpec: obj.ValidationSpec<CatParent> = {
         age: [
             [IsOfType('number'), 'age must be a number']
@@ -265,21 +283,20 @@ describe('Validate', () => {
             optionalProps: ['name']
         }
     }
-    
+
     it('should return valid summary if an object is valid', () => {
-        
+
         const cat: Cat = {
             age: 1,
             name: 'Tonny',
             amountOfLegs: 4,
             child: {}
         }
-        
+
         const result = Validate(CatSpec, cat);
-        
+
         expect(result.valid).toBe(true);
     })
-    
     it('should return valid summary if an object is invalid', () => {
 
         const cat: Cat = {
@@ -293,7 +310,6 @@ describe('Validate', () => {
 
         expect(result.valid).toBe(false);
     })
-    
     it('should return number of errors and invalid keys', () => {
 
         const cat: Cat = {
@@ -313,7 +329,6 @@ describe('Validate', () => {
         expect(result.errorCount).toBe(2);
         expect(result.valid).toBe(false);
     })
-    
     it('should not error optional properties if they were omitted', () => {
         const cat: Cat = {
             age: 1,
@@ -390,9 +405,9 @@ describe('Validate', () => {
             amountOfLegs: '4' as any, // SHOULD BE NUMBER
             childCat: cat
         }
-        
+
         const ITERATIONS = 100;
-        
+
         const start = process.hrtime();
         for(let i = 0; i < ITERATIONS; i++) {
             Validate(CatParentSpec, catParent);
@@ -401,5 +416,25 @@ describe('Validate', () => {
         const ms = ms6 / 10**6 / ITERATIONS
 
         expect(ms).toBeLessThan(3);
+    })
+})
+describe('DeepCopy', () => {
+    it('should create a deep copy of an object', () => {
+        const humanFriendHeight = 188;
+        const human = {
+            name: 'jogn',
+            height: 182,
+            friend: {
+                name: 'lenny',
+                height: humanFriendHeight
+            }
+        };
+
+        const humanCopy = obj.DeepCopy(human);
+        humanCopy.friend.height = 155;
+
+        expect(human.friend.height).toEqual(humanFriendHeight); // should not change
+        expect(humanCopy.name).toEqual(human.name);
+        expect(humanCopy.friend.name).toEqual(human.friend.name);
     })
 })

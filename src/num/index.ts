@@ -6,7 +6,7 @@ export namespace num {
     export const IsQuotientOf = Curry((n1: number, n2: number) => n2 % n1 === 0)
     export const IsInt = (n: number) => Number.isInteger(n);
     export const IsNaN = (n: any) => Number.isNaN(n);
-    
+
     export const Gt = Curry((n1: number, n2: number) => n2 > n1 );
     export const Gte = Curry((n1, n2) => n2 >= n1 );
     export const Lt = Curry((n1: number, n2: number) => n2 < n1 );
@@ -19,7 +19,7 @@ export namespace num {
     export const InRangeEx = Curry((min: number, max: number, v: number) => {
         return v < max && v > min;
     });
-    
+
     // transform
     export const Negate = (v: number) => -v;
     export const Inc = (v: number) => v + 1;
@@ -35,10 +35,6 @@ export namespace num {
     export const ToExtent = Curry((extent: number, a: number) => a**extent);
     export const Floor = (n: number) => Math.floor(n);
     export const Ceil = (n: number) => Math.ceil(n);
-    export const ToInt = (v: number) => InCase([
-        [IsPos, Floor],
-        [IsNeg, Ceil],
-        [TRUE, Return(0)]
-    ], v);
+    export const ToInt = (v: number) => Math.round(v);
     export const Abs = (n: number) => Math.abs(n);
 }
