@@ -1,5 +1,5 @@
 import {
-    Binary, Curried,
+    Binary,
     Curried2, Curried3,
     JSTypesWithArrayAndNull,
     Predicate,

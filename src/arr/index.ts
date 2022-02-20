@@ -1,10 +1,11 @@
 import {Curry, Not,} from "../core";
 import {Binary, Predicate, Ternary, Unary} from "../core.types";
+import {num} from "../num";
 
 export namespace arr {
     // create
     export const OfValues = <T>(...v: T[]) => [...v];
-    export const OfLength = Curry((n: number) => Array(n).fill(0));
+    export const OfLength = Curry((n: number) => Array(n).fill(null));
     export const FromRange = Curry((
         start: number,
         finish: number,
@@ -12,6 +13,8 @@ export namespace arr {
     ): number[] => {
         if(start >= finish || step <= 0) {
             throw Error(`Invalid input to FromRange: start:${start} finish:${finish} step:${step}`)
+        } if (!num.IsQuotientOf(1, step)) {
+            throw Error(`Invalid input to FromRange: step must be integer`)
         }
 
         const result: number[] = []
@@ -80,7 +83,7 @@ export namespace arr {
     export const Tail = (arr) => arr.length > 1
         ? arr.slice(1)
         : [...arr];
-    export const Nose = (arr) => arr.length > 1 ? [...arr].slice(0, arr.length - 1) : [...arr];
+    export const Nose = (arr) => arr.length > 1 ? arr.slice(0, arr.length - 1) : [...arr];
     export const Head = <T1>(arr: T1[]): T1 | undefined => arr[0];
     export const Butt = <T1>(arr: T1[]): T1 | undefined => arr.length >= 1
         ? arr[arr.length - 1]
@@ -91,8 +94,8 @@ export namespace arr {
     export const TakeNLast = Curry((n, arr) => arr.length < n
         ? [...arr]
         : arr.slice(-n));
-    export const Append = Curry((value, arr) => [...arr, value]);
-    export const Prepend = Curry((arr, value) => [value, ...arr]);
+    export const Append = Curry((value: any, arr: any[]) => [...arr, value]);
+    export const Prepend = Curry((value: any, arr: any[]) => [value, ...arr]);
     export const Flatten = function Flatten<T1>(arr: any[]): T1[] {
         const result: any[] = [];
 
