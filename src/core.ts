@@ -32,8 +32,9 @@ export const Not = (f: Predicate): Predicate => (...args) => !f(...args);
 export const IsNot = Not(Is);
 export const NotExists = Not(Exists);
 
-export const Swap = <T1, T2, R>(f: Binary<T1, T2, R>): Curried2<T2, T1, R> =>
-    Curry((a, b) => f(b,a));
+export const Swap = <T1, T2, R>(
+    f: Binary<T1, T2, R> | Curried2<T1, T2, R>
+): Curried2<T2, T1, R> => Curry((a, b) => f(b,a)) as any;
 
 export const Call = Curry((f, v) => f(v))
 export const ApplyOn = Swap(Call)
