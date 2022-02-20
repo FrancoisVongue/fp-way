@@ -1,14 +1,14 @@
 import {
-  CanBeDescribedAs,
-  Compose,
-  Curry,
-  FALSE, IfElse,
-  InCase,
-  Is,
-  IsOfType, Return,
-  TRUE,
-  Unless,
-  When
+    CanBeDescribedAs,
+    Compose, Const,
+    Curry,
+    FALSE, IfElse,
+    InCase,
+    Is,
+    IsOfType, Return,
+    TRUE,
+    Unless,
+    When
 } from './core';
 
 describe('Curry', () => {
@@ -145,4 +145,13 @@ describe('IfElse', () => {
     expect(three).toBe(3);
     expect(ten).toBe(10);
   })
+})
+
+describe('Const', () => {
+    it('should return the first argument after call', () => {
+        const four = Const(4, 5);
+        const alsoFour = Const(4)(5);
+
+        expect(four + alsoFour).toBe(8);
+    })
 })

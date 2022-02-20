@@ -13,7 +13,7 @@ export namespace obj {
 
     export const DeepCopy = <T1>(obj: T1): T1 => {
         return InCase<T1, T1>([
-            [IsOfType('array'), arr => (arr as any).map(DeepCopy) as any],
+            [IsOfType('array'), arr => (arr as any).map(DeepCopy)],
             [IsOfType('object'), Pipe([
                 Entries,
                 entries => entries.map(([k, v]) => [k, DeepCopy(v)]),
