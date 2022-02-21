@@ -14,12 +14,26 @@ Library consists of namespaces that correspond to the following javascript types
 4. obj       - 'object'
 5. arr       - 'array'
 ```
-And [core methods](#isoftype)
+And **[core methods](#core-methods)**
 
 
 Each namespace contains curried methods that work on the corresponding type.
 
 # Core methods
+
+| Base fp methods       | Conditionals                            | Other                   |
+|-----------------------|-----------------------------------------|-------------------------|
+| [Curry](#curry)       | [Is](#is)                               | [DoNothing](#donothing) |
+| [Identity](#identity) | [Exists](#exists)                       | [TypeOf](#typeof)       |
+| [Const](#const)       | [IfElse](#ifelse)                       |                         |
+| [Variable](#variable) | [When](#when)                           |                         |
+| [Swap](#swap)         | [Unless](#unless)                       |                         |
+| [Call](#call)         | [InCase](#incase)                       |                         |
+| [ApplyOn](#applyon)   | [IndependendInCase](#independendincase) |                         |
+| [Pipe](#pipe)         | [CanBeDescribedAs](#canbedescribedas)   |                         |
+| [Compose](#compose)   | [IsOfType](#isoftype)                   |                         |
+| [Not](#not)           |                                         |                         |
+
 Note that some methods in this section have **aliases**. 
 <br>For example **Const** and **Return** are the same method.
 
