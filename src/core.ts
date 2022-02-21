@@ -139,7 +139,7 @@ export const InCase: {
 export const IndependentInCase: {
     <T, R>(
         entries: [Unary<T, boolean>, Unary<T, R>][],
-    ): (v: T) => R
+    ): (v: T) => R[]
 
     <T, R>(
         entries: [Unary<T, boolean>, Unary<T, R>][],
@@ -147,14 +147,14 @@ export const IndependentInCase: {
     ): R[]
 } = Curry((
     entries: [Unary<any, boolean>, Unary<any, any>][],
-    v: any
+    val: any
 ): any[] => {
     const results: any[] = [];
 
     for(let entry of entries) {
         const [predicate, f] = entry;
-        if(predicate(v)) {
-            results.push(f(v));
+        if(predicate(val)) {
+            results.push(f(val));
         }
     }
 
@@ -175,15 +175,28 @@ export const CanBeDescribedAs: {
 })
 
 export const Pipe: {
-    <T, R>(
-        functions: [Unary<T, any>, ...Unary<any, any>[], Unary<any, R>],
-        v: T
-    ): R
-
-    <T, R>(
-        functions: [Unary<T, any>, ...Unary<any, any>[], Unary<any, R>],
-    ): Unary<T, R>
-} = Curry((fns: Function[], arg: any): any => {
+    <T1, R>(fns: [Unary<T1, R>], v: T1): R
+    <T1, R>(fns: [Unary<T1, R>]): Unary<T1, R>
+    <T1, T2, R>(fns: [Unary<T1, T2>, Unary<T2, R>], v: T1): R
+    <T1, T2, R>(fns: [Unary<T1, T2>, Unary<T2, R>]): Unary<T1, R>
+    <T1, T2, R>(fns: [Unary<T1, T2>, Unary<T2, R>], v: T1): R
+    <T1, T2, T3, R>(fns: [Unary<T1, T2>, Unary<T2, T3>, Unary<T3, R>]): Unary<T1, R>
+    <T1, T2, T3, R>(fns: [Unary<T1, T2>, Unary<T2, T3>, Unary<T3, R>], v: T1): R
+    <T1, T2, T3, T4, R>(fns: [Unary<T1, T2>, Unary<T2, T3>, Unary<T3, T4>, Unary<T4, R>]): Unary<T1, R>
+    <T1, T2, T3, T4, R>(fns: [Unary<T1, T2>, Unary<T2, T3>, Unary<T3, T4>, Unary<T4, R>], v: T1): R
+    <T1, T2, T3, T4, T5, R>(fns: [Unary<T1, T2>, Unary<T2, T3>, Unary<T3, T4>, Unary<T4, T5>, Unary<T5, R>]): Unary<T1, R>
+    <T1, T2, T3, T4, T5, R>(fns: [Unary<T1, T2>, Unary<T2, T3>, Unary<T3, T4>, Unary<T4, T5>, Unary<T5, R>], v: T1): R
+    <T1, T2, T3, T4, T5, T6, R>(fns: [Unary<T1, T2>, Unary<T2, T3>, Unary<T3, T4>, Unary<T4, T5>, Unary<T5, T6>, Unary<T6, R>]): Unary<T1, R>
+    <T1, T2, T3, T4, T5, T6, R>(fns: [Unary<T1, T2>, Unary<T2, T3>, Unary<T3, T4>, Unary<T4, T5>, Unary<T5, T6>, Unary<T6, R>], v: T1): R
+    <T1, T2, T3, T4, T5, T6, T7, R>(fns: [Unary<T1, T2>, Unary<T2, T3>, Unary<T3, T4>, Unary<T4, T5>, Unary<T5, T6>, Unary<T6, T7>, Unary<T7, R>]): Unary<T1, R>
+    <T1, T2, T3, T4, T5, T6, T7, R>(fns: [Unary<T1, T2>, Unary<T2, T3>, Unary<T3, T4>, Unary<T4, T5>, Unary<T5, T6>, Unary<T6, T7>, Unary<T7, R>], v: T1): R
+    <T1, T2, T3, T4, T5, T6, T7, T8, R>(fns: [Unary<T1, T2>, Unary<T2, T3>, Unary<T3, T4>, Unary<T4, T5>, Unary<T5, T6>, Unary<T6, T7>, Unary<T7, T8>, Unary<T8, R>]): Unary<T1, R>
+    <T1, T2, T3, T4, T5, T6, T7, T8, R>(fns: [Unary<T1, T2>, Unary<T2, T3>, Unary<T3, T4>, Unary<T4, T5>, Unary<T5, T6>, Unary<T6, T7>, Unary<T7, T8>, Unary<T8, R>], v: T1): R
+    <T1, T2, T3, T4, T5, T6, T7, T8, T9, R>(fns: [Unary<T1, T2>, Unary<T2, T3>, Unary<T3, T4>, Unary<T4, T5>, Unary<T5, T6>, Unary<T6, T7>, Unary<T7, T8>, Unary<T8, T9>, Unary<T9, R>]): Unary<T1, R>
+    <T1, T2, T3, T4, T5, T6, T7, T8, T9, R>(fns: [Unary<T1, T2>, Unary<T2, T3>, Unary<T3, T4>, Unary<T4, T5>, Unary<T5, T6>, Unary<T6, T7>, Unary<T7, T8>, Unary<T8, T9>, Unary<T9, R>], v: T1): R
+    <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R>(fns: [Unary<T1, T2>, Unary<T2, T3>, Unary<T3, T4>, Unary<T4, T5>, Unary<T5, T6>, Unary<T6, T7>, Unary<T7, T8>, Unary<T8, T9>, Unary<T9, T10>, Unary<T10, R>]): Unary<T1, R>
+    <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R>(fns: [Unary<T1, T2>, Unary<T2, T3>, Unary<T3, T4>, Unary<T4, T5>, Unary<T5, T6>, Unary<T6, T7>, Unary<T7, T8>, Unary<T8, T9>, Unary<T9, T10>, Unary<T10, R>], v: T1): R
+} = Curry((fns: Unary<any, any>[], arg: any): Unary<any, any> => {
     let currentArg = arg;
 
     for(let fn of fns)
@@ -193,15 +206,25 @@ export const Pipe: {
 });
 
 export const Compose: {
-    <T, R>(
-        functions: [Unary<any, R>, ...Unary<any, any>[], Unary<T, any>],
-        v: T
-    ): R
-
-    <T, R>(
-        functions: [Unary<any, R>, ...Unary<any, any>[], Unary<T, any>],
-    ): Unary<T, R>
-} = Curry((fns: Function[], a: any) => Pipe(fns.reverse() as any, a));
+    <T1, R>(fns: [Unary<T1, R>], v: T1): R
+    <T1, R>(fns: [Unary<T1, R>]): Unary<T1, R>
+    <T1, T2, R>(fns: [Unary<T2, R>, Unary<T1, T2>]): Unary<T1, R>
+    <T1, T2, R>(fns: [Unary<T2, R>, Unary<T1, T2>], v: T1): R
+    <T1, T2, T3, R>(fns: [Unary<T3, R>, Unary<T2, T3>, Unary<T1, T2>]): Unary<T1, R>
+    <T1, T2, T3, R>(fns: [Unary<T3, R>, Unary<T2, T3>, Unary<T1, T2>], v: T1): R
+    <T1, T2, T3, T4, R>(fns: [Unary<T4, R>, Unary<T3, T4>, Unary<T2, T3>, Unary<T1, T2>]): Unary<T1, R>
+    <T1, T2, T3, T4, R>(fns: [Unary<T4, R>, Unary<T3, T4>, Unary<T2, T3>, Unary<T1, T2>], v: T1): R
+    <T1, T2, T3, T4, T5, T6, R>(fns: [Unary<T6, R>, Unary<T5, T6>, Unary<T4, T5>, Unary<T3, T4>, Unary<T2, T3>, Unary<T1, T2>]): Unary<T1, R>
+    <T1, T2, T3, T4, T5, T6, R>(fns: [Unary<T6, R>, Unary<T5, T6>, Unary<T4, T5>, Unary<T3, T4>, Unary<T2, T3>, Unary<T1, T2>], v: T1): R
+    <T1, T2, T3, T4, T5, T6, T7, R>(fns: [Unary<T7, R>, Unary<T6, T7>, Unary<T5, T6>, Unary<T4, T5>, Unary<T3, T4>, Unary<T2, T3>, Unary<T1, T2>]): Unary<T1, R>
+    <T1, T2, T3, T4, T5, T6, T7, R>(fns: [Unary<T7, R>, Unary<T6, T7>, Unary<T5, T6>, Unary<T4, T5>, Unary<T3, T4>, Unary<T2, T3>, Unary<T1, T2>], v: T1): R
+    <T1, T2, T3, T4, T5, T6, T7, T8, R>(fns: [Unary<T8, R>, Unary<T7, T8>, Unary<T6, T7>, Unary<T5, T6>, Unary<T4, T5>, Unary<T3, T4>, Unary<T2, T3>, Unary<T1, T2>]): Unary<T1, R>
+    <T1, T2, T3, T4, T5, T6, T7, T8, R>(fns: [Unary<T8, R>, Unary<T7, T8>, Unary<T6, T7>, Unary<T5, T6>, Unary<T4, T5>, Unary<T3, T4>, Unary<T2, T3>, Unary<T1, T2>], v: T1): R
+    <T1, T2, T3, T4, T5, T6, T7, T8, T9, R>(fns: [Unary<T9, R>, Unary<T8, T9>, Unary<T7, T8>, Unary<T6, T7>, Unary<T5, T6>, Unary<T4, T5>, Unary<T3, T4>, Unary<T2, T3>, Unary<T1, T2>]): Unary<T1, R>
+    <T1, T2, T3, T4, T5, T6, T7, T8, T9, R>(fns: [Unary<T9, R>, Unary<T8, T9>, Unary<T7, T8>, Unary<T6, T7>, Unary<T5, T6>, Unary<T4, T5>, Unary<T3, T4>, Unary<T2, T3>, Unary<T1, T2>], v: T1): R
+    <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R>(fns: [Unary<T10, R>, Unary<T9, T10>, Unary<T8, T9>, Unary<T7, T8>, Unary<T6, T7>, Unary<T5, T6>, Unary<T4, T5>, Unary<T3, T4>, Unary<T2, T3>, Unary<T1, T2>]): Unary<T1, R>
+    <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R>(fns: [Unary<T10, R>, Unary<T9, T10>, Unary<T8, T9>, Unary<T7, T8>, Unary<T6, T7>, Unary<T5, T6>, Unary<T4, T5>, Unary<T3, T4>, Unary<T2, T3>, Unary<T1, T2>], v: T1): R
+} = Curry((fns: Unary<any, any>[], a: any): Unary<any, any> => Pipe(fns.reverse() as any, a));
 
 export const IsOfType = Curry((desiredType: JSTypesWithArrayAndNull, v: any) => {
     return desiredType === TypeOf(v)

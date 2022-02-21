@@ -5,7 +5,7 @@ import {
     FALSE, IfElse,
     InCase,
     Is,
-    IsOfType, Return,
+    IsOfType, Pipe, Return,
     TRUE,
     Unless,
     When

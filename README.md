@@ -14,7 +14,8 @@ Library consists of namespaces that correspond to the following javascript types
 4. obj       - 'object'
 5. arr       - 'array'
 ```
-And **core methods**
+And [core methods](#isoftype)
+
 
 Each namespace contains curried methods that work on the corresponding type.
 
@@ -105,3 +106,122 @@ const Call = (f, x) => f(x)
 ```ts
 const ApplyOn = Swap(Call)
 ```
+
+## IfElse
+Function that takes four arguments:
+1. unary predicate
+2. unary function
+3. unary function
+4. value
+
+First, value is being passed to the predicate, if it returns 
+1. **true** then the function will return the result of calling the first function with the value
+2. **false** then the function will return the result of calling the **second function** with the value
+
+## When
+Function that takes three arguments:
+1. unary predicate
+2. unary function
+3. value
+
+First, value is being passed to the predicate, if it returns
+1. **true** then the function will return the result of calling the function with the value
+2. **false** then the function will return the value itself
+
+## Unless
+Function that takes three arguments:
+1. unary predicate
+2. unary function
+3. value
+
+First, value is being passed to the predicate, if it returns
+1. **true** then the function will return the value itself
+2. **false** then the function will return the result of calling the function with the value
+
+## InCase
+Function that takes two arguments:
+1. An array of binary tuples where every tuple contains:
+   1. Unary predicate
+   2. Unary function
+2. value
+
+Value is passed to every unary predicate in order.
+<br>Function returns the result of passing value to the Unary function 
+<br>of the first tuple where predicate returns true.
+
+This function works similar to switch..case construction.
+```ts
+const value = 22;
+
+const forty_four = InCase([
+    [Is(2) , (v) => v - 2],
+    [Is(22), (v) => v * 2],  // first tuple where predicate returns true for the value
+                             // then value is multiplied by 2 and returned
+    // using TRUE as the predicate for the last tuple is simmilar to using "default" in a switch case
+    [TRUE  , Return(8)],     
+], value)
+```
+
+## IndependentInCase
+Function that takes two arguments:
+1. An array of binary tuples where every tuple contains:
+    1. Unary predicate
+    2. Unary function
+2. value
+
+Works simillar to InCase but returns 
+<br>**an array of results** of passing value to unary functions where predicate returned `true`
+
+## CanBeDescribedAs
+Function takes two arguments:
+1. An array of unary predicates
+2. value
+
+Checks if every predicate returns true when called with the value.
+
+## Pipe
+Function takes two arguments:
+1. An array of unary functions 
+2. value
+
+Passes value to the first function and then the result to the next one, 
+<br>invoking every function in order and returning the result of the last one
+
+```ts
+const Add = a => b => a + b;
+const MultiplyBy = a => b => a * b;
+
+const twelve = Pipe([
+    Add(2),
+    MultiplyBy(3),
+], 2)
+```
+
+## Compose
+Function takes two arguments:
+1. An array of unary functions
+2. value
+
+Works similar to `Pipe` but **calls functions in the reverse order**.
+
+## IsOfType
+Functions takes two arguments:
+1. string representing a type, which can be
+   `| "undefined"
+    | "null"
+    | "object"
+    | "boolean" `<br>`
+    | "number"
+    | "bigint"
+    | "string"
+    | "symbol"
+    | "function"
+    | "array" |`
+3. a value
+
+Validates that value is of specified type. Works simillar to `typeof` 
+but works correctly for **null** and **array** values.
+
+## TypeOf
+Unary function that takes value and returns its type, 
+<br>which can be one of the aforementioned strings.
