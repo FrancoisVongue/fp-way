@@ -31,12 +31,20 @@ export const Const: {
 export const Return = Const;
 export const TRUE = Const(true);
 export const FALSE = Const(false);
-export const Variable = (_?) => <T1>(v: T1) => v;
+export const Variable: {
+    <T1>(
+        _: any,
+        value: T1,
+    ): T1
+    <T1>(
+        _: any,
+    ): Unary<T1, T1>
+} = Curry((_, b) => b)
 export const DoNothing = (_?) => {};
+export const Not = (f: Predicate): Predicate => (...args) => !f(...args);
+
 export const Is = Curry((a, b) => a === b);
 export const Exists = a => !(a === null || a === undefined);
-
-export const Not = (f: Predicate): Predicate => (...args) => !f(...args);
 export const IsNot = Not(Is);
 export const NotExists = Not(Exists);
 
