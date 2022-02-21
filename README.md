@@ -66,5 +66,42 @@ that **returns true/false in opposite to the initial function cases**.
 
 > **Note** that this function is one of a few that are **not curried**.
 
-## Is, Exists, IsNot, NotExists
-I
+## Is
+Function that takes two arguments and checks if they are equal using **strict equality**.
+
+## IsNot
+```ts
+const IsNot = Not(Is)
+```
+
+## Exists
+Function that takes a single argument and checks if it's equal to **null** or **undefined**
+<br> using strict equality. Any other value is considered as existing.
+
+## NotExists
+```ts
+const NotExists = Not(Exists);
+```
+
+## Swap
+Function that takes a **binary function** and returns a binary function that
+<br>does the same thing but **takes second argument first**.
+```ts
+const append = (appendingString, str) => str + appendingString;
+const result1 = append('Hello ', 'world'); // "worldHello "
+
+const prepend = Swap(append);
+const result2 = prepend('Hello ', 'world'); // "Hello world"
+```
+
+## Call
+Function that takes a function and an argument and returns 
+<br>**the result of calling that function with the argument**
+```ts
+const Call = (f, x) => f(x)
+```
+
+## ApplyOn
+```ts
+const ApplyOn = Swap(Call)
+```
