@@ -68,7 +68,7 @@ describe('ExcludeProps', () => {
             amountOfLegs: 4
         };
 
-        const catWOAge: Partial<Cat> = obj.ExcludeProps(["age"], cat);
+        const catWOAge: Partial<Cat> = obj.Exclude(["age"], cat);
 
         expect(catWOAge.age).toBeUndefined();
         expect(catWOAge.name).toBeDefined();
@@ -81,7 +81,7 @@ describe('ExcludeProps', () => {
             amountOfLegs: 4
         };
 
-        const catWOAge: Partial<Cat> = obj.ExcludeProps(["age"], cat);
+        const catWOAge: Partial<Cat> = obj.Exclude(["age"], cat);
         catWOAge.amountOfLegs = 444;
 
         expect(cat.amountOfLegs).toBe(4);

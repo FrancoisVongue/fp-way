@@ -1,13 +1,14 @@
 # FP-WAY
 Simple functional programming library that works as you would expect.
-Main purpose of the library is to 
+> **Main purpose of the library is to**
 > **reduce the amount of code that you need to write in your projects.**
+> <br>and make it much more **readable**
 
 # Type based structure
 Library consists of **[core methods](#core-methods)** and namespaces that correspond to the following javascript types:
 
 | namespace | javascript type |
-|-----------|-----------------|
+|-----------|:----------------|
 | bool      | boolean         | 
 | num       | number          | 
 | str       | string          | 
@@ -165,10 +166,10 @@ This function works similar to switch..case construction.
 ```ts
 const value = 22;
 
-const forty_four = InCase([
+const FORTY_FOUR = InCase([
     [Is(2) , (v) => v - 2],
     [Is(22), (v) => v * 2],  // first tuple where predicate returns true for the value
-                             // then value is multiplied by 2 and returned
+                             // value is multiplied by 2 and returned
     // using TRUE as the predicate for the last tuple is simmilar to using "default" in a switch case
     [TRUE  , Return(8)],     
 ], value)
@@ -259,7 +260,7 @@ Unary predicate that takes one argument returns true if argument is false.
 Unary predicate that returns true if argument is of type number.
 
 ## IsQuotientOf
-Binary predicate that returns true if second argument can divide the first without remainder.
+Binary predicate that returns true if second argument can be divided by the first without remainder.
 
 ```ts
 const IsQuotientOf = (a, b) => b % a === 0
@@ -349,3 +350,162 @@ And returns value raised to the extent
 ```ts
 const ToExtent = (e, x) => x**e;
 ```
+
+# Str
+## ToUpperCase, ToLowerCase
+Unary function that turns a string into it's upper/lowercase version.
+
+## Trim, TrimLeft, TrimRight
+Unary function that removes whitespaces from a string on **both** sides or **left** side or **right** side respectively.
+
+## CharAt
+Unary function that takes an index(integer) and a string and returns 
+a character at the index.
+
+## CharCodeAt
+Unary function that takes an index(integer) and a string and returns
+a number in range 0 - 2^16 that represents UTF-16 code.
+
+## Slice
+Function that takes three arguments:
+1. start
+2. end
+3. value
+
+Extracts a section of the value and returns it as a new string. 
+<br>Start and end are integers and can be negative.
+
+## SplitBy
+Binary function that takes two arguments
+1. splitter
+2. value
+
+The split() method divides a String into an ordered list of substrings, 
+<br>puts these substrings into an array, and returns the array.  
+<br>The division is done by searching for a pattern; where the pattern is provided 
+<br>as the first parameter in the method's call and can be **either Regex or a string**.
+
+## ConcatWith
+Function takes two strign arguments and returns the result of appending first argument to the second one.
+```ts
+const ConcatWith = (s1, s2) => s2 + s1; // note that s2 comes first
+```
+
+## OccurrencesOf
+Function takes two arguments:
+1. regex 
+2. value
+
+Returns an array of substrings of the value string that matched the regex.
+
+## Matches
+Binary predicate that takes a Regex and a string and returns true if 
+string matches the regex.
+
+## IsOfLength
+Binary predicate that takes a number and a string and returns true if 
+string length equals to the first argument.
+
+## StartsWith, EndsWith
+Binary predicate that takes two strings and returns true if 
+second string starts/ends with the first one.
+
+# Obj
+## Keys 
+Unary function that returns enumerable keys of an object.
+
+## Entries
+Unary function that returns enumerable key-value pairs of an object as an array of binary tuples.
+
+## FromEntries
+Unary function that takes an array of binary tuples where first values is a string 
+and returns an object created using these entries.
+
+For every tuple, first value (string) becomes an object key and second value becomes 
+this key's value.
+
+## DeepCopy
+Unary function that returns a deep copy of an object, meaning that changing the result 
+wont change the object that you passed to the function as argument.
+
+## WithDefault
+Binary function that takes two arguments:
+1. defaultObject
+2. object
+
+It returns a deep copy of the result of merging these two objects into one.
+> **Note** If both objects have a nested object under the same key, the objects merge as well
+
+```ts
+const defaultCat = {
+    name: 'Jonny',
+    age: 1,
+    cute: true,
+    parent: {
+        name: 'Jonny Jr',
+        age: 5,
+    }
+};
+const cat = {
+    name: 'Malcolm',
+    parent: {
+        name: 'Malcolm Jr',
+        cute: false
+    }
+}
+
+const result = WithDefault(defaultCat, cat);
+
+const ResultWillBe = {
+    name: 'Malcolm',       // overriden by cat
+    age: 1,                // taken from default
+    cute: true,            // taken from default
+    parent: {
+        cute: false,       // taken from cat
+        name: 'Malcolm Jr',// overriden by cat
+        age: 5,            // taken from default
+    }
+}
+```
+
+## Impose
+```ts
+const Impose = Swap(WithDefault)
+```
+
+First object's properties become more important.
+
+## Pick
+Binary function that takes two argumetns:
+1. array of strings 
+2. object
+
+Creates a new object with only the keys specified in the first argument.
+
+## Exclude
+Same as pick but excludes properties from object instead of picking them.
+
+## Map
+A binary function that takes two arguments: 
+1. map specification
+2. object
+
+It **maps one object(type) to another**.
+
+Map specification looks like this:
+```ts
+export type ObjectMapper<T1> = (value: any, obj: O1) => any;
+export type ObjectMapSpec<T1, T2> = {
+    map: 
+        [
+            keyof T1 | '', 
+            ObjectMapper<T1> | ObjectMapSpec<any, any>, 
+            keyof T2
+        ][];
+    transfer?: Extract<keyof T1, keyof T2>[]
+}
+```
+`map` is an array of **ternary tuples** that look like this:
+1. key of the source object or an **empty string in case you want to create a new key in the resulting object**
+2. objectMapper function or **another map specification to map one object to another**
+   

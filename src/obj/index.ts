@@ -1,6 +1,6 @@
-import {Identity} from "..";
-import {Curry, Exists, FALSE, InCase, Is, IsOfType, Pipe, Return, Swap, TRUE, Variable, When} from "../core";
-import { DataObject, Unary, DeepPartial } from "../core.types";
+import {CanBeDescribedAs, Identity, Is, Not} from "..";
+import {Curry, Exists, FALSE, InCase, IsOfType, Pipe, Swap, TRUE} from "../core";
+import {DataObject, DeepPartial, Unary} from "../core.types";
 
 export namespace obj {
     export const Keys = <T1 extends DataObject>(obj: T1): (keyof T1 & string)[] => Object.keys(obj);
@@ -16,7 +16,7 @@ export namespace obj {
             [IsOfType('array'), arr => (arr as any).map(DeepCopy)],
             [IsOfType('object'), Pipe([
                 Entries,
-                entries => entries.map(([k, v]) => [k, DeepCopy(v)]),
+                (entries: [string, any][]) => entries.map(([k, v]) => [k, DeepCopy(v)]),
                 FromEntries
             ])],
             [TRUE, Identity]
@@ -76,7 +76,7 @@ export namespace obj {
         return newObj;
     });
 
-    export const ExcludeProps: {
+    export const Exclude: {
         <T1 extends DataObject>(
             keys: (keyof T1)[],
             obj: T1
@@ -95,7 +95,8 @@ export namespace obj {
     export type ObjectMapper<O1> = (value: any, obj: O1) => any;
     export type ObjectMapSpec<O1 extends DataObject, O2 extends DataObject> = {
         map: [keyof O1 | '', ObjectMapper<O1> | ObjectMapSpec<any, any>, keyof O2][];
-        transfer?: Extract<keyof O1, keyof O2>[]
+        transfer?: Extract<keyof O1, keyof O2>[],
+        allowNull?: boolean
     }
     export const Map: {
         <O1 extends DataObject, O2 extends DataObject>(
@@ -106,16 +107,22 @@ export namespace obj {
         <O1 extends DataObject, O2 extends DataObject>(
             mapSpec: ObjectMapSpec<O1, O2>,
         ): Unary<O1, O2>
-    } = Curry((mapSpec, src) => {
+    } = Curry((mapSpec: ObjectMapSpec<any, any>, src) => {
         const result = {};
+        const ObjOrNull = o => typeof o === 'object';
 
-        if(!IsOfType('object', src)) {
-            throw Error(`Invalid input to obj.Map: src must be an object`)
-        }
+        InCase([
+            [Not(ObjOrNull), () => {
+                throw Error(`Invalid input to obj.Map: src must be an object or null`)
+            }],
+            [o => o === null && !mapSpec?.allowNull, () => {
+                throw Error(`Invalid input to obj.Map: src can not be null`)
+            }]
+        ], src);
 
         if(mapSpec.transfer) {
             for(const prop of mapSpec.transfer) {
-                result[prop] = src[prop];
+                result[prop] = src?.[prop];
             }
         }
 
@@ -123,9 +130,9 @@ export namespace obj {
             const [sourceProp, mapperOrSpec, destinationProp] = row;
 
             if(IsOfType('function', mapperOrSpec)) {
-                result[destinationProp] = mapperOrSpec(src?.[sourceProp] ?? null, src);
+                result[destinationProp] = (mapperOrSpec as ObjectMapper<any>)(src?.[sourceProp] ?? null, src);
             } else {
-                result[destinationProp] = Map(mapperOrSpec, src?.[sourceProp]);
+                result[destinationProp] = Map((mapperOrSpec as ObjectMapSpec<any, any>), src?.[sourceProp] ?? null);
             }
         }
 
