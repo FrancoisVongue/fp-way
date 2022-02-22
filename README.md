@@ -433,7 +433,8 @@ Binary function that takes two arguments:
 1. defaultObject
 2. object
 
-It returns a deep copy of the result of merging these two objects into one.
+It returns a deep copy of the result of merging these two objects into one, with the 
+<br>**properties of the second having higher precedence**.
 > **Note** If both objects have a nested object under the same key, the objects merge as well
 
 ```ts
@@ -494,7 +495,7 @@ It **maps one object(type) to another**.
 
 Map specification looks like this:
 ```ts
-export type ObjectMapper<T1> = (value: any, obj: O1) => any;
+export type ObjectMapper<T1> = (value: any, obj: T1) => any;
 export type ObjectMapSpec<T1, T2> = {
     map: 
         [
@@ -502,10 +503,24 @@ export type ObjectMapSpec<T1, T2> = {
             ObjectMapper<T1> | ObjectMapSpec<any, any>, 
             keyof T2
         ][];
-    transfer?: Extract<keyof T1, keyof T2>[]
+    transfer?: Extract<keyof T1, keyof T2>[],
+    allowNull?: boolean
 }
 ```
-`map` is an array of **ternary tuples** that look like this:
-1. key of the source object or an **empty string in case you want to create a new key in the resulting object**
-2. objectMapper function or **another map specification to map one object to another**
+What these specification properties mean: 
+1. **map**<br>
+    is an array of **ternary tuples** that look like this:
+    1. key of the source object or an **empty string in case you want to create a new key in the resulting object** 
+        <br> as opposed to mapping source key to a target one.
+    2. objectMapper function to map one key to another or **another map specification to map one object to another**
+    3. key of the target object
+
+2. **transfer**<br>
+    an array of keys that should be mapped using `Identity` function,
+    meaning their value will not change in the resulting object.
+3. **allowNull** <br>
+    specifies whether this specification is able to handle null value as an object (by default it doesn't),
+    for this to work, every object mapper function must handle case where both value and object are null and 
+    **every nested map specification must also allow null value**
    
+[//]: # (todo: add deepcopy to the map function)

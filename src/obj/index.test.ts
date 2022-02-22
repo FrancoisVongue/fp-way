@@ -186,6 +186,28 @@ describe('Map', () => {
         expect(catOwner.cat.amountOfLegs).toBe(4);
         expect(catOwner.cat.mustacheLength).toBeGreaterThan(0);
     })
+
+    it('Should allow to map null values', () => {
+        const animalOwner: AnimalOwner = {
+            name: 'John',
+            animal: {
+                alive: true,
+                legs: 3,
+                name: 'Tonny'
+            }
+        }
+
+        const catOwner = obj.Map<AnimalOwner, CatOwner>({
+            map: [
+                ['animal', AnimalToCatSpec, 'cat']
+            ],
+            transfer: ['name'],
+            allowNull: true
+        }, animalOwner);
+
+        expect(catOwner.cat.amountOfLegs).toBe(4);
+        expect(catOwner.cat.mustacheLength).toBeGreaterThan(0);
+    })
 })
 describe('_preCheckProps', () => {
     let catSpec: ValidationSpecWithPopulatedOptions<Cat> = {
