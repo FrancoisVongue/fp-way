@@ -35,6 +35,6 @@ export namespace num {
     export const ToExtent = Curry((extent: number, a: number) => a**extent);
     export const Floor = (n: number) => Math.floor(n);
     export const Ceil = (n: number) => Math.ceil(n);
-    export const ToInt = (v: number) => Math.round(v);
+    export const ToInt = (v: number) => Math.trunc(v);
     export const Abs = (n: number) => Math.abs(n);
 }

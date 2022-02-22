@@ -4,17 +4,15 @@ Main purpose of the library is to
 > **reduce the amount of code that you need to write in your projects.**
 
 # Type based structure
-Library consists of namespaces that correspond to the following javascript types:
+Library consists of **[core methods](#core-methods)** and namespaces that correspond to the following javascript types:
 
-```
-  (namespace - js type)
-1. bool      - 'boolean'
-2. num       - 'number'
-3. str       - 'string'
-4. obj       - 'object'
-5. arr       - 'array'
-```
-And **[core methods](#core-methods)**
+| namespace | javascript type |
+|-----------|-----------------|
+| bool      | boolean         | 
+| num       | number          | 
+| str       | string          | 
+| obj       | object          | 
+| arr       | array           | 
 
 
 Each namespace contains curried methods that work on the corresponding type.
@@ -239,3 +237,115 @@ but works correctly for **null** and **array** values.
 ## TypeOf
 Unary function that takes value and returns its type, 
 <br>which can be one of the aforementioned strings.
+
+# Bool
+## IsBool
+Unary predicate that takes one argument returns true if argument is either true or false.
+
+## And
+Binary predicate that takes two boolean arguments and returns true if both of them are true.
+```ts
+const And = (a, b) => a && b
+```
+
+## Or
+Binary predicate that takes two boolean arguments and returns true if either of them is true.
+
+## Not
+Unary predicate that takes one argument returns true if argument is false.
+
+# Num 
+## IsNum
+Unary predicate that returns true if argument is of type number.
+
+## IsQuotientOf
+Binary predicate that returns true if second argument can divide the first without remainder.
+
+```ts
+const IsQuotientOf = (a, b) => b % a === 0
+
+const True = IsQuotientOf(13, 39)
+```
+
+## IsInt
+Unary predicate that returns true if argument is integer.
+
+## IsNaN
+Unary predicate that returns true if argument is NaN.
+
+## Gt, Gte, Lt, Lte
+Binary predicate that compares first argument to the second one.
+1. Gt - greater than
+2. Gte - greater than or equal
+2. Lt - less than 
+2. Lte - less than or equal
+
+```ts
+const True = Gt(2, 3); // three is greater than 2 
+```
+
+## IsPos, IsNeg
+Unary predicate that returns true if argument is greater than 0 (IsPos) or less than 0 (IsNeg)
+
+## InRangeEx
+Function takes three numeric arguments:
+1. min
+2. max
+3. value
+
+And returns true if value is greater then min and less then max.
+
+## InRangeInc
+Same as above but **value can also be equal** to the min or max.
+
+## Negate
+Unary function that negates a numeric value
+
+## Inc, Dec
+Increment (+1) and decrement (-1)
+
+## AtMost
+Binary function takes two arguments:
+1. max
+2. value
+
+And returns max if value is greater than max and value if it's not
+```ts
+const AtMost = (max, x) => x > max ? max : x
+```
+
+## AtLeast
+Binary function takes two arguments:
+1. min
+2. value
+
+And returns min if value is less than min and value if it's not
+
+## Add, Subtr, MulBy, DivBy, Mod
+Binary functions that correspond to math operators (+, -, *, /, %)
+
+## Diff
+Binary function that returns difference benteen two numeric values as 
+**absolute(positive) value**
+
+## Floor
+Unary function that rounds a value to the largest integer less than or equal to the value.
+
+## Ceil
+Unary function that rounds a value to the smallest integer greater than or equal to the value.
+
+## ToInt
+Unary function that removes decimal part of a number
+
+## Abs
+Returns positive representation of a number
+
+## ToExtent
+Function takes two arguments: 
+1. extent
+2. value
+
+And returns value raised to the extent
+```ts
+const ToExtent = (e, x) => x**e;
+```
