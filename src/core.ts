@@ -172,7 +172,20 @@ export const CanBeDescribedAs: {
     ): Unary<T, boolean>
 } = Curry((ps: Predicate[], v: any) => {
     return ps.map(ApplyOn(v)).every(Is(true))
-})
+});
+
+export const IsEither: {
+    <T>(
+        predicates: UnaryPredicate<T>[],
+        value: T
+    ): boolean
+
+    <T>(
+        predicates: UnaryPredicate<T>[],
+    ): Unary<T, boolean>
+} = Curry((ps: Predicate[], v: any) => {
+    return ps.map(ApplyOn(v)).some(Is(true))
+});
 
 export const Pipe: {
     <T1, R>(fns: [Unary<T1, R>], v: T1): R

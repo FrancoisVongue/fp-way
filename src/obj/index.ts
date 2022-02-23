@@ -1,4 +1,4 @@
-import {CanBeDescribedAs, Identity, Is, Not} from "..";
+import {CanBeDescribedAs, Identity, Is, Not, TypeOf} from "..";
 import {Curry, Exists, FALSE, InCase, IsOfType, Pipe, Swap, TRUE} from "../core";
 import {DataObject, DeepPartial, Unary} from "../core.types";
 
@@ -39,7 +39,8 @@ export namespace obj {
 
         for(const key of allProps) {
             objCopy[key] = InCase([
-                [([defv, v]) => [defv, v].every(IsOfType("object")), ([n, o]) => WithDefault(n, o)], // if both are objects, merge them again
+                // if both are objects, merge them again
+                [([defv, v]) => [defv, v].every(IsOfType("object")), ([n, o]) => WithDefault(n, o)],
                 [([_, v]) => Exists(v), ([_, v]) => v],// if not, and obj has value, simply replace
                 [TRUE, ([defv, _]) => defv],          // if there's no value, return default
             ], [defCopy[key], objCopy[key]])
@@ -92,7 +93,7 @@ export namespace obj {
     });
 
     // == MAPPER
-    export type ObjectMapper<O1> = (value: any, obj: O1) => any;
+    export type ObjectMapper<O1> = (value: any | null, obj: O1) => any;
     export type ObjectMapSpec<O1 extends DataObject, O2 extends DataObject> = {
         map: [keyof O1 | '', ObjectMapper<O1> | ObjectMapSpec<any, any>, keyof O2][];
         transfer?: Extract<keyof O1, keyof O2>[],
@@ -107,7 +108,8 @@ export namespace obj {
         <O1 extends DataObject, O2 extends DataObject>(
             mapSpec: ObjectMapSpec<O1, O2>,
         ): Unary<O1, O2>
-    } = Curry((mapSpec: ObjectMapSpec<any, any>, src) => {
+    } = Curry((mapSpec: ObjectMapSpec<any, any>, originalSrc) => {
+        const src = DeepCopy(originalSrc);
         const result = {};
         const ObjOrNull = o => typeof o === 'object';
 
@@ -131,8 +133,10 @@ export namespace obj {
 
             if(IsOfType('function', mapperOrSpec)) {
                 result[destinationProp] = (mapperOrSpec as ObjectMapper<any>)(src?.[sourceProp] ?? null, src);
-            } else {
+            } else if (IsOfType('object'), mapperOrSpec) {
                 result[destinationProp] = Map((mapperOrSpec as ObjectMapSpec<any, any>), src?.[sourceProp] ?? null);
+            } else {
+                throw Error(`Invalid input to obj.Map: mapper can be either function or object, not ${TypeOf(mapperOrSpec)}`)
             }
         }
 

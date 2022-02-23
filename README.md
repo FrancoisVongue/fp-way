@@ -20,18 +20,19 @@ Each namespace contains curried methods that work on the corresponding type.
 
 # Core methods
 
-| Base fp methods       | Conditionals                            | Other                   |
-|-----------------------|-----------------------------------------|-------------------------|
-| [Curry](#curry)       | [Is](#is)                               | [DoNothing](#donothing) |
-| [Identity](#identity) | [Exists](#exists)                       | [TypeOf](#typeof)       |
-| [Const](#const)       | [IfElse](#ifelse)                       |                         |
-| [Variable](#variable) | [When](#when)                           |                         |
-| [Swap](#swap)         | [Unless](#unless)                       |                         |
-| [Call](#call)         | [InCase](#incase)                       |                         |
-| [ApplyOn](#applyon)   | [IndependendInCase](#independendincase) |                         |
-| [Pipe](#pipe)         | [CanBeDescribedAs](#canbedescribedas)   |                         |
-| [Compose](#compose)   | [IsOfType](#isoftype)                   |                         |
-| [Not](#not)           |                                         |                         |
+
+| Base fp methods                           | Conditionals                            | Other                   |
+|-------------------------------------------|-----------------------------------------|-------------------------|
+| [Curry](#curry)                           | [Is](#is)                               | [DoNothing](#donothing) |
+| [Identity](#identity)                     | [Exists](#exists)                       | [TypeOf](#typeof)       |
+| [Const](#const-aka-return-true-and-false) | [IfElse](#ifelse)                       |                         |
+| [Variable](#variable)                     | [When](#when)                           |                         |
+| [Swap](#swap)                             | [Unless](#unless)                       |                         |
+| [Call](#call)                             | [InCase](#incase)                       |                         |
+| [ApplyOn](#applyon)                       | [IndependentInCase](#independentincase) |                         |
+| [Pipe](#pipe)                             | [CanBeDescribedAs](#canbedescribedas)   |                         |
+| [Compose](#compose)                       | [IsEither](#iseither)                   |                         |
+| [Not](#not)                               | [IsOfType](#isoftype)                   |                         |
 
 Note that some methods in this section have **aliases**. 
 <br>For example **Const** and **Return** are the same method.
@@ -162,7 +163,7 @@ Value is passed to every unary predicate in order.
 <br>Function returns the result of passing value to the Unary function 
 <br>of the first tuple where predicate returns true.
 
-This function works similar to switch..case construction.
+This function works similar to switch...case construction.
 ```ts
 const value = 22;
 
@@ -182,7 +183,7 @@ Function that takes two arguments:
     2. Unary function
 2. value
 
-Works simillar to InCase but returns 
+Works similar to InCase but returns 
 <br>**an array of results** of passing value to unary functions where predicate returned `true`
 
 ## CanBeDescribedAs
@@ -191,6 +192,13 @@ Function takes two arguments:
 2. value
 
 Checks if every predicate returns true when called with the value.
+
+## IsEither
+Function takes two arguments:
+1. An array of unary predicates
+2. value
+
+Checks if **at least one** predicate returns true when called with the value.
 
 ## Pipe
 Function takes two arguments:
@@ -218,7 +226,7 @@ Function takes two arguments:
 Works similar to `Pipe` but **calls functions in the reverse order**.
 
 ## IsOfType
-Functions takes two arguments:
+Function takes two arguments:
 1. string representing a type, which can be
    `| "undefined"
     | "null"
@@ -232,7 +240,7 @@ Functions takes two arguments:
     | "array" |`
 3. a value
 
-Validates that value is of specified type. Works simillar to `typeof` 
+Validates that value is of specified type. Works similar to `typeof` 
 but works correctly for **null** and **array** values.
 
 ## TypeOf
@@ -294,7 +302,7 @@ Function takes three numeric arguments:
 2. max
 3. value
 
-And returns true if value is greater then min and less then max.
+And returns true if value is greater than min and less than max.
 
 ## InRangeInc
 Same as above but **value can also be equal** to the min or max.
@@ -326,7 +334,7 @@ And returns min if value is less than min and value if it's not
 Binary functions that correspond to math operators (+, -, *, /, %)
 
 ## Diff
-Binary function that returns difference benteen two numeric values as 
+Binary function that returns difference between two numeric values as 
 **absolute(positive) value**
 
 ## Floor
@@ -386,7 +394,7 @@ The split() method divides a String into an ordered list of substrings,
 <br>as the first parameter in the method's call and can be **either Regex or a string**.
 
 ## ConcatWith
-Function takes two strign arguments and returns the result of appending first argument to the second one.
+Function takes two string arguments and returns the result of appending first argument to the second one.
 ```ts
 const ConcatWith = (s1, s2) => s2 + s1; // note that s2 comes first
 ```
@@ -426,7 +434,7 @@ this key's value.
 
 ## DeepCopy
 Unary function that returns a deep copy of an object, meaning that changing the result 
-wont change the object that you passed to the function as argument.
+won't change the object that you passed to the function as argument.
 
 ## WithDefault
 Binary function that takes two arguments:
@@ -436,6 +444,9 @@ Binary function that takes two arguments:
 It returns a deep copy of the result of merging these two objects into one, with the 
 <br>**properties of the second having higher precedence**.
 > **Note** If both objects have a nested object under the same key, the objects merge as well
+
+<details>
+<summary>Click to view example:</summary>
 
 ```ts
 const defaultCat = {
@@ -468,6 +479,8 @@ const ResultWillBe = {
     }
 }
 ```
+</details>
+<hr>
 
 ## Impose
 ```ts
@@ -477,7 +490,7 @@ const Impose = Swap(WithDefault)
 First object's properties become more important.
 
 ## Pick
-Binary function that takes two argumetns:
+Binary function that takes two arguments:
 1. array of strings 
 2. object
 
@@ -489,7 +502,7 @@ Same as pick but excludes properties from object instead of picking them.
 ## Map
 A binary function that takes two arguments: 
 1. map specification
-2. object
+2. source object
 
 It **maps one object(type) to another**.
 
@@ -510,17 +523,87 @@ export type ObjectMapSpec<T1, T2> = {
 What these specification properties mean: 
 1. **map**<br>
     is an array of **ternary tuples** that look like this:
-    1. key of the source object or an **empty string in case you want to create a new key in the resulting object** 
+    + key of the source object or an **empty string** in case you want to create **a new key in the resulting object** 
         <br> as opposed to mapping source key to a target one.
-    2. objectMapper function to map one key to another or **another map specification to map one object to another**
-    3. key of the target object
+    + objectMapper is a binary function to map one key to another or **another map specification to map one object to another** 
+        <br>In case it's a function, it takes two arguments: 
+        + value of the source key or **null if source key is an empty string**
+        + source object
+    + key of the target object
 
 2. **transfer**<br>
-    an array of keys that should be mapped using `Identity` function,
-    meaning their value will not change in the resulting object.
+    an array of keys that have the same name in the target object should be mapped using `Identity` function,
+    meaning their value should not change.
 3. **allowNull** <br>
     specifies whether this specification is able to handle null value as an object (by default it doesn't),
     for this to work, every object mapper function must handle case where both value and object are null and 
     **every nested map specification must also allow null value**
    
-[//]: # (todo: add deepcopy to the map function)
+<details>
+<summary>Click to view example:</summary>
+
+```ts
+interface Cat {
+    name: string,
+    age: number,
+    cute: boolean,
+    weight: number,
+    kitten: Omit<Cat, 'kitten'>,
+}
+
+interface Dog {
+    name: string,
+    age: number,
+    brave: boolean,
+    weight: number,
+    puppy: Omit<Dog, 'puppy'>,
+}
+
+const KittenToPuppySpecification: ObjectMapSpec<Cat, Dog> = {
+    transfer: ['age', 'name'],
+    map: [
+        ['', (_, kitten) => kitten.cute, 'brave'], // one way of making a dog brave in case cat was cute
+        ['weight', (weight, kitten) => weight * 2, 'weight'],
+    ],
+    allowNull: false
+}
+const CatToDogSpecification: ObjectMapSpec<Cat, Dog> = {
+    transfer: ['age', 'name'],
+    map: [
+        ['cute', Identity, 'brave'], // another way of making a dog brave in case cat was cute
+        
+        // note that specification can be passed here because kitten and puppy are objects
+        ['kitten', KittenToPuppySpecification, 'puppy'],
+        ['weight', (weight, kitten) => weight * 3, 'weight'],
+    ],
+    allowNull: false
+}
+
+const cat: Cat = {
+    name: 'Marry',
+    age: 12,
+    cute: true,
+    weight: 3.5,
+    kitten: {
+        name: 'Jerry',
+        age: 4,
+        weight: 1.5,
+        cute: true,
+    }
+}
+const dog = Map(CatToDogSpecification, cat);
+const DogResult = {
+    name: 'Marry',  // transferred as it was
+    age: 12,        // transferred as it was
+    brave: true,    // because cat was cute
+    weight: 11.5,   // cat weight (3.5) * 3
+    kitten: {
+        name: 'Jerry',  // transferred from cat.kitten
+        age: 4,         // transferred from cat.kitten
+        weight: 3,      // kitten weight (1.5) * 2
+        brave: true,    // because kitten was cute
+    }
+}
+```
+</details> 
+<hr>
