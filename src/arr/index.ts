@@ -25,6 +25,10 @@ export namespace arr {
             current += step;
         }
 
+        if(result?.[result.length - 1] !== finish) {
+            result.push(finish)
+        }
+
         return result
     });
 
@@ -47,7 +51,7 @@ export namespace arr {
             p: Predicate,
         ): Unary<T1[], T1[]>
     } = Curry((p: Predicate, arr: any[]) => arr.filter(Not(p)));
-    export const MapArr: {
+    export const Map: {
         <T1, T2>(
             f: Unary<T1, T2>,
             arr: T1[]
@@ -79,15 +83,13 @@ export namespace arr {
         <T1>(
             arr: T1[],
         ): Unary<T1[], T1[]>
-    } = Curry((arr, arrOfValues) => arr.push(...arrOfValues));
+    } = Curry((arr, arrOfValues) => [...arr, ...arrOfValues]);
     export const Tail = (arr) => arr.length > 1
         ? arr.slice(1)
         : [...arr];
     export const Nose = (arr) => arr.length > 1 ? arr.slice(0, arr.length - 1) : [...arr];
-    export const Head = <T1>(arr: T1[]): T1 | undefined => arr[0];
-    export const Butt = <T1>(arr: T1[]): T1 | undefined => arr.length >= 1
-        ? arr[arr.length - 1]
-        : arr[0]
+    export const Head = <T1>(arr: T1[]): T1 | undefined => [...arr].shift();
+    export const Butt = <T1>(arr: T1[]): T1 | undefined => [...arr].pop();
     export const TakeNFirst = Curry((n, arr) => arr.length < n
         ? [...arr]
         : arr.slice(0, n));

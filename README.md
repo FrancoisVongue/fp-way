@@ -64,9 +64,8 @@ Useful to use as a higher order function to return the same value no matter the 
 ```ts
 const Const = (a, b) => a
 ```
-> **Note** that unlike examples in this tutorial, 
-> actual functions in the library are **curried**. 
-> <br>This is done to simplify code examples.
+> **Note** that function examples in this tutorial just show function signatures.
+> Actual functions in the library are **curried**. 
 
 ## Variable
 Variable is a function that takes **two arguments** and returns the **second** one.
@@ -607,3 +606,224 @@ const DogResult = {
 ```
 </details> 
 <hr>
+
+## Validate
+A binary function that takes two arguments:
+1. validation specification
+2. an object
+
+It **checks whether object adheres to the specification**.
+and returns `validation summary`
+
+Validation specification looks like this:
+```ts
+export type ValidationOptions<T extends DataObject> = {
+    // used to increase performance in case you are only interested in 
+    // validity of an object and not in all the properties that are invalid
+    stopWhen?: (summary: ValidationSummary<T>) => boolean, 
+    
+    // allows you to create custom messages in case validator throws an exception
+    errorHandler?: (e: ValidationException) => string,
+    
+    // should redundant properties make object invalid (true by default)
+    redundantIsError?: boolean,
+    
+    // properties that are allowed to be null or undefined
+    optionalProps?: (keyof T)[],
+    
+    // whether object itself is allowed to be null or undefined
+    isOptional?: boolean
+}
+export type ValidationPropertyRule<T1> = [
+    (v: any, o: T1) => boolean,                 // validator predicate function 
+    string | ((v: any, k: keyof T1) => string) // message in case validator returns false
+];
+export type ValidationSpec<T1 extends DataObject> =
+    & Record<keyof T1, ValidationPropertyRule<T1>[] | AnyValidationSpec>
+    & { [ValidationOptionsSym]?: ValidationOptions<T1> };
+```
+
+<details>
+<summary>Click to view example:</summary>
+
+```ts
+type CatChild = Partial<Omit<Cat, 'child'>>
+type Cat = {
+    age: number;
+    name?: string;
+    amountOfLegs: number;
+    child: CatChild
+}
+
+type CatParent = {
+    age: number;
+    name?: string;
+    amountOfLegs: number;
+    childCat: Cat;
+}
+
+const CatChildSpec: obj.ValidationSpec<CatChild> = {
+    age: [
+        [IsOfType('number'), 'age must be a number']
+    ],
+    name: [
+        [IsOfType('string'),  'name must be a number']
+    ],
+    amountOfLegs: [
+        [IsOfType('number'),  'amountOfLegs must be a number']
+    ],
+    [ValidationOptionsSym]: {
+        optionalProps: ['name', 'age', 'amountOfLegs']
+    }
+}
+
+const CatSpec: obj.ValidationSpec<Cat> = {
+    age: [
+        [IsOfType('number'), 'age must be a number']
+    ],
+    name: [
+        [IsOfType('string'),  'name must be a number']
+    ],
+    amountOfLegs: [
+        [IsOfType('number'),  'amountOfLegs must be a number']
+    ],
+    child: CatChildSpec,
+    [ValidationOptionsSym]: {
+        optionalProps: ['name']
+    }
+}
+
+
+const CatParentSpec: obj.ValidationSpec<CatParent> = {
+    age: [
+        [IsOfType('number'), 'age must be a number']
+    ],
+    name: [
+        [IsOfType('string'),  'name must be a number']
+    ],
+    amountOfLegs: [
+        [IsOfType('number'),  'amountOfLegs must be a number']
+    ],
+    childCat: CatSpec,
+    [ValidationOptionsSym]: {
+        optionalProps: ['name']
+    }
+}
+
+const cat: Cat = {
+    age: 1,
+    name: 1 as any, // SHOULD BE A STRING
+    amountOfLegs: 4,
+    child: {
+        name: 'Tonny jr',
+        age: '1' as any, // SHOULD BE A NUMBER
+    },
+}
+const catParent: CatParent = {
+    age: 1,
+    name: 'Tonny Sr',
+    amountOfLegs: '4' as any, // SHOULD BE A NUMBER
+    childCat: cat
+}
+
+const result = Validate(CatParentSpec, catParent);
+const Result = {
+    "valid": false,
+    "errorCount": 3,
+    "missingProperties": [],
+    "redundantProperties": [],
+    "errors": {
+        "amountOfLegs": [
+            "amountOfLegs must be a number"
+        ],
+        "childCat.name": [
+            "name must be a number"
+        ],
+        "childCat.child.age": [
+            "age must be a number"
+        ]
+    }
+}
+```
+</details> 
+<hr>
+
+Result of the function is of type ValidationSummary:
+```ts
+export type ValidationSummary<T1 extends DataObject> = {
+    // whether object is valid
+    valid: boolean,
+    
+    // how many errors occured in the process of validation
+    // in case of a valid object it's always 0
+    errorCount: number,
+    
+    // valid object can not have missing properties
+    missingProperties: string[],
+    
+    // valid object can not have redundant properties 
+    // (unless stated otherwise in specification)
+    redundantProperties: string[],
+    
+    // messages to understand what is wrong with the object
+    errors: Record<keyof T1 | '_self', string[]>
+    // _self is used to indicate that value that you passed to 
+    // the validation function IS NOT AN OBJECT AT ALL
+}
+```
+
+# Arr
+## OfValues
+Function that takes multiple arguments of the same type and returns an array of them.
+```ts
+export const OfValues = <T>(...v: T[]) => [...v];
+```
+
+## OfLength
+Unary function.
+Creates an array of specified length filled with `null`'s.
+```ts
+const OfLength = (n: number) => Array(n).fill(null)
+```
+
+## FromRange
+Takes three arguments:
+1. start
+2. finish (must be greater than start)
+3. step (must be integer)
+
+And creates an array of numbers, starting from start up step by step until finish.
+```ts
+const result = arr.FromRange(1.5, 3.6, 1);
+const Result = [1.5, 2.5, 3.5, 3.6]
+```
+
+## Select
+Binary function that takes a predicate and an array. 
+Alternative to Array.prototype.filter.
+
+## Exclude
+Binary function that takes a predicate and an array. 
+Alternative to Array.prototype.filter but excludes values for which predicate returns true.
+
+## Reduce
+Ternary function that takes 
+1. ternary function that takes
+   1. accumulator
+   2. array value
+   3. array
+2. accumulator
+3. array
+
+Alternative to Array.prototype.reduce.
+
+## Map
+Binary function that takes a mapper function and an array. 
+Alternative to Array.prototype.map.
+
+## ConcatTo
+Binary function that takes two arrays and returns a new one that is result of `pushing`
+all elements of the first array to the second one.
+
+## Tail, Nose, Head, Butt
+

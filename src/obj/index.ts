@@ -149,14 +149,14 @@ export namespace obj {
         errorCount: number,
         missingProperties: string[],
         redundantProperties: string[],
-        errors: Record<keyof T1 | '_self', any>
+        errors: Record<keyof T1 | '_self', string[]>
     }
     namespace _ValidationSummary {
         export const incErrCount = (s: ValidationSummary<any>) => {
             s.errorCount++
             s.valid = false
         }
-        export const addErr = (k, msg, summary: ValidationSummary<any>) => {
+        export const addErr = (k: string, msg: string, summary: ValidationSummary<any>) => {
             if(IsOfType('array', summary.errors[k])) {
                 (summary.errors[k]).push(msg);
             } else {
@@ -170,7 +170,7 @@ export namespace obj {
                 errorCount: 0,
                 missingProperties: [],
                 redundantProperties: [],
-                errors: {} as Record<keyof T1 | '_self', any>
+                errors: {} as Record<keyof T1 | '_self', string[]>
             }
         }
         export const mergeNestedSummary = (
