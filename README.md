@@ -825,5 +825,92 @@ Alternative to Array.prototype.map.
 Binary function that takes two arrays and returns a new one that is result of `pushing`
 all elements of the first array to the second one.
 
-## Tail, Nose, Head, Butt
+## Nose, tail
+Unary function that returns a new array that contains all elements of the input array but 
+the last/first one. In case of an empty array input returns `empty array` as well.
 
+## Head, Butt
+Unary function that returns first/last element of an array.
+Doesn't change the array itself. In case of an empty array returns `undefined`.
+
+## TakeNFirst, TakeNLast
+Binary function that takes a number and an array and returns a new 
+array that contains first/last N values of the original array.
+
+## Append, Prepend
+Binary function that takes two arguments: a value and an array and returns a 
+`new array` that has value appended/prepended to it.
+
+## Flatten
+Turns an array that contains nested arrays into a flat array (array that doesn't contain array, only values).
+```ts
+const groupedArr = [
+    [1, 2],
+    [3, [4, 5]]
+];
+const numArr = arr.Flatten(groupedArr)
+
+const Result = [1,2,3,4,5];
+```
+
+## Intersection
+Binary function that takes two arrays and returns a new array 
+that contains only elements that belong to both arrays simultaneously.
+
+## Subtract
+Binary function that takes two arrays and returns a new array 
+that contains only elements that are contained in the second array and not in 
+the first one.
+
+Example:
+
+```ts
+// curried example
+const remove1and2 = arr.Subtract([1,2]); // returns a function
+const arr = [0,1,2,3,4];
+
+const result = remove1and2(arr);
+const Result = [0,3,4];
+```
+
+## IsArray
+Unary predicate that takes a value and returns true if value is an array.
+
+## AllElementsAre
+Binary predicate that takes an array and a unary predicate and returns true
+if predicate returns true for every element in the array.
+Alternative to `Array.prototype.every`.
+
+## SomeElementsAre
+Binary predicate that takes an array and a unary predicate and returns true
+if predicate returns true for at least one element in the array.
+Alternative to `Array.prototype.some`.
+
+## NoElementIs
+Binary predicate that takes an array and a unary predicate and returns true
+if predicate returns false for every element in the array.
+
+## ContainedIn
+Binary predicate that takes two arguments: an array and a value 
+and returns true if array contains the value.
+
+## Contains
+```ts
+const Contains = Swap(ContainedIn);
+```
+
+## IsSupersetOf
+Binary predicate that takes two arrays and returns true if all elements of 
+the first array can be found in the second one.
+
+## IsSubsetOf
+```ts
+const IsSubsetOf = Swap(IsSupersetOf);
+```
+
+## EqualsArray
+Binary predicate that takes two arrays and returns true if arrays 
+contain the same values. Order doesn't matter.
+
+## IsUnique
+Unary predicate that takes an array and returns true if every element of the array is unique.

@@ -1,4 +1,4 @@
-import {Curry, Not,} from "../core";
+import {Curry, IsOfType, Not, Swap,} from "../core";
 import {Binary, Predicate, Ternary, Unary} from "../core.types";
 import {num} from "../num";
 
@@ -84,32 +84,37 @@ export namespace arr {
             arr: T1[],
         ): Unary<T1[], T1[]>
     } = Curry((arr, arrOfValues) => [...arr, ...arrOfValues]);
-    export const Tail = (arr) => arr.length > 1
-        ? arr.slice(1)
-        : [...arr];
-    export const Nose = (arr) => arr.length > 1 ? arr.slice(0, arr.length - 1) : [...arr];
+    export const Tail = (arr) => [...arr].slice(1);
+    export const Nose = (arr) => [...arr].slice(0, -1)
     export const Head = <T1>(arr: T1[]): T1 | undefined => [...arr].shift();
     export const Butt = <T1>(arr: T1[]): T1 | undefined => [...arr].pop();
-    export const TakeNFirst = Curry((n, arr) => arr.length < n
-        ? [...arr]
-        : arr.slice(0, n));
-    export const TakeNLast = Curry((n, arr) => arr.length < n
-        ? [...arr]
-        : arr.slice(-n));
-    export const Append = Curry((value: any, arr: any[]) => [...arr, value]);
-    export const Prepend = Curry((value: any, arr: any[]) => [value, ...arr]);
-    export const Flatten = function Flatten<T1>(arr: any[]): T1[] {
-        const result: any[] = [];
+    export const TakeNFirst = Curry((n: number, arr: any[]) => arr.slice(0, n));
+    export const TakeNLast = Curry((n: number, arr: any[]) => arr.slice(-n));
+    export const Append: {
+        <T1>(
+            v: T1,
+            arr: T1[]
+        ): T1[]
 
-        for(const v of arr) {
-            if (Array.isArray(v)) {
-                const flattenedArray = Flatten(v);
-                result.push(...flattenedArray);
-            } else {
-                result.push(v);
-            }
-        }
-        return result;
+        <T1>(
+            v: T1,
+        ): Unary<T1[], T1[]>
+    } = Curry((value: any, arr: any[]) => [...arr, value]);
+    export const Prepend: {
+        <T1>(
+            v: T1,
+            arr: T1[]
+        ): T1[]
+
+        <T1>(
+            v: T1,
+        ): Unary<T1[], T1[]>
+    } = Curry((value: any, arr: any[]) => [value, ...arr]);
+    export const Flatten = function Flatten<T1>(arr: any[]): T1[] {
+        return arr.reduce((b, v) => (IsOfType("array", v)
+                ? b.push(...Flatten(v))
+                : b.push(v)
+            , b), [])
     }
     export const Intersection: {
         <T1>(
@@ -171,7 +176,7 @@ export namespace arr {
         <T1>(
             v: T1,
         ): Unary<T1[], boolean>
-    } = Curry((v, arr: any[]) => arr.includes(v))
+    } = Swap(ContainedIn) as any;
     export const IsSupersetOf: {
         <T1>(
             sub: T1[],

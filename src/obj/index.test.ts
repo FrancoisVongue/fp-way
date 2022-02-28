@@ -455,7 +455,8 @@ describe('DeepCopy', () => {
         const humanCopy = obj.DeepCopy(human);
         humanCopy.friend.height = 155;
 
-        expect(human.friend.height).toEqual(humanFriendHeight); // should not change
+        // human.friend.height should not change
+        expect(human.friend.height).toEqual(humanFriendHeight);
         expect(humanCopy.name).toEqual(human.name);
         expect(humanCopy.friend.name).toEqual(human.friend.name);
     })
