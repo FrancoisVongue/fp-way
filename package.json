@@ -11,7 +11,8 @@
         "start": "node src",
         "test": "jest",
         "clean": "rm -rf ./lib",
-        "build": "rm -rf ./lib && tsc -p ."
+        "build": "rm -rf ./lib && tsc -p .",
+        "deploy": "npm run build && np"
     },
     "repository": {
         "type": "git",
