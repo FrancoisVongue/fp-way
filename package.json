@@ -1,6 +1,6 @@
 {
     "name": "fp-way",
-    "version": "2.0.2",
+    "version": "2.1.0",
     "description": "Simple functional programming library that works as you would expect.",
     "main": "lib/index.js",
     "files": [
