@@ -773,24 +773,20 @@ export type ValidationSummary<T1 extends DataObject> = {
 ```
 
 # Arr
-| constructors            | transformators                | validators                          |
-|-------------------------|:------------------------------|-------------------------------------|
-| [OfValues](#ofvalues)   | [Select](#select)             | [IsArray](#isarray)                 | 
-| [OfLength](#oflength)   | [Exclude](#exclude)           | [AllElementsAre](#allelementsare)   | 
-| [FromRange](#fromrange) | [Reduce](#reduce)             | [SomeElementsAre](#someelementsare) | 
-|                         | [Map](#map)                   | [NoElementIs](#noelementis)         | 
-|                         | [ConcatTo](#concatto)         | [ContainedIn](#containedin)         | 
-|                         | [Nose](#nose)                 | [Contains](#contains)               | 
-|                         | [Tail](#tail)                 | [IsSupersetOf](#issupersetof)       | 
-|                         | [Head](#head)                 | [IsSubsetOf](#issubsetof)           | 
-|                         | [Butt](#butt)                 | [EqualsArray](#equalsarray)         | 
-|                         | [TakeNFirst](#takenfirst)     | [IsUnique](#isunique)               | 
-|                         | [TakeNLast](#takenlast)       |                                     | 
-|                         | [Append](#append)             |                                     | 
-|                         | [Prepend](#prepend)           |                                     | 
-|                         | [Flatten](#flatten)           |                                     | 
-|                         | [Intersection](#intersection) |                                     | 
-|                         | [Subtract](#subtract)         |                                     | 
+| constructors            | transformators                                 | validators                          |
+|-------------------------|:-----------------------------------------------|-------------------------------------|
+| [OfValues](#ofvalues)   | [Select](#select)                              | [IsArray](#isarray)                 | 
+| [OfLength](#oflength)   | [Exclude](#exclude)                            | [AllElementsAre](#allelementsare)   | 
+| [FromRange](#fromrange) | [Reduce](#reduce)                              | [SomeElementsAre](#someelementsare) | 
+|                         | [Map](#map-1)                                  | [NoElementIs](#noelementis)         | 
+|                         | [ConcatTo](#concatto)                          | [ContainedIn](#containedin)         | 
+|                         | [Nose, Tail](#nose-tail)                       | [Contains](#contains)               | 
+|                         | [Head, Butt](#head-butt)                       | [IsSupersetOf](#issupersetof)       | 
+|                         | [TakeNFirst, TakeNLast](#takenfirst-takenlast) | [IsSubsetOf](#issubsetof)           | 
+|                         | [Append, Prepend](#append-prepend)             | [EqualsArray](#equalsarray)         | 
+|                         | [Flatten](#flatten)                            | [IsUnique](#isunique)               | 
+|                         | [Intersection](#intersection)                  |                                     | 
+|                         | [Subtract](#subtract)                          |                                     | 
 
 ## OfValues
 Function that takes multiple arguments of the same type and returns an array of them.
