@@ -7,13 +7,13 @@ Simple functional programming library that works as you would expect.
 # Type based structure
 Library consists of **[core methods](#core-methods)** and namespaces that correspond to the following javascript types:
 
-| namespace | javascript type |
-|-----------|:----------------|
-| bool      | boolean         | 
-| num       | number          | 
-| str       | string          | 
-| obj       | object          | 
-| arr       | array           | 
+| namespace | javascript type | documentation link |
+|-----------|:----------------|--------------------|
+| bool      | boolean         | **[bool](#bool)**  | 
+| num       | number          | **[num](#num)**    | 
+| str       | string          | **[str](#str)**    | 
+| obj       | object          | **[obj](#obj)**    | 
+| arr       | array           | **[arr](#arr)**    | 
 
 
 Each namespace contains curried methods that work on the corresponding type.
@@ -773,6 +773,25 @@ export type ValidationSummary<T1 extends DataObject> = {
 ```
 
 # Arr
+| constructors            | transformators                | validators                          |
+|-------------------------|:------------------------------|-------------------------------------|
+| [OfValues](#ofvalues)   | [Select](#select)             | [IsArray](#isarray)                 | 
+| [OfLength](#oflength)   | [Exclude](#exclude)           | [AllElementsAre](#allelementsare)   | 
+| [FromRange](#fromrange) | [Reduce](#reduce)             | [SomeElementsAre](#someelementsare) | 
+|                         | [Map](#map)                   | [NoElementIs](#noelementis)         | 
+|                         | [ConcatTo](#concatto)         | [ContainedIn](#containedin)         | 
+|                         | [Nose](#nose)                 | [Contains](#contains)               | 
+|                         | [Tail](#tail)                 | [IsSupersetOf](#issupersetof)       | 
+|                         | [Head](#head)                 | [IsSubsetOf](#issubsetof)           | 
+|                         | [Butt](#butt)                 | [EqualsArray](#equalsarray)         | 
+|                         | [TakeNFirst](#takenfirst)     | [IsUnique](#isunique)               | 
+|                         | [TakeNLast](#takenlast)       |                                     | 
+|                         | [Append](#append)             |                                     | 
+|                         | [Prepend](#prepend)           |                                     | 
+|                         | [Flatten](#flatten)           |                                     | 
+|                         | [Intersection](#intersection) |                                     | 
+|                         | [Subtract](#subtract)         |                                     | 
+
 ## OfValues
 Function that takes multiple arguments of the same type and returns an array of them.
 ```ts
